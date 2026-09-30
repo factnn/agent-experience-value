@@ -1,6 +1,6 @@
 # Online RL engineering progress
 
-2026-09-30: environment acceptance passed; GPU RL update not yet run.
+2026-09-30: environment and loss-mask checks passed; two online attempts completed with zero learning signal; reasoning-mode calibration in progress. Latest machine-readable state: [STATUS.json](STATUS.json).
 
 - Research direction: [PROJECT_STATE.md](../PROJECT_STATE.md).
 - Environment: pinned BFCL MessageAPI implementation, **independent synthetic engineering tasks**, no BFCL question/answer files loaded. Shared simulator means this is not independent OOD evidence.
@@ -40,3 +40,5 @@ A concrete integration bug was found: TRL passes `padding_side='left'` to `apply
 The same four groups still have zero reward variance and unchanged parameter hashes. Total wall 145.5 s; peak allocated 9.60 GiB. This rules out padding correction alone as sufficient to get learning signal. Do not attribute the first attempt's entire failure to that bug. A same-input old/new runtime diagnostic follows before changing task difficulty or reasoning settings.
 
 CPU regression checks passed: one real-tokenizer batch-padding test; three tests of the **official TRL loss** verify zero feedback/padding gradients, correct reward-sign gradients, invariance to feedback log-probabilities, and zero gradients for zero advantages. Commands: `.venv-rl/bin/python -m unittest discover -s pipeline -p 'test_rl_*.py'`. Environment acceptance is separate (`python pipeline/rl_environment.py`). `.venv-rl/bin/pip check` also passes.
+
+Runtime parity: `runtime_compare_transformers457.json` and `runtime_compare_transformers520.json` contain identical greedy token sequences and identical first-token entropy (0.0012726) on the same saved prompt. This is one-input evidence, not a global equivalence guarantee. Third attempt enables thinking and raises the completion cap to 2048; tasks and rewards remain identical. It is calibration, not a controlled research comparison of allocation policies.
