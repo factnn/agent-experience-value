@@ -109,14 +109,21 @@ to the "stateful, long-horizon, unseen environment" transfer target.
 
 **Correction (2026-09-30) — this is note (2) in the table above.** An earlier version of this README
 and of `09_evaluation_sensitivity.md` claimed multi-turn decodability was 100%, and used that to
-argue the axis measures capability rather than format. **That claim is withdrawn.** The 100% was
-produced by `score_multi_turn()` hardcoding `True` in both the success and the failure branch, so
-the metric was a tautology rather than a measurement. With the wrapper replaced by a real
-classification of every model response through the official decoder, the executable-call rate on a
-2-item check was **0.556** (10 of 18 responses decoded as calls, 8 failed). A 16-item
-re-measurement is running. The same fix stops truncating each trajectory at 4000 characters: full
-per-item payloads (raw responses, parse samples, execution results, stop reason) now go to
-`<tag>_full/<id>.json`.
+argue the axis measures capability rather than format. **That claim is withdrawn.** The 100% came
+from `score_multi_turn()` hardcoding `True` in both the success and the failure branch, so the
+metric was a tautology rather than a measurement.
+
+Re-measured over all 16 items by classifying every model response through the official decoder:
+**221 responses, 180 executable calls, 38 parse failures, 3 legitimate non-calls → decodable rate
+0.814, not 1.000.** Accuracy reproduced exactly at 4/16 = 0.250 across three independent runs, so
+the inference path is unchanged and deterministic. Only 1 of the 16 items had every response
+decodable, and that item was still wrong; per-item decodability (0.50-1.00) does not track
+correctness. So format failure is real (17.2% of responses) but is **not** the dominant failure
+mode - task-level failures remain mostly `force_terminated` and `instance_state_mismatch`.
+Note the units differ: multi-turn decodability is per-response, single-turn is per-item.
+
+The same fix stops truncating each trajectory at 4000 characters: full per-item payloads (raw
+responses, parse samples, execution results, stop reason) now go to `<tag>_full/<id>.json`.
 
 With paired evaluation on a shared question set, the minimum detectable effect is
 7.7 points at n=200 and 5.4 points at n=400 — which is why the pilot must freeze its
