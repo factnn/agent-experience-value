@@ -113,17 +113,36 @@ argue the axis measures capability rather than format. **That claim is withdrawn
 from `score_multi_turn()` hardcoding `True` in both the success and the failure branch, so the
 metric was a tautology rather than a measurement.
 
-Re-measured over all 16 items by classifying every model response through the official decoder:
-**221 responses, 180 executable calls, 38 parse failures, 3 legitimate non-calls → decodable rate
-0.814, not 1.000.** Accuracy reproduced exactly at 4/16 = 0.250 across three independent runs, so
-the inference path is unchanged and deterministic. Only 1 of the 16 items had every response
-decodable, and that item was still wrong; per-item decodability (0.50-1.00) does not track
-correctness. So format failure is real (17.2% of responses) but is **not** the dominant failure
-mode - task-level failures remain mostly `force_terminated` and `instance_state_mismatch`.
-Note the units differ: multi-turn decodability is per-response, single-turn is per-item.
+Re-measured over all 16 items by classifying every model response, with categories derived by
+inspecting the responses rather than assumed up front:
 
-The same fix stops truncating each trajectory at 4000 characters: full per-item payloads (raw
-responses, parse samples, execution results, stop reason) now go to `<tag>_full/<id>.json`.
+**221 responses → 180 executable calls (81.4%), 34 legitimate prose answers (15.4%), 4 cut off
+mid-thought (1.8%), 3 fragments (1.4%), and 0 malformed call attempts.**
+
+Two further corrections follow from that, both of which retract something this README previously
+said:
+
+1. The claim that **17.2% of responses were format failures is wrong**. The first version of the
+   classifier counted *any* response the call parser rejected as a failure, but a terminal agent
+   legitimately answers in prose between calls - e.g. `The 'log.txt' file has been successfully
+   moved into the 'archive' directory.` Those answers made a fully successful task score 0.5.
+   Reclassified, the genuine malformed-call rate is **0**.
+2. `executable_call / responses` is the **share of responses that are tool calls** - a behavioural
+   property, not a parse success rate. An agent that summarises after every call sits near 0.5
+   while one that never summarises sits near 1.0, and the latter is not thereby better. It must
+   not be called "decodability".
+
+Accuracy still reproduces exactly at 4/16 = 0.250 across three independent runs. Reclassification
+uses saved responses only - no re-run needed (`pipeline/reclassify_multi_turn.py`).
+
+Scope of the saved payloads, stated accurately this time: `<tag>_full/<id>.json` holds **model
+responses and classification samples only**. It does *not* hold execution feedback, environment
+state or stop reasons (`exclude_state_log=True`, and metadata is not written out), so it supports
+response-level classification but **not** full root-cause analysis. An earlier version of this
+README claimed otherwise.
+
+Units differ and must not be merged into one column: multi-turn figures here are per-response,
+single-turn decodability is per-item.
 
 With paired evaluation on a shared question set, the minimum detectable effect is
 7.7 points at n=200 and 5.4 points at n=400 — which is why the pilot must freeze its
