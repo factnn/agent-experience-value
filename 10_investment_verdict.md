@@ -88,6 +88,21 @@ BFCL 是完全可能的。而且实测 base 模型在 BFCL 主要轴上已经**�
 
 **§2.1、§2.2、§2.3 指向同一个东西：一个能对训练池自身任务给出 oracle 结果的 verifier。**
 
+### 2.4 §2.2 有一个比我原先写法更强的解法：within-task 设计
+
+我原来的缓解方案是「within-source 抽样」，但那只控制到来源层级。更干净的是 **within-task**：
+
+> 同一个任务有多个 rollout——straightforward success / success-after-recovery / failure / 高-低多样度——
+> 先在**任务内**比较和选择，再跨任务组成 token-matched 训练集。
+
+这样才能把 **task value** 和 **experience value** 分开：否则 Recovery 组天然可能来自更难的任务，
+Recovery 赢了到底是「recovery 经验好」还是「这批任务本身更有学习价值」，无法区分。
+
+代价：这要求每个任务有多个 rollout。现有池子里 71,255 条候选只覆盖约 37,186 个 task family
+（≈1.9 rollout/family），**密度太低，做不了 within-task 配对**。要真正做这件事，就必须
+在可执行任务上**自己生成一批多-rollout 的、带 oracle 标签的经验池**——
+这正好和 §4 的标签路径是同一件事。所以那个有界实验的收益不止是「有标签」，而是「能做出干净的设计」。
+
 ## 3. 平台约束（今天新发现，影响整个项目）
 
 ### 3.1 这台机器没有容器能力
@@ -194,9 +209,18 @@ TaskTrove（161 万任务）中存在训练池四源中的三个，且名字直�
 | 结果 | 判断 |
 |---|---|
 | 参考解全过 + join 命中率 ≥30% + 重放能产出非退化标签（非全 0/全 1） | **投**。核心 claim 变得可测，且后续成本低（replay 纯 CPU，可 256 核并行） |
-| 参考解全过，但 join 命中率极低 | 缩到有 join 的那部分来源（可能只剩 swesmith），或重新用可执行任务生成 rollout |
+| 参考解全过，但 join 命中率极低 | 改走 §2.4 的路：不 join 旧轨迹，直接在可执行任务上生成多-rollout 经验池（贵，但设计更干净） |
 | 参考解过不了（环境保真度不足） | 需要真正的容器运行时；先解决平台，否则按 K4 判断 |
 | 以上都失败 | 只剩 Pilot B。对照 K3（迁移无法干净评测）与 K4（ground-truth 干预不可负担）决定收缩或转向 |
+
+**另外两条必须在正式实验里落实的要求**（来自 09 §2.8 与外部评审）：
+
+1. **评测轴必须是 near OOD + far OOD 两条。** Near OOD 用同为 terminal/executable 的 agent benchmark，
+   far OOD 用 BFCL。只有两个方向同时为正，general-transfer 的故事才成立；只有 BFCL 的话，
+   reviewer 完全可以说测到的是 output-format interference。
+2. **BFCL 结果必须拆成 decodability 与 P(correct | decodable)。** 16 步 LoRA 的实验已经证明
+   终端 agent SFT 会让模型输出 `[func_name=X, params={...}]` 这种 harness 方言——不拆开就无法区分
+   「能力下降」和「方言漂移」。
 
 **这个实验的成本与收益**：一天、纯 CPU、不动 GPU、不训练。它决定的是整个项目能不能测——
 相比之下，再加一轮训练或再加一条评测轴的信息量接近零。
