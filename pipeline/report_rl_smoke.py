@@ -14,6 +14,8 @@ def audit(path):
     groups = read_rows(path/'groups.jsonl')
     trajectories = read_rows(path/'rollouts.jsonl')
     generations = read_rows(path/'generation_calls.jsonl')
+    metrics = read_rows(path/'metrics.jsonl')
+    nonzero_gradient_steps = [m['step'] for m in metrics if float(m.get('grad_norm', 0)) > 0]
     assert len(updates) == summary['optimizer_steps']
     assert len(trajectories) == len(groups)*4
     fingerprints = {u['step']: u['after_sha256'] for u in updates}
@@ -39,6 +41,8 @@ def audit(path):
             'train_successes': sum(t['reward'] for t in train), 'train_episodes': len(train),
             'post_update_successes': sum(t['reward'] for t in post), 'post_update_episodes': len(post),
             'parameter_change_steps': sum(u['parameters_changed'] for u in updates),
+            'nonzero_gradient_steps': nonzero_gradient_steps,
+            'optimizer_note': 'Adam momentum can move parameters on later zero-gradient groups; changed hashes alone do not prove fresh learning signal.',
             'groups_with_variance': summary['groups_with_reward_variance'],
             'sampled_tokens_including_discarded': sampled, 'retained_model_tokens': kept_tokens,
             'discarded_sampled_tokens': sampled - kept_tokens if sampled is not None else None,
