@@ -9,8 +9,8 @@
 2. **但评测配置是最大的偏差源**：同一批 120 题只改生成预算，准确率从 0.758（256 token）到 0.950（1024 token）——**19.2 个百分点**；
    java/js 上 640→1536 差 **14pp**。批大小差 1.7pp，换 prompt 组装路径差 5pp。这些都比 pilot 想检测的效应大。
 3. **BFCL 的 Python 轴饱和**：simple_python 0.932（n=400）、multiple 0.950（n=200）。base 没有提升空间，**不能**作为主要 OOD 指标。
-4. **有空间且最贴近 scope 的轴是 multi_turn_base**：base 0.250（n=16），decodable 100%，
-   失败模式是「把环境状态改错」。已本地跑通官方多轮推理 + mock API 执行 + 官方 state 检查，无需 Docker 或外部服务。
+4. **有空间且最贴近 scope 的轴是 multi_turn_base**：base 0.250（n=16，预算尚未冻结），
+   decodable 100%，失败模式以「卡住」和「改错状态」为主。已本地跑通官方多轮推理 + mock API 执行 + 官方 state 检查，无需 Docker 或外部服务。
 5. **配对 MDE**（不一致率 0.15）：n=100 → 10.9pp，n=200 → 7.7pp，n=400 → 5.4pp，n=1390 → 2.9pp。
 6. **还没测的关键噪声是训练种子方差**——需要用 ≥2 个独立训练运行来估计，目前为 0 个。
 7. 小样本会给出关于头部空间的**错误结论**：irrelevance 在 n=6 时是 1.000，扩到 n=240 后是 0.887。
@@ -118,8 +118,40 @@ base 与「16 步 LoRA adapter」在同样 20 题上：不一致 **3/20 = 0.15**
 配对公式 `MDE = (z_{α/2}+z_β)·sqrt(d/n)`，d 为不一致率。**题目集在所有组之间共享，所以配对列才是 pilot 该看的。**
 注意 d 本身取决于两个模型有多不同：当两个 bin 训练出的模型几乎一样时 d 更小、MDE 更小；d 必须用 pilot 自己的数据重新估计。
 
-**把 2.2 和 2.6 放在一起看**：预算差一个设置就能造成 19pp 的移动，而 400 题只能分辨 5.4pp。
+**把 2.2 和 2.7 放在一起看**：预算差一个设置就能造成 19pp 的移动，而 400 题只能分辨 5.4pp。
 没有固定评测配置，pilot 测到的东西会被配置偏差淹没。
+
+### 2.8 格式漂移：SFT 会改变输出方言（影响 BFCL 的可解释性）
+
+16 步 LoRA adapter（在 terminus-2 终端轨迹上训练）在 simple_python 上从 0.95 掉到 0.80。
+逐条看这 4 个失败，**大部分不是能力下降，而是输出方言漂移**：
+
+| 题 | 失败类型 | 模型实际输出（尾部） |
+|---|---|---|
+| `simple_python_6` | decode 失败（语法） | `[func_name=solve_quadratic, params={"a": 2, "b": 5, "c": 3}]` |
+| `simple_python_18` | decode 失败（语法） | `[func_name=number_analysis.prime_factors, params={"number": 123456}]` |
+| `simple_python_17` | decode 失败（字符串未闭合） | （同类的 `key=value, params=` 结构） |
+| `simple_python_13` | `type_error:nested` | `[calculate_area_under_curve(function="x**2", interval=[1, 3])]` |
+
+前三条里模型输出的是 **`name=…, params={…}`** —— 这是 terminus-2 harness 的命令 JSON 方言
+（`{"commands": [...], "task_complete": ...}`）泄漏进了 BFCL 要求的 `[func_name(param=value)]` 格式。
+**这不是「SFT 让 agent 变笨」，而是「终端 agent SFT → 函数调用方言漂移」。**
+
+**对实验设计的直接后果**：BFCL 主结果**不能只报 accuracy**，必须拆成
+
+```
+Decodability           # 输出能不能被官方 parser 解成调用
+P(Correct | Decodable)  # 在可解码的前提下答对的比例
+```
+
+否则如果 Recovery bin 比 Random bin 在 BFCL 上低 5pp，而差距全部来自方言漂移，
+就不能解释成「recovery 经验的迁移价值更低」。
+
+**这不意味着 BFCL 不能用**，反而它应该被明确定义成一条 **far-transfer / cross-interface 轴**：
+训练是 terminal 风格轨迹，测试是结构化函数调用 + stateful API。这是很强的迁移。
+但论文不能只有这一条——否则 reviewer 完全可以说测到的是 output-format interference。
+最终至少要有 **near OOD（同为 terminal/executable agent benchmark）+ far OOD（BFCL）** 两条：
+若某个 experience bin 在两个方向上同时为正，general-transfer 的故事才成立。
 
 ## 3. 各评测轴的头部空间（全量扫描完成）
 
@@ -138,16 +170,39 @@ base 模型（Qwen3-4B，无 adapter），官方 prompt/parser/checker：
 
 （各轴预算：多轮 2048，java/js 1536，其余 640。见 2.2：预算会显著改变这些数字。）
 
+**预算冻结状态（2026-09-30 更正）**：按 §2.2 自己立的「cap hits 必须为 0」标准，**下表只有 simple_python /
+multiple / irrelevance / parallel / parallel_multiple 是干净的**（budget 640）。
+
+| 轴 | 撞上限的 completion 数 |
+|---|---|
+| simple_java（budget 1536） | 5 / 100 |
+| simple_javascript（budget 1536） | 5 / 50 |
+| multi_turn_base（budget 2048） | 3 / 221（涉及 3 道题） |
+
+这三行的数字**尚未冻结**，更高预算的重跑（`java_js_b3072`、`mt16_b4096`）已启动，结果出来前不应进主表。
+
 三点解读：
 
 1. **两条轴饱和**（simple_python 0.932、multiple 0.950）：base 已经没有提升空间，
    bin 之间的真实差异会被天花板吃掉。**不能作为主要 OOD 指标。**
 2. java/js 的失败有相当比例是**格式失败**（decodable 0.88–0.92，即 8–12% 的输出根本解析不出调用），
    不是语义错误。这两条轴同时测量「格式泛化」和「语义正确」，分析时必须分开报。
-3. multi_turn_base 的 decodable 是 1.000——失败**全部**发生在官方 state 轨迹检查
-   （`multi_turn:instance_state_mismatch` 一类）：模型会调用函数，但把环境状态改错了。
-   这是最接近 scope 里「stateful、long-horizon、unseen environment 迁移」的失败模式，
-   也是唯一一条 base 明显不会的轴。
+3. multi_turn_base 的 decodable 是 1.000，但**失败并不是单一原因**。逐条统计 16 题的失败分类：
+
+   | 结果 | 数量 |
+   |---|---:|
+   | correct | 4 |
+   | `instance_state_mismatch`（调用成功但环境状态改错） | 4 |
+   | `force_terminated` | 5 |
+   | `empty_turn_model_response` | 2 |
+   | `execution_response_mismatch` | 1 |
+
+   12 个失败里只有 4 个是「状态被改错」。**`force_terminated` 占 5 个**——那是模型在单轮内反复重试直到被强制终止，
+   属于「卡住」而不是「做错」。这两种失败对 experience value 的含义完全不同，不能混成一句结论。
+
+   **而且这个 0.250 还不算冻结**：该次评测用 budget 2048，221 次 completion 中有 **3 次撞上限**，涉及 3 道题
+   （`multi_turn_base_0/12/13`）。按本文件 §2.2 自己立的规则（cap hits 必须为 0），这个数字需要更高预算重跑后才能进表。
+   （重跑 `mt16_b4096` 已启动。）
 
 顺带修正一个早前的误读：irrelevance 在 n=6 时是 1.000，看起来饱和；
 扩到 n=240 后是 0.887。**小样本会给出关于头部空间的错误结论**，这是本文件存在的另一半理由。
@@ -181,8 +236,9 @@ batch-8 提速 3.5–4.2 倍，约 2 秒/题；budget 1536 时 java/js 约 14–
 1. **冻结评测配置并写进协议**：官方 loader、预算设到撞上限数为 0（单轮 ≥1536、多轮用官方默认 4096 量级）、
    批大小固定、同一题序、同一 harness。2.2–2.4 说明这些偏差都比 pilot 想检测的效应大。
 2. **不要**用 simple_python / multiple 作为主要 OOD 指标（饱和）。
-3. 主指标选 **multi_turn_base**（+ miss_func / miss_param / long_context），理由：头部空间最大（base 0.250）、
-   失败模式（状态被改错）最贴近 scope 的迁移目标、decodable 100% 说明它测的是能力而不是格式。
+3. 主指标选 **multi_turn_base**（+ miss_func / miss_param / long_context），理由：头部空间最大（base 0.250，
+   预算待冻结）、decodable 100% 说明它测的是能力而不是格式。**注意失败分类要分开报**：
+   `force_terminated`（卡住）与 `instance_state_mismatch`（改错状态）对 experience value 的含义不同。
    代价是 242 秒/题，必须限制题量。
 4. 单轮侧用 **simple_java + simple_javascript + plain parallel/parallel_multiple**（0.64–0.87）作为次级轴，
    并按「格式有效率 / 条件正确率」两个指标分开报。

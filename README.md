@@ -39,6 +39,13 @@ What does exist:
 
 The one genuinely decision-relevant result so far is negative in a useful way, and is
 explained under [Evaluation sensitivity](#evaluation-sensitivity-two-results-that-change-the-pilot-design).
+Whether the project should be invested in at all is a separate question, answered in
+`10_investment_verdict.md`: the bottleneck is not compute, pipeline or evaluation — it is
+that **no verifier gives oracle outcomes for the training pool's own tasks**, which makes both
+the success hypothesis and the local-to-transfer gap unmeasurable. TaskTrove contains
+executable, verifier-carrying tasks for 3 of the pool's 4 sources (66% of candidates), and a
+chroot-based harness was shown to run the task verifiers on this machine despite the absence
+of any container runtime — but the trajectory-to-task join is still unverified.
 
 ## Hypotheses under test
 
@@ -93,9 +100,13 @@ Base Qwen3-4B, official BFCL prompt/parser/checker:
 | simple_javascript | 50 | 0.640 | 0.880 | yes |
 | multi_turn_base | 16 | 0.250 | 1.000 | **primary candidate** |
 
-`multi_turn_base` is the only axis the base model clearly cannot do, its failures are
-entirely state-trajectory errors (`instance_state_mismatch`) rather than format errors, and
-it is the closest match to the "stateful, long-horizon, unseen environment" transfer target.
+`multi_turn_base` is the only axis the base model clearly cannot do (0.250 on 16 items, and that
+number is not yet frozen — 3 of 221 completions still hit the generation cap). Its failures are
+mixed rather than uniform: of 12 failures, 4 are `instance_state_mismatch`, 5 are `force_terminated`
+(the model retries inside one turn until it is cut off), 2 are `empty_turn_model_response` and 1 is
+`execution_response_mismatch`. Those mean different things for experience value and must be reported
+separately. It remains the closest match to the "stateful, long-horizon, unseen environment"
+transfer target.
 
 With paired evaluation on a shared question set, the minimum detectable effect is
 7.7 points at n=200 and 5.4 points at n=400 — which is why the pilot must freeze its
@@ -114,6 +125,7 @@ evaluation configuration before comparing anything.
 | `07_recovery_annotation_guide.md` | Event-level recovery annotation rubric. |
 | `08_full_pool_preparation.md` | Pinned full-pool scan, label hunt, token measurements. |
 | `09_evaluation_sensitivity.md` | Noise, configuration bias, MDE, per-axis headroom, cost. |
+| `10_investment_verdict.md` | **Investment decision record**: what is proven, what is fatal, platform constraints, and the bounded experiment that decides go/no-go. |
 | `audit/` | Data-pool reconnaissance scripts and findings. |
 | `pipeline/` | Download, scan, review-page, tokenize, train, evaluate, analyse. |
 | `prepared/` | Scan summaries and the 299-trajectory HTML review reader. |
@@ -147,6 +159,14 @@ See `smoke/README.md`.
 unpacked and imported rather than vendored, and its single- and multi-turn inference loops
 run locally against the official mock APIs — no Docker, no external service, no API cost.
 Only the generation call is replaced (`pipeline/eval_bfcl_local.py`).
+
+**Terminal-agent SFT causes function-call dialect drift.** After 16 LoRA steps on
+terminus-2 terminal trajectories, a small BFCL regression (0.95 → 0.80 on 20 items) turned
+out to be mostly *format*, not capability: three of the four failures are the harness dialect
+leaking into BFCL, e.g. `[func_name=solve_quadratic, params={"a": 2, "b": 5, "c": 3}]` instead
+of `[solve_quadratic(a=2, b=5, c=3)]`. Any BFCL comparison must therefore be decomposed into
+**decodability** and **P(correct | decodable)**, or a bin-to-bin gap could be pure dialect
+drift. See `09_evaluation_sensitivity.md` §2.8.
 
 ## Reproducing
 
