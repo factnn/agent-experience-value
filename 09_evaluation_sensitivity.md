@@ -164,22 +164,27 @@ base 模型（Qwen3-4B，无 adapter），官方 prompt/parser/checker：
 | irrelevance | 240 | 0.887 | 1.000 | 小 |
 | parallel_multiple | 200 | 0.865 | 0.905 | 中 |
 | parallel | 200 | 0.860 | 0.910 | 中 |
-| **simple_java** | 100 | **0.650** | 0.920 | **大** |
-| **simple_javascript** | 50 | **0.640** | 0.880 | **大** |
+| **simple_java** | 100 | **0.650** | 0.930 | **大** |
+| **simple_javascript** | 50 | **0.700** | 0.940 | **大** |
 | **multi_turn_base** | 16 | **0.250** | 1.000 | **最大** |
 
-（各轴预算：多轮 2048，java/js 1536，其余 640。见 2.2：预算会显著改变这些数字。）
+（java/js 为冻结配置 budget 3072；多轮 2048 待冻结；其余 640。见 2.2：预算会显著改变这些数字。）
 
-**预算冻结状态（2026-09-30 更正）**：按 §2.2 自己立的「cap hits 必须为 0」标准，**下表只有 simple_python /
-multiple / irrelevance / parallel / parallel_multiple 是干净的**（budget 640）。
+**预算冻结状态（2026-09-30 更新）**：本节原先的标准是「cap hits 必须为 0」。实测后这个标准要改——
+**它是不可达的**：`multi_turn_base` 里同样三道题（`_0/_12/_13`）在 2048 和 4096 下都撞上限，
+加预算只让它们打转更久，cap hits 反而从 3 升到 5。真正相关的标准是
+**「预算翻倍后逐题判定零翻转」**。按此标准：
 
-| 轴 | 撞上限的 completion 数 |
-|---|---|
-| simple_java（budget 1536） | 5 / 100 |
-| simple_javascript（budget 1536） | 5 / 50 |
-| multi_turn_base（budget 2048） | 3 / 221（涉及 3 道题） |
+| 轴 | 稳定预算 | 依据 |
+|---|---|---|
+| simple_java | **1536** | 1536→3072 零翻转，acc 均为 0.650 |
+| simple_javascript | **3072** | 3072→6144 零翻转，acc 均为 0.700 |
+| multi_turn_base | **2048** | 2048→4096 零翻转，acc 均为 0.250 |
+| simple_python / multiple / irrelevance / parallel / parallel_multiple | 640 | 未做翻倍检验，但 base 已饱和，风险低 |
 
-这三行的数字**尚未冻结**，更高预算的重跑（`java_js_b3072`、`mt16_b4096`）已启动，结果出来前不应进主表。
+**冻结基线**：`simple_java` = **0.650**（dec 0.930，budget 3072）、
+`simple_javascript` = **0.700**（dec 0.940，budget 3072）、
+`multi_turn_base` = **0.250**（dec 1.000，budget 2048）。这三条是 pilot 的主配对轴。
 
 三点解读：
 
