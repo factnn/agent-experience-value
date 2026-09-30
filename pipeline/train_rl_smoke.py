@@ -135,6 +135,7 @@ def main():
     ap.add_argument('--steps', type=int, default=4)
     ap.add_argument('--max-completion-length', type=int, default=768)
     ap.add_argument('--seed', type=int, default=20260930)
+    ap.add_argument('--enable-thinking', action='store_true')
     args = ap.parse_args()
     out = ROOT / args.out
     out.mkdir(parents=True, exist_ok=False)
@@ -166,7 +167,7 @@ def main():
         bf16=True, gradient_checkpointing=True, gradient_checkpointing_kwargs={'use_reentrant': False},
         beta=0.0, loss_type='grpo', scale_rewards='group', num_iterations=1,
         temperature=1.0, top_p=1.0, top_k=0, seed=args.seed, data_seed=args.seed,
-        chat_template_kwargs={'enable_thinking': False},
+        chat_template_kwargs={'enable_thinking': args.enable_thinking},
         logging_steps=1, save_strategy='no', report_to='none', disable_tqdm=True,
         dataloader_num_workers=0, use_vllm=False, mask_truncated_completions=False,
     )
