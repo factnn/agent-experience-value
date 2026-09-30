@@ -143,6 +143,8 @@ evaluation configuration before comparing anything.
 | `08_full_pool_preparation.md` | Pinned full-pool scan, label hunt, token measurements. |
 | `09_evaluation_sensitivity.md` | Noise, configuration bias, MDE, per-axis headroom, cost. |
 | `10_investment_verdict.md` | **Investment decision record**: what is proven, what is fatal, platform constraints, and the bounded experiment that decides go/no-go. |
+| `11_preregistration_feasibility.md` | Pre-registered go/no-go criterion, written before the experiment ran. |
+| `12_feasibility_gate_result.md` | **Result of that gate**: training produces large, reliable, one-directional drops; 29-74% of the drop is output-serialization convention, not capability. Literal verdict NO-GO, with the criterion's own flaw stated. |
 | `audit/` | Data-pool reconnaissance scripts and findings. |
 | `pipeline/` | Download, scan, review-page, tokenize, train, evaluate, analyse. |
 | `prepared/` | Scan summaries and the 299-trajectory HTML review reader. |

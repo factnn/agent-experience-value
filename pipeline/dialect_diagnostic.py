@@ -9,7 +9,8 @@ numbers side by side.
 normalized number exists only to separate "different serialization convention" from
 "different capability". Always report both.
 
-Three dialects normalized (all observed in trained-model outputs):
+Dialect forms normalized (all observed in trained-model outputs; the list is not exhaustive, so
+the reported serialization share is a lower bound):
   1. markdown fence        ```json\n[CALL]\n```
   2. envelope              {"function_calls": ["[CALL]"]}
   3. func_name/params      {"func_name": "X", "params": {...}}   (the terminus-2 harness dialect)
@@ -32,29 +33,57 @@ from bfcl_eval.constants.enums import Language, ReturnFormat                    
 from bfcl_eval.eval_checker.ast_eval.ast_checker import ast_checker                # noqa: E402
 from bfcl_eval.model_handler.utils import default_decode_ast_prompting             # noqa: E402
 
-FENCE = re.compile(r'^```[a-zA-Z]*\s*\n?(.*?)\n?```$', re.S)
+
+
+def _as_call(name, args):
+    if not isinstance(args, dict):
+        return None
+    body = ', '.join(f'{k}={v!r}' if isinstance(v, str) else f'{k}={v}' for k, v in args.items())
+    return f'{name}({body})'
 
 
 def normalize(text):
+    """Best-effort rewrite of an observed dialect form into the expected `[name(args)]`.
+
+    This covers the forms seen in practice, not every possible one, so the serialization
+    share it produces is a LOWER BOUND on the true share.
+    """
     t = text.strip()
     if '</think>' in t:
         t = t.rsplit('</think>', 1)[1].strip()
-    m = FENCE.match(t)
-    if m:
-        t = m.group(1).strip()
+    # drop a trailing/leading markdown fence, with or without a language tag
+    for pattern in (re.compile(r'^```[a-zA-Z]*\s*\n?(.*?)\n?```$', re.S),
+                    re.compile(r'^```[a-zA-Z]*\s*\n?(.*)$', re.S),
+                    re.compile(r'^(.*?)\n?```$', re.S)):
+        m = pattern.match(t)
+        if m:
+            t = m.group(1).strip()
+            break
     try:
         obj = json.loads(t)
     except Exception:
         return t
-    if isinstance(obj, dict):
-        calls = obj.get('function_calls')
-        if isinstance(calls, list) and calls:
-            return '[' + ', '.join(str(c).strip('[]') for c in calls) + ']'
-        for name_key, args_key in (('func_name', 'params'), ('name', 'arguments')):
-            if name_key in obj and isinstance(obj.get(args_key), dict):
-                args = ', '.join(f'{k}={v!r}' if isinstance(v, str) else f'{k}={v}'
-                                 for k, v in obj[args_key].items())
-                return f"[{obj[name_key]}({args})]"
+    if not isinstance(obj, dict):
+        return t
+    calls = obj.get('function_calls')
+    if isinstance(calls, list) and calls:
+        rendered = []
+        for c in calls:
+            if isinstance(c, dict):
+                inner = _as_call(c.get('name') or c.get('func_name'),
+                                 c.get('parameters') or c.get('arguments') or c.get('params'))
+                if inner:
+                    rendered.append(inner)
+            else:
+                rendered.append(str(c).strip('[]'))
+        if rendered:
+            return '[' + ', '.join(rendered) + ']'
+    for name_key, args_key in (('func_name', 'params'), ('name', 'arguments'),
+                               ('name', 'parameters')):
+        if name_key in obj and isinstance(obj.get(args_key), dict):
+            inner = _as_call(obj[name_key], obj[args_key])
+            if inner:
+                return f'[{inner}]'
     return t
 
 
