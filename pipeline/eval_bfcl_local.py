@@ -148,6 +148,9 @@ def score_single_turn(handler, item, answers, category):
     except Exception as exc:
         return {'valid': False, 'decodable': False,
                 'reason': f'decode_failed:{type(exc).__name__}', 'raw': raw}
+    if decoded is None:
+        return {'valid': False, 'decodable': False,
+                'reason': 'decode_failed:decoder_returned_none', 'raw': raw}
     checked = ast_checker(item['_check_function'], decoded, answers[item['id']],
                           LANGUAGE.get(category, Language.PYTHON), category, MODEL_NAME)
     return {'valid': bool(checked['valid']), 'decodable': True,

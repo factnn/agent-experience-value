@@ -132,6 +132,10 @@ def score(item, category, text, prompt_tokens, completion_tokens):
             response, RETURN_FORMAT.get(category, ReturnFormat.PYTHON), False)
     except Exception as exc:
         return False, False, f'decode_failed:{type(exc).__name__}:{str(exc)[:120]}'
+    if decoded is None:
+        # the official decoder can return None instead of raising; ast_checker would
+        # then fail with "object of type 'NoneType' has no len()"
+        return False, False, 'decode_failed:decoder_returned_none'
     result = ast_checker(item['_check_function'], decoded, answers[item['id']],
                          LANGUAGE.get(category, Language.PYTHON), category, MODEL_NAME)
     if result['valid']:
