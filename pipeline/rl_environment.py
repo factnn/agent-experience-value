@@ -123,7 +123,10 @@ class MessageEnv:
         if t['family'] == 'replace':
             inbox.pop()
         inbox.append({users[t['receiver']]: t['text']})
-        return float(not self.limit_exceeded and self.api.user_map == users and self.api.inbox == inbox
+        successful_writes = [e for e in self.events if e['method'] in ['send_message', 'delete_message']
+                             and (e['result'].get('sent_status') or e['result'].get('deleted_status'))]
+        correct_actor = all(e['before']['current_user'] == users[t['sender']] for e in successful_writes)
+        return float(correct_actor and not self.limit_exceeded and self.api.user_map == users and self.api.inbox == inbox
                      and self.api.current_user == users[t['sender']]
                      and self.api.message_count == t['scenario']['message_count'] + 1
                      and self.api.user_count == t['scenario']['user_count'] + (t['family'] == 'new_contact')
@@ -170,6 +173,17 @@ def acceptance():
             env.reset(json.dumps(task)); oracle(env)
             env.api.current_user = 'wrong'
             assert env._reward() == 0
+            env.reset(json.dumps(task))
+            # MessageAPI stores no sender in inbox: verify the actual execution actor.
+            wrong_id = next(uid for name, uid in env.api.user_map.items() if name != task['sender'])
+            env.login(wrong_id)
+            rid = (env.add_contact(task['receiver']) if family == 'new_contact'
+                   else env.lookup(task['receiver']))['user_id']
+            if family == 'replace':
+                env.delete_latest(rid)
+            env.send(rid, task['text'])
+            env.login(env.lookup(task['sender'])['user_id'])
+            assert env._reward() == 0, 'logging in correctly after a wrong-actor send must fail'
             env.reset(json.dumps(task)); oracle(env)
             env.api.inbox.pop(0)
             assert env._reward() == 0, 'collateral deletion must fail'
