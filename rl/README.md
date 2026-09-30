@@ -1,6 +1,6 @@
 # Online RL engineering progress
 
-2026-09-30: environment and loss-mask checks passed; two online attempts completed with zero learning signal; reasoning-mode calibration in progress. Latest machine-readable state: [STATUS.json](STATUS.json).
+2026-09-30: online multi-turn RL engineering loop **verified**; full four-step reasoning-mode run and final-policy resampling completed, audit passed, GPUs released. No allocation-effect or transfer result yet. Latest machine-readable state: [STATUS.json](STATUS.json).
 
 - Research direction: [PROJECT_STATE.md](../PROJECT_STATE.md).
 - Environment: pinned BFCL MessageAPI implementation, **independent synthetic engineering tasks**, no BFCL question/answer files loaded. Shared simulator means this is not independent OOD evidence.
@@ -46,3 +46,32 @@ Runtime parity: `runtime_compare_transformers457.json` and `runtime_compare_tran
 ## Third attempt: first effective update observed (smoke_003, in progress)
 
 First group rewards `[0, 1, 0, 0]`, advantages approximately `[-0.5, 1.5, -0.5, -0.5]`, gradient norm `0.04073`; trainable-parameter fingerprint changed after step 1. The successful trajectory initially used incorrect IDs, received failure feedback, then logged in with the looked-up ID and sent exactly one correct message. Reward is based on actual state and execution identity. This is a verified recovery example, not evidence that recovery-focused allocation improves transfer. The near-zero scalar loss is expected for centered advantages at an on-policy update; nonzero gradients and changed weights are the effective-update evidence. Full-run/final-resample audit pending.
+
+
+## Completed acceptance: smoke_003
+
+The final [audit_report.json](smoke_003/audit_report.json) passes policy-version provenance, group/trajectory reward consistency, feedback masks, and retained-token equality against actual generation histories. [summary.json](smoke_003/summary.json) records runtime. Console logs and full trajectories for all three attempts are retained.
+
+| Item | Observed |
+|---|---:|
+| Optimizer steps | 4 |
+| Groups with reward variance / nonzero gradients | 2 (steps 1 and 4) |
+| Training successes | 4 / 16 episodes |
+| Final-policy resample successes | 2 / 4 episodes |
+| Training trajectories reaching the 2,048-token cap | 12 / 16 |
+| All sampled model tokens, including discarded suffixes | 44,789 |
+| Retained model tokens | 37,497 |
+| Discarded sampled tokens (still charged) | 7,292 |
+| Retained external-feedback tokens | 2,043 |
+| Simulator calls / error results | 91 / 40 |
+| Main-run wall time, one GPU | 988.05 s (16.47 min) |
+| Training generation + environment time | 780.62 s |
+| Training forward/backward + scoring time | 11.07 s |
+| Final-policy resampling time | 184.08 s |
+| Peak allocated / reserved GPU memory | 12.74 / 16.93 GiB |
+
+All four optimizer steps changed weights; steps 2 and 3 had zero fresh gradient and moved due to optimizer state, so this is **two informative reward groups**, not four. The final-policy resample reuses an engineering task and is neither a held-out test nor evidence of improvement. The three smoke runs sum to about 21.2 minutes of single-GPU main-run wall time, excluding dependency installation/imports and the separate short runtime diagnostics. Two GPUs were briefly used concurrently for training and parity diagnosis; the training itself used only GPU 4. GPUs 4 and 5 are released.
+
+Cost timing starts in the runner's `main()`, after imports. `single_gpu_reserved_hours` is a wall-time reservation proxy, not metered utilization or a financial bill. Simulator execution time excludes separate reward-check/logging overhead; generation timings include the tool loop. Raw sampled-token accounting avoids claiming savings from discarded suffixes.
+
+**Next:** calibrate multiple train/development tasks and horizon so learnability does not come solely from one easy family and truncation does not dominate; define independent held-out tasks; then freeze [the first allocation comparison](../13_rl_experiment_contract_draft.md). No more SFT gate or teacher-label recovery is required to proceed with this online path.
