@@ -10,6 +10,7 @@ def read_rows(path):
 
 def audit(path):
     summary = json.loads((path/'summary.json').read_text())
+    config = json.loads((path/'trainer_config.json').read_text())
     updates = read_rows(path/'updates.jsonl')
     groups = read_rows(path/'groups.jsonl')
     trajectories = read_rows(path/'rollouts.jsonl')
@@ -48,6 +49,8 @@ def audit(path):
             'discarded_sampled_tokens': sampled - kept_tokens if sampled is not None else None,
             'retained_feedback_tokens': sum(t['feedback_tokens'] for t in trajectories),
             'environment_calls': sum(len(t['events']) for t in trajectories),
+            'environment_error_results': sum('error' in e['result'] or any(v is False for k, v in e['result'].items() if k.endswith('_status')) for t in trajectories for e in t['events']),
+            'train_trajectory_cap_hits': sum(len(t['completion_ids']) >= config['max_completion_length'] for t in train),
             'environment_seconds': sum(t['env_seconds'] for t in trajectories),
             'wall_seconds': summary['total_wall_seconds'],
             'peak_allocated_gb': summary['peak_allocated_gb'],
