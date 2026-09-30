@@ -42,6 +42,20 @@ def fingerprint(model):
 
 
 class EvidenceTrainer(GRPOTrainer):
+    def _generate_single_turn(self, prompts):
+        result = super()._generate_single_turn(prompts)
+        pids, cids, logps, extra = result
+        # Count every sampled token, including suffixes later discarded by TRL's
+        # multi-turn length cap. Retained trajectory tokens are not acquisition cost.
+        append(self.evidence_dir / 'generation_calls.jsonl', {
+            'policy_step': self.state.global_step, 'phase': self.evidence_phase,
+            'prompt_tokens': [len(p) for p in pids],
+            'sampled_tokens': [len(c) for c in cids],
+            'prompt_ids': pids, 'completion_ids': cids,
+        })
+        self.sampled_tokens += sum(map(len, cids))
+        return result
+
     def _generate(self, prompts):
         torch.cuda.synchronize()
         start = time.perf_counter()
@@ -140,6 +154,9 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(ROOT/'smoke/model', local_files_only=True)
     model = AutoModelForCausalLM.from_pretrained(ROOT/'smoke/model', dtype=torch.bfloat16,
                                                attn_implementation='sdpa', local_files_only=True)
+    # apply_chat_template accepts padding_side as a Jinja kwarg in Transformers
+    # 5.2; set the tokenizer property explicitly for decoder-only batched generation.
+    tokenizer.padding_side = 'left'
     rows = dataset_rows()
     (out/'tasks.json').write_text(json.dumps(rows, indent=2)+'\n')
     training_args = GRPOConfig(
@@ -167,6 +184,7 @@ def main():
     trainer.evidence_dir = out
     trainer.evidence_phase = 'train'
     trainer.generation_seconds = 0.0
+    trainer.sampled_tokens = 0
     trainer.train_compute_seconds = 0.0
     trainer.add_callback(UpdateEvidence(trainer))
     torch.cuda.reset_peak_memory_stats()
@@ -183,6 +201,7 @@ def main():
     changed = sum(x['parameters_changed'] for x in updates)
     wall = time.perf_counter() - start
     summary = {'status': 'closed_loop_verified' if changed else 'no_parameter_update_signal',
+               'all_sampled_tokens_including_discarded': trainer.sampled_tokens,
                'optimizer_steps': trainer.state.global_step, 'steps_with_parameter_change': changed,
                'train_generation_and_environment_seconds': train_generation,
                'post_update_resample_seconds': trainer.generation_seconds - train_generation,
