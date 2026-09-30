@@ -98,15 +98,25 @@ Base Qwen3-4B, official BFCL prompt/parser/checker:
 | parallel | 200 | 0.860 | 0.910 | secondary |
 | simple_java | 100 | 0.650 | 0.920 | yes |
 | simple_javascript | 50 | 0.640 | 0.880 | yes |
-| multi_turn_base | 16 | 0.250 | 1.000 | **primary candidate** |
+| multi_turn_base | 16 | 0.250 | see note (2) | **primary candidate** |
 
-`multi_turn_base` is the only axis the base model clearly cannot do (0.250 on 16 items, and that
-number is not yet frozen — 3 of 221 completions still hit the generation cap). Its failures are
-mixed rather than uniform: of 12 failures, 4 are `instance_state_mismatch`, 5 are `force_terminated`
-(the model retries inside one turn until it is cut off), 2 are `empty_turn_model_response` and 1 is
-`execution_response_mismatch`. Those mean different things for experience value and must be reported
-separately. It remains the closest match to the "stateful, long-horizon, unseen environment"
-transfer target.
+`multi_turn_base` is the only axis the base model clearly cannot do (0.250 on 16 items; stable
+across 2048 → 4096). Its failures are mixed rather than uniform: of 12 failures, 4 are
+`instance_state_mismatch`, 5 are `force_terminated` (the model retries inside one turn until it is
+cut off), 2 are `empty_turn_model_response` and 1 is `execution_response_mismatch`. Those mean
+different things for experience value and must be reported separately. It remains the closest match
+to the "stateful, long-horizon, unseen environment" transfer target.
+
+**Correction (2026-09-30) — this is note (2) in the table above.** An earlier version of this README
+and of `09_evaluation_sensitivity.md` claimed multi-turn decodability was 100%, and used that to
+argue the axis measures capability rather than format. **That claim is withdrawn.** The 100% was
+produced by `score_multi_turn()` hardcoding `True` in both the success and the failure branch, so
+the metric was a tautology rather than a measurement. With the wrapper replaced by a real
+classification of every model response through the official decoder, the executable-call rate on a
+2-item check was **0.556** (10 of 18 responses decoded as calls, 8 failed). A 16-item
+re-measurement is running. The same fix stops truncating each trajectory at 4000 characters: full
+per-item payloads (raw responses, parse samples, execution results, stop reason) now go to
+`<tag>_full/<id>.json`.
 
 With paired evaluation on a shared question set, the minimum detectable effect is
 7.7 points at n=200 and 5.4 points at n=400 — which is why the pilot must freeze its

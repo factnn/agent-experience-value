@@ -16,7 +16,7 @@ Supported categories (all local, no external API):
   CUDA_VISIBLE_DEVICES=4 .venv-train/bin/python pipeline/eval_bfcl_local.py \
       --category multi_turn_base --limit 20 --tag base_mt20
 """
-import argparse, json, pathlib, sys, time
+import argparse, collections, json, pathlib, sys, time
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
@@ -51,6 +51,9 @@ from bfcl_eval.constants.enums import Language, ReturnFormat                    
 from bfcl_eval.eval_checker.ast_eval.ast_checker import ast_checker                   # noqa: E402
 from bfcl_eval.eval_checker.eval_runner import _evaluate_single_multi_turn_entry      # noqa: E402
 from bfcl_eval.model_handler.local_inference.qwen import QwenHandler                  # noqa: E402
+from bfcl_eval.eval_checker.multi_turn_eval.multi_turn_utils import (               # noqa: E402
+    is_empty_execute_response,
+)
 from bfcl_eval.utils import (                                                         # noqa: E402
     is_empty_output,
     load_dataset_entry,
@@ -138,16 +141,57 @@ def score_single_turn(handler, item, answers, category):
             contain_call = not is_empty_output(decoded)
         except Exception:
             contain_call = False
-        return (True, not contain_call, 'ok' if not contain_call else 'made_function_call',
-                raw, metadata)
+        return {'valid': not contain_call, 'decodable': True,
+                'reason': 'ok' if not contain_call else 'made_function_call', 'raw': raw}
     try:
         decoded = handler.decode_ast(raw, RETURN_FORMAT.get(category, ReturnFormat.PYTHON), False)
     except Exception as exc:
-        return (False, False, f'decode_failed:{type(exc).__name__}', raw, metadata)
+        return {'valid': False, 'decodable': False,
+                'reason': f'decode_failed:{type(exc).__name__}', 'raw': raw}
     checked = ast_checker(item['_check_function'], decoded, answers[item['id']],
                           LANGUAGE.get(category, Language.PYTHON), category, MODEL_NAME)
-    return (True, bool(checked['valid']), 'ok' if checked['valid'] else checked.get('error_type', 'invalid'),
-            raw, metadata)
+    return {'valid': bool(checked['valid']), 'decodable': True,
+            'reason': 'ok' if checked['valid'] else checked.get('error_type', 'invalid'), 'raw': raw}
+
+
+def multi_turn_parse_stats(handler, model_result):
+    """Classify every model response the agent produced, using the official decoder.
+
+    `model_result` is `all_model_response` from the official multi-turn loop: one list per
+    turn, holding one string per model response in that turn (execution feedback goes to the
+    chat history, not here). The first element of the tuple returned by score_multi_turn used
+    to be a hardcoded True; this replaces it with an actual measurement.
+
+    Categories are kept apart on purpose: a model that legitimately answers in prose instead of
+    calling a function must not be counted as a parse failure.
+    """
+    stats = collections.Counter()
+    samples = []
+    for turn in model_result:
+        for response in turn if isinstance(turn, list) else [turn]:
+            stats['responses'] += 1
+            if not isinstance(response, str) or not response.strip():
+                stats['empty_response'] += 1
+                continue
+            if '</think>' not in response and '<think>' in response:
+                stats['unterminated_think'] += 1
+            try:
+                decoded = handler.decode_execute(response, has_tool_call_tag=False)
+            except Exception as exc:
+                stats['parse_failed'] += 1
+                if len(samples) < 5:
+                    samples.append({'kind': 'parse_failed', 'error': str(exc)[:120],
+                                    'response_tail': response[-200:]})
+                continue
+            if is_empty_execute_response(decoded):
+                stats['no_call'] += 1
+                if len(samples) < 5:
+                    samples.append({'kind': 'no_call', 'response_tail': response[-200:]})
+            else:
+                stats['executable_call'] += 1
+    stats['decodable_rate'] = (stats['executable_call'] / stats['responses']
+                               if stats['responses'] else None)
+    return dict(stats), samples
 
 
 def score_multi_turn(handler, item, answers, category):
@@ -155,11 +199,14 @@ def score_multi_turn(handler, item, answers, category):
     model_result, metadata = handler.inference(item, include_input_log=False, exclude_state_log=True)
     entry = _evaluate_single_multi_turn_entry(handler, item['id'], model_result,
                                               answers[item['id']], item, MODEL_NAME, category)
+    stats, samples = multi_turn_parse_stats(handler, model_result)
     if entry['valid']:
-        return True, True, 'ok', json.dumps(model_result)[:4000], metadata
+        return {'valid': True, 'reason': 'ok', 'decodable': stats['decodable_rate'],
+                'parse_stats': stats, 'parse_samples': samples, 'raw': model_result}
     error = entry.get('error', {})
     reason = error.get('error_type', 'invalid') if isinstance(error, dict) else str(error)[:80]
-    return True, False, reason, json.dumps(model_result)[:4000], metadata
+    return {'valid': False, 'reason': reason, 'decodable': stats['decodable_rate'],
+            'parse_stats': stats, 'parse_samples': samples, 'raw': model_result}
 
 
 def load_model(args):
@@ -194,6 +241,8 @@ def main():
 
     out = ROOT / args.out
     out.mkdir(parents=True, exist_ok=True)
+    full_dir = out / f'{args.tag}_full'      # untruncated per-item payloads
+    full_dir.mkdir(exist_ok=True)
     log = (out / f'{args.tag}.jsonl').open('w')
     summaries, started = [], time.time()
 
@@ -204,24 +253,46 @@ def main():
             items = items[:args.limit]
         multi = category in MULTI_TURN
         n_decodable = n_valid = 0
+        parse_totals = collections.Counter()
         cat_started = time.time()
         for item in items:
             if multi:
-                decodable, valid, reason, raw, meta = score_multi_turn(handler, item, answers, category)
+                res = score_multi_turn(handler, item, answers, category)
+                parse_totals.update({k: v for k, v in res.get('parse_stats', {}).items()
+                                     if k != 'decodable_rate'})
             else:
-                decodable, valid, reason, raw, meta = score_single_turn(handler, item, answers, category)
-            n_decodable += decodable
+                res = score_single_turn(handler, item, answers, category)
+            decodable, valid, reason = res['decodable'], res['valid'], res['reason']
+            if decodable:
+                n_decodable += 1
             n_valid += valid
+            # full payload saved separately; the jsonl keeps a short readable summary
+            (full_dir / f"{item['id']}.json").write_text(
+                json.dumps({'id': item['id'], 'category': category, 'valid': valid,
+                            'reason': reason, 'decodable': decodable,
+                            'parse_stats': res.get('parse_stats'),
+                            'parse_samples': res.get('parse_samples'),
+                            'raw': res['raw']}, ensure_ascii=False))
             log.write(json.dumps({'id': item['id'], 'category': category, 'decodable': decodable,
-                                  'valid': valid, 'reason': reason, 'output': raw,
-                                  'prompt_tokens': meta.get('input_token_count'),
-                                  'output_tokens': meta.get('output_token_count'),
-                                  'latency': meta.get('latency')}, ensure_ascii=False) + '\n')
+                                  'valid': valid, 'reason': reason,
+                                  'output': json.dumps(res['raw'])[:4000],
+                                  'parse_stats': res.get('parse_stats'),
+                                  'full': f'{args.tag}_full/{item["id"]}.json'},
+                                 ensure_ascii=False) + '\n')
             log.flush()
             print(json.dumps({'id': item['id'], 'valid': valid, 'reason': str(reason)[:90]}), flush=True)
-        summary = {'category': category, 'n': len(items), 'decodable': n_decodable, 'valid': n_valid,
-                   'accuracy': n_valid / len(items), 'decodable_rate': n_decodable / len(items),
+        summary = {'category': category, 'n': len(items), 'valid': n_valid,
+                   'accuracy': n_valid / len(items),
                    'seconds': round(time.time() - cat_started, 1), 'multi_turn': multi}
+        if multi:
+            # decodability is a per-response rate here, not a per-item count
+            summary['decodable_measured'] = bool(parse_totals.get('responses'))
+            summary['parse_stats'] = dict(parse_totals)
+            summary['decodable_rate'] = (parse_totals['executable_call'] / parse_totals['responses']
+                                         if parse_totals.get('responses') else None)
+        else:
+            summary['decodable'] = n_decodable
+            summary['decodable_rate'] = n_decodable / len(items)
         summaries.append(summary)
         print(json.dumps(summary), flush=True)
     log.close()
