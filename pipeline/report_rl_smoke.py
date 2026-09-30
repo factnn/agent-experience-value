@@ -26,6 +26,13 @@ def audit(path):
         assert len(t['completion_ids']) == len(t['model_token_mask'])
         assert set(t['model_token_mask']) <= {0, 1}
         assert t['model_tokens'] == sum(t['model_token_mask'])
+    if generations:
+        for t in trajectories:
+            full = t['prompt_ids'] + t['completion_ids']
+            candidates = [p + c for g in generations
+                          if (g['policy_step'], g['phase']) == (t['policy_step'], t['phase'])
+                          for p, c in zip(g['prompt_ids'], g['completion_ids'])]
+            assert any(full == sequence[:len(full)] for sequence in candidates), 'retokenized trajectory differs from sampled history'
     for g in groups:
         batch = [t for t in trajectories if (t['policy_step'], t['phase']) == (g['policy_step'], g['phase'])]
         assert [t['reward'] for t in batch] == g['rewards']
@@ -45,6 +52,7 @@ def audit(path):
             'nonzero_gradient_steps': nonzero_gradient_steps,
             'optimizer_note': 'Adam momentum can move parameters on later zero-gradient groups; changed hashes alone do not prove fresh learning signal.',
             'groups_with_variance': summary['groups_with_reward_variance'],
+            'retained_sequence_matches_raw_generation': True if generations else None,
             'sampled_tokens_including_discarded': sampled, 'retained_model_tokens': kept_tokens,
             'discarded_sampled_tokens': sampled - kept_tokens if sampled is not None else None,
             'retained_feedback_tokens': sum(t['feedback_tokens'] for t in trajectories),
