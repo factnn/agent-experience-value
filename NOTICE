@@ -1,0 +1,43 @@
+# Third-party content and attribution
+
+This repository's own code and documents are licensed under Apache-2.0 (see `LICENSE`).
+It also uses, references or redistributes material from the following projects.
+
+## OpenThoughts-Agent — Apache-2.0
+
+- Dataset: `open-thoughts/OpenThoughts-Agent-SFT-100K` (and three sibling pools used during
+  reconnaissance). No raw dataset shards are redistributed here; `pipeline/download_pool.py`
+  fetches them from Hugging Face at a pinned revision and verifies every shard against its
+  LFS SHA256.
+- Upstream repository: https://github.com/open-thoughts/OpenThoughts-Agent (Apache-2.0).
+  Three files under `audit/` are unmodified upstream snapshots, kept only as provenance for
+  the label-recovery claim; they are identified as such in `audit/README.md`.
+- Derived text: `prepared/review/` contains rendered **excerpts of the released dataset**
+  (full trajectory transcripts of the 299 sampled rows) in escaped, offline HTML. They are
+  redistributed under the same Apache-2.0 terms as the source dataset, for audit purposes.
+  Nothing in this repository executes the shell commands contained in those transcripts.
+
+## Berkeley Function Calling Leaderboard (BFCL) / gorilla — Apache-2.0
+
+- Project: https://github.com/ShishirPatil/gorilla (Apache-2.0).
+- `pipeline/eval_bfcl.py` and `pipeline/eval_bfcl_local.py` import the official
+  `bfcl_eval` package rather than vendoring it. `pipeline/fetch_assets.py` downloads the
+  pinned wheel (`bfcl_eval==2026.3.23`) and unpacks it into `.third_party/`, which is not
+  committed. Evaluation data, prompt templates, decoders and AST checkers therefore come
+  from the official package, unmodified.
+- We do not pip-install the package because its dependency list includes every vendor API
+  client (anthropic, cohere, mistralai, google-genai, boto3, ...) which this work does not use.
+  See `09_evaluation_sensitivity.md` §1.
+
+## Qwen3-4B — Apache-2.0
+
+- Model: https://huggingface.co/Qwen/Qwen3-4B. Weights are not redistributed;
+  `pipeline/fetch_assets.py` downloads them into `smoke/model/` (git-ignored).
+
+## Note on credential-like strings
+
+The released agent trajectories occasionally contain credential-shaped text as part of the
+task content (for example a truncated sample RSA key inside a coding task). Those strings
+originate in the public upstream dataset. Raw row dumps are git-ignored; the rendered review
+pages under `prepared/review/` inherit them from the source data. No live credential or
+access token is used by, or stored in, this repository.

@@ -1,0 +1,661 @@
+<!doctype html><meta charset="utf-8"><style>body{font:16px system-ui;max-width:1100px;margin:30px auto;padding:20px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f5f7;padding:16px}summary{cursor:pointer;padding:12px;border-top:1px solid #ccc}input{padding:10px;width:80%}a{color:#2256ab}</style><a href="index.html">目录</a>
+<h1>Row 81509: tezos-01474</h1>
+<p>未标注；错误关键词只是候选。请分别记录事件起因、纠正动作、后续验证与终局结果。</p>
+<pre>{
+  &quot;row_id&quot;: 81509,
+  &quot;shard&quot;: &quot;train-00008-of-00010.parquet&quot;,
+  &quot;task&quot;: &quot;tezos-01474&quot;,
+  &quot;task_family_hint&quot;: &quot;tezos-01474&quot;,
+  &quot;source_hint&quot;: &quot;tezos&quot;,
+  &quot;teacher_raw&quot;: &quot;hosted_vllm/glm&quot;,
+  &quot;trial_name&quot;: &quot;tezos-01474__3xFiYXg&quot;,
+  &quot;run_id&quot;: &quot;54764f3c-74c4-4abd-b3df-c27914fc413e&quot;,
+  &quot;branch&quot;: &quot;main&quot;,
+  &quot;runtime_result&quot;: &quot;AgentTimeoutError&quot;,
+  &quot;terminal_outcome&quot;: &quot;unknown&quot;,
+  &quot;instruction_sha256&quot;: &quot;a305d95588758561f7b0abbad92cdc8131e1716946d35d6918a01d6733c90c69&quot;,
+  &quot;trajectory_sha256&quot;: &quot;c21e208f3651afa6e297e15895117776f766f20c29e04e4c8ab3e84d9466e648&quot;,
+  &quot;assistant_turns&quot;: 5,
+  &quot;parsed_action_turns&quot;: 5,
+  &quot;unparsed_turn_indices&quot;: [],
+  &quot;operation_sequence&quot;: [
+    &quot;inspect&quot;,
+    &quot;inspect&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;
+  ],
+  &quot;motifs&quot;: [
+    &quot;edit&gt;edit&quot;,
+    &quot;inspect&gt;edit&quot;,
+    &quot;inspect&gt;inspect&quot;
+  ],
+  &quot;error_candidate_turns&quot;: [],
+  &quot;self_reported_complete&quot;: false,
+  &quot;characters&quot;: 51913,
+  &quot;has_conversations&quot;: true
+}</pre>
+<details id="turn-0"><summary>Turn 0 · user · 12535 chars</summary><pre>You are an AI assistant tasked with solving command-line tasks in a Linux environment. You will be given a task description and the output from previously executed commands. Your goal is to solve the task by providing batches of shell commands.
+
+Format your response as JSON with the following structure:
+
+{
+  &quot;analysis&quot;: &quot;Analyze the current state based on the terminal output provided. What do you see? What has been accomplished? What still needs to be done?&quot;,
+  &quot;plan&quot;: &quot;Describe your plan for the next steps. What commands will you run and why? Be specific about what you expect each command to accomplish.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;ls -la\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;cd project\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ],
+  &quot;task_complete&quot;: true
+}
+
+Required fields:
+- &quot;analysis&quot;: Your analysis of the current situation
+- &quot;plan&quot;: Your plan for the next steps
+- &quot;commands&quot;: Array of command objects to execute
+
+Optional fields:
+- &quot;task_complete&quot;: Boolean indicating if the task is complete (defaults to false if not present)
+
+Command object structure:
+- &quot;keystrokes&quot;: String containing the exact keystrokes to send to the terminal (required)
+- &quot;duration&quot;: Number of seconds to wait for the command to complete before the next command will be executed (defaults to 1.0 if not present)
+
+IMPORTANT: The text inside &quot;keystrokes&quot; will be used completely verbatim as keystrokes. Write commands exactly as you want them sent to the terminal:
+- You must end every command with a newline (\n) or it will not execute.
+- For special key sequences, use tmux-style escape sequences:
+  - C-c for Ctrl+C
+  - C-d for Ctrl+D
+
+The &quot;duration&quot; attribute specifies the number of seconds to wait for the command to complete (default: 1.0) before the next command will be executed. On immediate tasks (e.g., cd, ls, echo, cat) set a duration of 0.1 seconds. On commands (e.g., gcc, find, rustc) set a duration of 1.0 seconds. On slow commands (e.g., make, python3 [long running script], wget [file]) set an appropriate duration as you determine necessary.
+
+It is better to set a smaller duration than a longer duration. It is always possible to wait again if the prior output has not finished, by running {&quot;keystrokes&quot;: &quot;&quot;, &quot;duration&quot;: 10.0} on subsequent requests to wait longer. Never wait longer than 60 seconds; prefer to poll to see intermediate result status.
+
+Important notes:
+- Each command&#x27;s keystrokes are sent exactly as written to the terminal
+- Do not include extra whitespace before or after the keystrokes unless it&#x27;s part of the intended command
+- Extra text before or after the JSON will generate warnings but be tolerated
+- The JSON must be valid - use proper escaping for quotes and special characters within strings
+- Commands array can be empty if you want to wait without taking action
+
+Task Description:
+You are given the following original problem statement and logs from a Tezos baker. Your job is to produce a complete, production-ready diagnostic, remediation and monitoring solution that answers why this baker has not earned any baking rewards and to prevent recurrence. Keep the core investigative goal the same (investigate the messages below, check the account at the provided tzscan link), but implement the much-harder, production-grade task described below.
+
+Original excerpt to investigate:
+- client.nonce_revelation: Nothing to reveal for block BLjjy3pgs8pN Apr 15 05:23:46
+- client.baking: No slot found at level 395863 (max_priority = 64)
+- User-supplied address to inspect: https://tzscan.io/tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp?default=baking
+
+Deliverables (must be provided exactly as separate artifacts):
+1. Diagnostic playbook (Markdown) that describes step-by-step checks, commands, and expected outcomes for each check. It must be safe to run (read-only by default) and include fallbacks if read-only RPC is unavailable.
+2. A set of automated diagnostic scripts (bash + Python) that:
+   - a) Parse tezos node / tezos-client logs and extract relevant events (baking rights, endorsements, nonces, missed slots, errors). Support gzipped rotated logs and systemd journal.
+   - b) Query the configured node’s RPC and at least two public RPC endpoints (configurable) to cross-check chain/head/rights data. Handle RPC rate limiting, transient failures with exponential backoff, and TLS certificate issues.
+   - c) Reconstruct a timeline for the last 1000 blocks showing: which levels had baking/endorsing rights for the delegate, which rights were actually executed, which were missed, and any nonce revelations. Output in both JSON and human-readable form.
+   - d) Validate local baker/client configuration files (tezos-baker/config, systemd unit, tezos-client, remote-signer) for common misconfigurations (wrong baker address, wrong key name, wrong node endpoint, wrong network, legacy config options for protocol upgrades).
+   - e) Check for remote signer issues (e.g., hsm/ledger/remote-signer connectivity) and safely attempt a non-destructive handshake to confirm signing capability without exposing keys.
+   - f) Cross-check delegate’s stake/roll count over time and compute expected baking/endorsement rights vs actual performed rights; flag discrepancies &gt;2% per cycle.
+
+3. A remediation automation (idempotent, non-destructive) in bash/Python that can:
+   - a) Reconfigure tezos-client endpoint and verify connectivity.
+   - b) Restart tezos-node / tezos-baker safely (systemd/docker/k8s), wait for sync within configurable thresholds, and validate successful restart with health checks.
+   - c) If remote signer is unreachable, switch to a user-provided fallback remote signer (explicit opt-in) or generate a safe alert and rollback.
+   - d) Rotate logging to include debug-level for a short controlled period, then revert.
+
+4. A test suite (pytest + integration harness) that simulates the following scenarios and asserts the scripts/automation behave correctly:
+   - Node fully synced, rights present, baker performed -&gt; scripts detect successful bakes and nonces.
+   - Node behind by &gt;30 blocks -&gt; scripts mark unsynced and warn; remediation attempts to resync and re-evaluates rights scheduling.
+   - Delegate has no baking rights in the observed range -&gt; scripts correctly infer “no missed rewards because no rights” and show expected future rights.
+   - Remote signer returns intermittent errors and signs intermittently -&gt; diagnostics detect and remediation safely failover or alert.
+   - Node returns inconsistent head between local and public RPCs (split brain) -&gt; scripts must reconcile and explain possible causes.
+   - Node has evidence of double bake or slashing (simulated) -&gt; scripts must detect and surface details but must not attempt to manipulate chain state.
+
+5. A monitoring and alerting proposal and sample configuration:
+   - Prometheus metrics (node, baker, remote-signer) and Grafana dashboard panels to include: sync lag, baking rights schedule, missed rights rate, nonce revelations pending, last successful bake/endorsement per delegate, remote-signer latency/error rate.
+   - Alert rules (Prometheus Alertmanager) for: sync lag &gt; 60s, missed rights rate &gt; 5% in last cycle, remote-signer failure &gt; 3 consecutive errors, evidence of double-baking detection.
+   - A simple alert-to-automation binding: on alert, run a safe remediation script (from 3) and post summary to Slack/email.
+
+6. A forensic report (Markdown + JSON) generated by your diagnostics for the provided address and logs. The report must:
+   - Include the full timeline for the past 30 days (or 1000 blocks if shorter) of baking/endorsement rights, performed actions, missed actions, nonce revelations, and actual rewards earned or missed, with block-level citations.
+   - Compute expected rewards vs actual rewards, and explain discrepancies (e.g., no rights, unsynced node, misconfiguration, slashing, rewards delayed due to cycle finality).
+   - Cross-check tzscan/tzkt/tzkt API and at least one block explorer API of your choice; reconcile any differences and explain why they may occur.
+   - If the address appears to be delegated to another baker or has changed delegation, highlight the exact block/level/time and the delegate address(s) involved.
+   - Explain explicitly why the log messages seen (client.nonce_revelation: Nothing to reveal and No slot found at level X) do or do not indicate a problem, with precise corner-case behaviors (e.g., “Nothing to reveal” may legitimately occur when no baking occurred that requires revealing or when nonces already revealed; “No slot found” indicates no assigned priority at that level — explain how priority ranges and max_priority affect this).
+
+7. Security and safety constraints:
+   - Scripts must never print or transmit private keys, secret key files, or raw signing requests. Any handshake with remote signers must be read-only or use ephemeral test signing where possible.
+   - All network calls must be configurable to use only local/private RPCs by default; public RPCs must be opt-in via config.
+   - All remediation operations must require an explicit confirmation flag (--apply) and must log actions to an audit file.
+
+8. Performance and robustness requirements:
+   - Diagnostic scripts must process 1000-block timelines in under 10 seconds on a typical cloud VM (2 vCPU, 4GB RAM) when using a local node RPC; if public RPCs are used, allow 30s due to network.
+   - Use parallelism for RPC calls where safe; respect rate limits and implement concurrency throttling config.
+   - Tests must execute under 60 seconds for unit tests and under 5 minutes for full integration simulation on the same VM spec.
+
+9. Error handling and corner cases (be explicit):
+   - Define behavior if local node is pruned or configured with limited history; scripts must fall back to public RPCs and annotate any missing historical data.
+   - Define behavior if the baker’s delegate address has been burned, revealed as KT1 contract, or if the account has been frozen due to protocol changes.
+   - If multiple delegates or key aliases map to the same tz1 address, handle alias resolution and show which exact secret key alias is used by the baker process.
+   - If rights are scheduled far in the future due to snapshot timing (e.g., cycles), reports must explain the waiting period for rewards and show the exact cycle numbers and expected distribution times.
+
+10. Documentation and usage:
+   - README with installation, configuration, and examples to run the diagnostics against the provided tzscan URL and against a local tezos node.
+   - Include sample outputs for each of the test scenarios listed in (4).
+   - Provide clear instructions for safe manual remediation steps if automated remediation is not desirable.
+
+Extra constraints to make the task harder:
+- Must support and be tested against at least two Tezos protocol versions (e.g., Athens and Babylon or more recent; specify which protocols you used) and show differences in rights/nonces behavior across protocols.
+- Provide a timeline visualization (SVG or small HTML + JS page) that displays rights vs performed actions per block for the last 500 blocks for the given address.
+- The forensic report must be reproducible: include exact RPC calls, timestamps (UTC), and a script that can re-generate the report from scratch given access to the same RPC endpoints.
+- All code must be licensed MIT and include comments and typing (for Python).
+- Provide a short security review (Markdown) describing risk vectors for baking setups (remote signer, ledger, exposing RPC, firewall/NAT, stale system time), and mitigations you implemented.
+
+Acceptance criteria (what reviewer will check):
+- The diagnostic scripts run against a live tezos node and produce the JSON timeline and forensic report for the provided tz1 address without exposing secrets.
+- The test suite passes on a clean VM and simulates the scenarios above.
+- The monitoring proposal includes working Prometheus scrape configs and example Grafana dashboard JSON compatible with Grafana 8+.
+- The remediation automation includes dry-run and apply modes and logs audit actions.
+- The timeline visualization renders correctly in Chrome/Firefox given the generated JSON.
+- Performance constraints are met on the specified VM.
+
+Note: Do NOT modify or broadcast any transactions or keys to mainnet without explicit operator consent. The solution must be safe by default.
+
+Current terminal state:
+Current Terminal Screen:
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-1"><summary>Turn 1 · assistant · 1452 chars</summary><pre>&lt;think&gt;This is a complex task requiring a comprehensive Tezos baker diagnostic and monitoring solution. Let me analyze what needs to be created:
+
+1. Diagnostic playbook (Markdown)
+2. Automated diagnostic scripts (bash + Python)
+3. Remediation automation (bash/Python)
+4. Test suite (pytest + integration harness)
+5. Monitoring and alerting proposal (Prometheus/Grafana)
+6. Forensic report (Markdown + JSON)
+7. Security constraints implementation
+8. Performance requirements
+9. Error handling and corner cases
+10. Documentation
+
+Let me start by exploring the current directory structure and then begin building this comprehensive solution.
+
+First, I&#x27;ll check what&#x27;s available and start creating the directory structure.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;I&#x27;m starting fresh in a Linux environment. I need to create a comprehensive Tezos baker diagnostic, remediation, and monitoring solution. This is a large task requiring multiple components including diagnostic scripts, remediation automation, test suites, monitoring configs, and documentation.&quot;,
+  &quot;plan&quot;: &quot;I&#x27;ll start by exploring the current directory, then create the project structure and begin implementing the required components. I&#x27;ll create directories for each major component and start with the core diagnostic scripts.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;ls -la\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;pwd\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ],
+  &quot;task_complete&quot;: false
+}</pre></details>
+<details id="turn-2"><summary>Turn 2 · user · 391 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app# ls -la
+total 0
+drwxr-xr-x 2 root root  10 Apr 10 17:47 .
+drwxr-xr-x 1 root root 102 Apr 12 23:24 ..
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app# pwd
+/app
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-3"><summary>Turn 3 · assistant · 2421 chars</summary><pre>&lt;think&gt;Good, I&#x27;m in a fresh /app directory. Now I need to create the comprehensive Tezos baker diagnostic solution. Let me start by creating the directory structure and then build out all the required components.
+
+I&#x27;ll organize this as:
+1. tezos-baker-diagnostics/
+   - README.md
+   - diagnostic_playbook.md
+   - scripts/
+   - remediation/
+   - tests/
+   - monitoring/
+   - docs/
+   - reports/
+
+Let me start by creating the directory structure and then work through each component methodically.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;Fresh directory in /app. I need to create a comprehensive Tezos baker diagnostic solution with multiple components including diagnostic scripts, remediation automation, test suites, monitoring configs, and documentation.&quot;,
+  &quot;plan&quot;: &quot;Create the project directory structure first, then systematically build each component: diagnostic scripts, remediation automation, test suite, monitoring configs, and documentation. I&#x27;ll start with the directory structure and README.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;mkdir -p tezos-baker-diagnostics/{scripts,remediation,tests,monitoring,docs,reports,config} &amp;&amp; cd tezos-baker-diagnostics &amp;&amp; ls -la\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; LICENSE &lt;&lt; &#x27;EOF&#x27;\nMIT License\n\nCopyright (c) 2024 Tezos Baker Diagnostics\n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \&quot;Software\&quot;), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \&quot;AS IS\&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.\nEOF\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ],
+  &quot;task_complete&quot;: false
+}</pre></details>
+<details id="turn-4"><summary>Turn 4 · user · 2008 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app# mkdir -p tezos-baker-diagnostics/{scripts,remediation,tests,monitoring,docs,reports,config} &amp;&amp; cd tezos-baker-di
+agnostics &amp;&amp; ls -la
+total 0
+drwxr-xr-x 9 root root 144 Apr 12 23:27 .
+drwxr-xr-x 1 root root  45 Apr 12 23:27 ..
+drwxr-xr-x 2 root root   6 Apr 12 23:27 config
+drwxr-xr-x 2 root root   6 Apr 12 23:27 docs
+drwxr-xr-x 2 root root   6 Apr 12 23:27 monitoring
+drwxr-xr-x 2 root root   6 Apr 12 23:27 remediation
+drwxr-xr-x 2 root root   6 Apr 12 23:27 reports
+drwxr-xr-x 2 root root   6 Apr 12 23:27 scripts
+drwxr-xr-x 2 root root   6 Apr 12 23:27 tests
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics# cat &gt; LICENSE &lt;&lt; &#x27;EOF&#x27;
+&gt; MIT License
+&gt;
+&gt; Copyright (c) 2024 Tezos Baker Diagnostics
+&gt;
+&gt; Permission is hereby granted, free of charge, to any person obtaining a copy
+&gt; of this software and associated documentation files (the &quot;Software&quot;), to deal
+&gt; in the Software without restriction, including without limitation the rights
+&gt; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+&gt; copies of the Software, and to permit persons to whom the Software is
+&gt; furnished to do so, subject to the following conditions:
+&gt;
+&gt; The above copyright notice and this permission notice shall be included in all
+&gt; copies or substantial portions of the Software.
+&gt;
+&gt; THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+&gt; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+&gt; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+&gt; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+&gt; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+&gt; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+&gt; SOFTWARE.
+&gt; EOF
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics#
+</pre></details>
+<details id="turn-5"><summary>Turn 5 · assistant · 4492 chars</summary><pre>&lt;think&gt;Good, the directory structure is created and LICENSE is in place. Now I need to start creating the various components. Let me create the README first, then move on to the diagnostic scripts, remediation, tests, monitoring, etc. This is a large project so I&#x27;ll need to work systematically.
+
+Let me start with:
+1. README.md
+2. Diagnostic Playbook (docs/diagnostic-playbook.md)
+3. Core diagnostic scripts (Python)
+4. Configuration handling
+5. Timeline visualization
+6. Test suite
+7. Monitoring configs
+8. Security review
+
+Let me begin with the README.&lt;/think&gt;```json
+{
+  &quot;analysis&quot;: &quot;Directory structure created and LICENSE file added. Now I need to create all the components for the Tezos baker diagnostic solution.&quot;,
+  &quot;plan&quot;: &quot;Start creating the README.md and then move on to the diagnostic playbook and core scripts. I&#x27;ll work systematically through each required component.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; README.md &lt;&lt; &#x27;READMEEOF&#x27;\n# Tezos Baker Diagnostics, Remediation, and Monitoring Solution\n\nA comprehensive, production-ready solution for diagnosing why a Tezos baker is not earning rewards, with automated remediation and monitoring capabilities.\n\n## Features\n\n- **Diagnostic Playbook**: Step-by-step troubleshooting guide\n- **Automated Diagnostics**: Parse logs, query RPCs, reconstruct timelines, validate configs\n- **Remediation Automation**: Safe, idempotent fixes for common issues\n- **Test Suite**: Comprehensive pytest tests for all scenarios\n- **Monitoring**: Prometheus metrics and Grafana dashboards\n- **Forensic Reports**: Detailed analysis of baking/endorsing performance\n\n## Installation\n\n```bash\n# Clone or copy this directory\ncd tezos-baker-diagnostics\n\n# Install Python dependencies\npip install -r requirements.txt\n\n# Optional: Install monitoring stack\n# (see monitoring/README.md)\n```\n\n## Quick Start\n\n```bash\n# Run diagnostics against a local node\npython scripts/diagnose.py --delegate tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp \\\n    --node-rpc http://localhost:8732 \\\n    --output-dir reports/\n\n# Run with public RPCs (opt-in)\npython scripts/diagnose.py --delegate tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp \\\n    --public-rpcs https://rpc.tzkt.io/mainnet,https://mainnet.tezos.marigold.dev \\\n    --output-dir reports/\n\n# View timeline visualization\n# Open reports/timeline.html in your browser\n\n# Run tests\npytest tests/\n\n# Remediation (dry-run first)\npython remediation/remediate.py --check\npython remediation/remediate.py --apply\n```\n\n## Configuration\n\nEdit `config/config.yaml` to customize:\n- RPC endpoints\n- Remote signer settings\n- Alert thresholds\n- Log paths\n\n```yaml\n# Example config.yaml\nnode_rpc: \&quot;http://localhost:8732\&quot;\npublic_rpcs:\n  - \&quot;https://rpc.tzkt.io/mainnet\&quot;\n  - \&quot;https://mainnet.tezos.marigold.dev\&quot;\ndelegate_address: \&quot;tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp\&quot;\nlog_paths:\n  - \&quot;/var/log/tezos/node.log\&quot;\n  - \&quot;/var/log/tezos/baker.log\&quot;\nremote_signer:\n  enabled: true\n  endpoint: \&quot;http://localhost:6732\&quot;\n```\n\n## Diagnostic Playbook\n\nSee `docs/diagnostic-playbook.md` for detailed troubleshooting steps.\n\n## Security\n\n- All scripts are read-only by default\n- Remediation requires `--apply` flag\n- Private keys are never printed or transmitted\n- Remote signer handshake is read-only\n\nSee `docs/security-review.md` for complete security analysis.\n\n## Protocol Support\n\nThis solution supports multiple Tezos protocol versions:\n- **Athens** (003-PsddFKi3)\n- **Babylon** (004-Pt24m4xi)\n- **Carthage** (005-PsBABY5H)\n- **Delphi** (006-PsDELPH1)\n- **Edo** (007-PsDELPH1)\n- **Florence** (008-PtEdoTez)\n- **Granada** (009-PsFLoren)\n- **Hangzhou** (010-PtGRANAD)\n- **Ithaca** (011-PtHangzhou2)\n- **Jakarta** (012-Psithaca)\n- **Kathmandu** (013-PtJakarta)\n- **Limusa** (014-PtJakarta)\n- **Mumbai** (015-PtLimaPt)\n- **Nairobi** (016-PtMumbai)\n- **Oxford** (017-PtNairob)\n\n## License\n\nMIT License - see LICENSE file for details.\nREADMEEOF\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; requirements.txt &lt;&lt; &#x27;REQEOF&#x27;\n# Core dependencies\nrequests&gt;=2.31.0\npyyaml&gt;=6.0\n\n# Data processing\nclick&gt;=8.1.0\ndatetime\ntyping-extensions&gt;=4.5.0\n\n# Testing\npytest&gt;=7.4.0\npytest-cov&gt;=4.1.0\npytest-mock&gt;=3.11.0\nresponses&gt;=0.23.0\nfreezegun&gt;=1.2.0\n\n# Monitoring (optional)\nprometheus-client&gt;=0.17.0\n\n# Visualization\njinja2&gt;=3.1.0\nREQEOF\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ],
+  &quot;task_complete&quot;: false
+}
+```</pre></details>
+<details id="turn-6"><summary>Turn 6 · user · 3807 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics# cat &gt; README.md &lt;&lt; &#x27;READMEEOF&#x27;
+&gt; # Tezos Baker Diagnostics, Remediation, and Monitoring Solution
+&gt;
+&gt; A comprehensive, production-ready solution for diagnosing why a Tezos baker is not earning rewards, with automated remediation and monitoring capabilities.
+&gt;
+&gt; ## Features
+&gt;
+&gt; - **Diagnostic Playbook**: Step-by-step troubleshooting guide
+&gt; - **Automated Diagnostics**: Parse logs, query RPCs, reconstruct timelines, validate configs
+&gt; - **Remediation Automation**: Safe, idempotent fixes for common issues
+&gt; - **Test Suite**: Comprehensive pytest tests for all scenarios
+&gt; - **Monitoring**: Prometheus metrics and Grafana dashboards
+&gt; - **Forensic Reports**: Detailed analysis of baking/endorsing performance
+&gt;
+&gt; ## Installation
+&gt;
+&gt;
+&gt; # Clone or copy this directory
+&gt; cd tezos-baker-diagnostics
+&gt;
+&gt; # Install Python dependencies
+&gt; pip install -r requirements.txt
+&gt;
+&gt; # Optional: Install monitoring stack
+&gt; # (see monitoring/README.md)
+&gt;
+&gt;
+&gt; ## Quick Start
+&gt;
+&gt;
+&gt; # Run diagnostics against a local node
+&gt; python scripts/diagnose.py --delegate tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp \
+&gt;     --node-rpc http://localhost:8732 \
+&gt;     --output-dir reports/
+&gt;
+&gt; # Run with public RPCs (opt-in)
+&gt; python scripts/diagnose.py --delegate tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp \
+&gt;     --public-rpcs https://rpc.tzkt.io/mainnet,https://mainnet.tezos.marigold.dev \
+&gt;     --output-dir reports/
+&gt;
+&gt; # View timeline visualization
+&gt; # Open reports/timeline.html in your browser
+&gt;
+&gt; # Run tests
+&gt; pytest tests/
+&gt;
+&gt; # Remediation (dry-run first)
+&gt; python remediation/remediate.py --check
+&gt; python remediation/remediate.py --apply
+&gt;
+&gt;
+&gt; ## Configuration
+&gt;
+&gt; Edit `config/config.yaml` to customize:
+&gt; - RPC endpoints
+&gt; - Remote signer settings
+&gt; - Alert thresholds
+&gt; - Log paths
+&gt;
+&gt;
+&gt; # Example config.yaml
+&gt; node_rpc: &quot;http://localhost:8732&quot;
+&gt; public_rpcs:
+&gt;   - &quot;https://rpc.tzkt.io/mainnet&quot;
+&gt;   - &quot;https://mainnet.tezos.marigold.dev&quot;
+&gt; delegate_address: &quot;tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp&quot;
+&gt; log_paths:
+&gt;   - &quot;/var/log/tezos/node.log&quot;
+&gt;   - &quot;/var/log/tezos/baker.log&quot;
+&gt; remote_signer:
+&gt;   enabled: true
+&gt;   endpoint: &quot;http://localhost:6732&quot;
+&gt;
+&gt;
+&gt; ## Diagnostic Playbook
+&gt;
+&gt; See `docs/diagnostic-playbook.md` for detailed troubleshooting steps.
+&gt;
+&gt; ## Security
+&gt;
+&gt; - All scripts are read-only by default
+&gt; - Remediation requires `--apply` flag
+&gt; - Private keys are never printed or transmitted
+&gt; - Remote signer handshake is read-only
+&gt;
+&gt; See `docs/security-review.md` for complete security analysis.
+&gt;
+&gt; ## Protocol Support
+&gt;
+&gt; This solution supports multiple Tezos protocol versions:
+&gt; - **Athens** (003-PsddFKi3)
+&gt; - **Babylon** (004-Pt24m4xi)
+&gt; - **Carthage** (005-PsBABY5H)
+&gt; - **Delphi** (006-PsDELPH1)
+&gt; - **Edo** (007-PsDELPH1)
+&gt; - **Florence** (008-PtEdoTez)
+&gt; - **Granada** (009-PsFLoren)
+&gt; - **Hangzhou** (010-PtGRANAD)
+&gt; - **Ithaca** (011-PtHangzhou2)
+&gt; - **Jakarta** (012-Psithaca)
+&gt; - **Kathmandu** (013-PtJakarta)
+&gt; - **Limusa** (014-PtJakarta)
+&gt; - **Mumbai** (015-PtLimaPt)
+&gt; - **Nairobi** (016-PtMumbai)
+&gt; - **Oxford** (017-PtNairob)
+&gt;
+&gt; ## License
+&gt;
+&gt; MIT License - see LICENSE file for details.
+&gt; READMEEOF
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics# cat &gt; requirements.txt &lt;&lt; &#x27;REQEOF&#x27;
+&gt; # Core dependencies
+&gt; requests&gt;=2.31.0
+&gt; pyyaml&gt;=6.0
+&gt;
+&gt; # Data processing
+&gt; click&gt;=8.1.0
+&gt; datetime
+&gt; typing-extensions&gt;=4.5.0
+&gt;
+&gt; # Testing
+&gt; pytest&gt;=7.4.0
+&gt; pytest-cov&gt;=4.1.0
+&gt; pytest-mock&gt;=3.11.0
+&gt; responses&gt;=0.23.0
+&gt; freezegun&gt;=1.2.0
+&gt;
+&gt; # Monitoring (optional)
+&gt; prometheus-client&gt;=0.17.0
+&gt;
+&gt; # Visualization
+&gt; jinja2&gt;=3.1.0
+&gt; REQEOF
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics#
+</pre></details>
+<details id="turn-7"><summary>Turn 7 · assistant · 3041 chars</summary><pre>&lt;think&gt;Good progress. Now I need to create the main diagnostic scripts and other components. Let me continue with creating the config file and then the core Python diagnostic scripts.&lt;/think&gt;```json
+{
+  &quot;analysis&quot;: &quot;README.md and requirements.txt have been created. Now I need to create the configuration file and start building the core diagnostic scripts.&quot;,
+  &quot;plan&quot;: &quot;Create the config.yaml file, then start building the main diagnostic Python scripts. I&#x27;ll create the core RPC client, log parser, and timeline reconstruction modules.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; config/config.yaml &lt;&lt; &#x27;CONFEOF&#x27;\n# Tezos Baker Diagnostics Configuration\n# MIT License - Copyright 2024\n\n# Primary local node RPC (default, read-only)\nnode_rpc: \&quot;http://localhost:8732\&quot;\n\n# Public RPC endpoints (opt-in for cross-checking)\n# Set to empty list to disable public RPC access\npublic_rpcs:\n  - \&quot;https://rpc.tzkt.io/mainnet\&quot;\n  - \&quot;https://mainnet.tezos.marigold.dev\&quot;\n  - \&quot;https://teztnets.xyz/mainnet\&quot;\n\n# Delegate address to monitor\ndelegate_address: \&quot;tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp\&quot;\n\n# Log file paths to parse\nlog_paths:\n  - \&quot;/var/log/tezos/node.log\&quot;\n  - \&quot;/var/log/tezos/baker.log\&quot;\n  - \&quot;/var/log/tezos/endoser.log\&quot;\n  - \&quot;/var/log/syslog\&quot;\n\n# Use systemd journal if logs not found\nuse_journal: true\njournal_unit: \&quot;tezos-node\&quot;\n\n# Remote signer configuration\nremote_signer:\n  enabled: false\n  endpoint: \&quot;http://localhost:6732\&quot;\n  timeout: 30\n  max_retries: 3\n\n# RPC settings\nrpc:\n  timeout: 30\n  max_retries: 3\n  backoff_factor: 2.0\n  rate_limit_delay: 0.1  # seconds between requests\n  max_concurrent: 5\n\n# Protocol-specific settings (auto-detected, but can override)\nprotocols:\n  current_protocol_hash: null\n  support_legacy_protocols: true\n\n# Alert thresholds\nalerts:\n  sync_lag_threshold: 60  # seconds\n  missed_rights_threshold: 5  # percent per cycle\n  remote_signer_failure_threshold: 3  # consecutive errors\n  double_bake_detection: true\n\n# Timeline analysis settings\ntimeline:\n  block_limit: 1000\n  days_limit: 30\n  rights_discrepancy_threshold: 2  # percent\n\n# Output settings\noutput:\n  json_pretty: true\n  include_rpc_calls: true\n  generate_html: true\n  generate_svg: true\n\n# Security settings\nsecurity:\n  allow_public_rpcs: false  # Must be explicitly enabled\n  log_all_rpc_calls: true\n  audit_log_path: \&quot;/var/log/tezos-diagnostics/audit.log\&quot;\n  never_print_secrets: true\nCONFEOF\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; scripts/__init__.py &lt;&lt; &#x27;EOF&#x27;\n\&quot;\&quot;\&quot;\nTezos Baker Diagnostics Scripts\nMIT License\n\&quot;\&quot;\&quot;\nfrom .diagnose import main as diagnose_main\nfrom .log_parser import LogParser\nfrom .rpc_client import RPCClient\nfrom .timeline import TimelineAnalyzer\nfrom .config_validator import ConfigValidator\n\n__all__ = [\n    &#x27;diagnose_main&#x27;,\n    &#x27;LogParser&#x27;,\n    &#x27;RPCClient&#x27;, \n    &#x27;TimelineAnalyzer&#x27;,\n    &#x27;ConfigValidator&#x27;\n]\nEOF\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ],
+  &quot;task_complete&quot;: false
+}
+```</pre></details>
+<details id="turn-8"><summary>Turn 8 · user · 2701 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics# cat &gt; config/config.yaml &lt;&lt; &#x27;CONFEOF&#x27;
+&gt; # Tezos Baker Diagnostics Configuration
+&gt; # MIT License - Copyright 2024
+&gt;
+&gt; # Primary local node RPC (default, read-only)
+&gt; node_rpc: &quot;http://localhost:8732&quot;
+&gt;
+&gt; # Public RPC endpoints (opt-in for cross-checking)
+&gt; # Set to empty list to disable public RPC access
+&gt; public_rpcs:
+&gt;   - &quot;https://rpc.tzkt.io/mainnet&quot;
+&gt;   - &quot;https://mainnet.tezos.marigold.dev&quot;
+&gt;   - &quot;https://teztnets.xyz/mainnet&quot;
+&gt;
+&gt; # Delegate address to monitor
+&gt; delegate_address: &quot;tz1e2meErj7eEfXwqr7bDK6N1YatmLaugfMp&quot;
+&gt;
+&gt; # Log file paths to parse
+&gt; log_paths:
+&gt;   - &quot;/var/log/tezos/node.log&quot;
+&gt;   - &quot;/var/log/tezos/baker.log&quot;
+&gt;   - &quot;/var/log/tezos/endoser.log&quot;
+&gt;   - &quot;/var/log/syslog&quot;
+&gt;
+&gt; # Use systemd journal if logs not found
+&gt; use_journal: true
+&gt; journal_unit: &quot;tezos-node&quot;
+&gt;
+&gt; # Remote signer configuration
+&gt; remote_signer:
+&gt;   enabled: false
+&gt;   endpoint: &quot;http://localhost:6732&quot;
+&gt;   timeout: 30
+&gt;   max_retries: 3
+&gt;
+&gt; # RPC settings
+&gt; rpc:
+&gt;   timeout: 30
+&gt;   max_retries: 3
+&gt;   backoff_factor: 2.0
+&gt;   rate_limit_delay: 0.1  # seconds between requests
+&gt;   max_concurrent: 5
+&gt;
+&gt; # Protocol-specific settings (auto-detected, but can override)
+&gt; protocols:
+&gt;   current_protocol_hash: null
+&gt;   support_legacy_protocols: true
+&gt;
+&gt; # Alert thresholds
+&gt; alerts:
+&gt;   sync_lag_threshold: 60  # seconds
+&gt;   missed_rights_threshold: 5  # percent per cycle
+&gt;   remote_signer_failure_threshold: 3  # consecutive errors
+&gt;   double_bake_detection: true
+&gt;
+&gt; # Timeline analysis settings
+&gt; timeline:
+&gt;   block_limit: 1000
+&gt;   days_limit: 30
+&gt;   rights_discrepancy_threshold: 2  # percent
+&gt;
+&gt; # Output settings
+&gt; output:
+&gt;   json_pretty: true
+&gt;   include_rpc_calls: true
+&gt;   generate_html: true
+&gt;   generate_svg: true
+&gt;
+&gt; # Security settings
+&gt; security:
+&gt;   allow_public_rpcs: false  # Must be explicitly enabled
+&gt;   log_all_rpc_calls: true
+&gt;   audit_log_path: &quot;/var/log/tezos-diagnostics/audit.log&quot;
+&gt;   never_print_secrets: true
+&gt; CONFEOF
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics# cat &gt; scripts/__init__.py &lt;&lt; &#x27;EOF&#x27;
+&gt; &quot;&quot;&quot;
+&gt; Tezos Baker Diagnostics Scripts
+&gt; MIT License
+&gt; &quot;&quot;&quot;
+&gt; from .diagnose import main as diagnose_main
+&gt; from .log_parser import LogParser
+&gt; from .rpc_client import RPCClient
+&gt; from .timeline import TimelineAnalyzer
+&gt; from .config_validator import ConfigValidator
+&gt;
+&gt; __all__ = [
+&gt;     &#x27;diagnose_main&#x27;,
+&gt;     &#x27;LogParser&#x27;,
+&gt;     &#x27;RPCClient&#x27;,
+&gt;     &#x27;TimelineAnalyzer&#x27;,
+&gt;     &#x27;ConfigValidator&#x27;
+&gt; ]
+&gt; EOF
+root@b87ea12e-7970-427b-8440-9d1fe5e4c0f8:/app/tezos-baker-diagnostics#
+</pre></details>
+<details id="turn-9"><summary>Turn 9 · assistant · 19065 chars</summary><pre>&lt;think&gt;Good progress. Now I need to create the core Python modules. Let me start with the RPC client module which is fundamental to all other components.&lt;/think&gt;```json
+{
+  &quot;analysis&quot;: &quot;Configuration files and __init__.py created. Now I need to create the core Python modules for the diagnostic system.&quot;,
+  &quot;plan&quot;: &quot;Create the RPC client module first, as it&#x27;s fundamental to all other components. This will handle querying Tezos nodes with proper error handling, rate limiting, and exponential backoff.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; scripts/rpc_client.py &lt;&lt; &#x27;RPCEOF&#x27;\n#!/usr/bin/env python3\n\&quot;\&quot;\&quot;\nTezos RPC Client Module\n\nProvides robust RPC querying with rate limiting, retry logic,\nand support for multiple endpoints.\n\nMIT License\n\&quot;\&quot;\&quot;\n\nimport json\nimport time\nimport logging\nimport ssl\nfrom typing import Any, Dict, List, Optional, Tuple\nfrom urllib.parse import urlparse\nfrom concurrent.futures import ThreadPoolExecutor, as_completed\nimport requests\nfrom requests.adapters import HTTPAdapter\nfrom urllib3.util.retry import Retry\n\n# Protocol constants for Tezos\nPROTOCOL_VERSIONS = {\n    &#x27;003-PsddFKi3&#x27;: &#x27;Athens&#x27;,\n    &#x27;004-Pt24m4xi&#x27;: &#x27;Babylon&#x27;,\n    &#x27;005-PsBABY5H&#x27;: &#x27;Carthage&#x27;,\n    &#x27;006-PsDELPH1&#x27;: &#x27;Delphi&#x27;,\n    &#x27;007-PsDELPH1&#x27;: &#x27;Edo&#x27;,\n    &#x27;008-PtEdoTez&#x27;: &#x27;Florence&#x27;,\n    &#x27;009-PsFLoren&#x27;: &#x27;Granada&#x27;,\n    &#x27;010-PtGRANAD&#x27;: &#x27;Hangzhou&#x27;,\n    &#x27;011-PtHangzhou2&#x27;: &#x27;Ithaca&#x27;,\n    &#x27;012-Psithaca&#x27;: &#x27;Jakarta&#x27;,\n    &#x27;013-PtJakarta&#x27;: &#x27;Kathmandu&#x27;,\n    &#x27;014-PtJakarta&#x27;: &#x27;Limusa&#x27;,\n    &#x27;015-PtLimaPt&#x27;: &#x27;Mumbai&#x27;,\n    &#x27;016-PtMumbai&#x27;: &#x27;Nairobi&#x27;,\n    &#x27;017-PtNairob&#x27;: &#x27;Oxford&#x27;,\n}\n\nlogger = logging.getLogger(__name__)\n\n\nclass RPCError(Exception):\n    \&quot;\&quot;\&quot;Base exception for RPC errors.\&quot;\&quot;\&quot;\n    pass\n\n\nclass RPCConnectionError(RPCError):\n    \&quot;\&quot;\&quot;Connection failed.\&quot;\&quot;\&quot;\n    pass\n\n\nclass RPCRateLimitError(RPCError):\n    \&quot;\&quot;\&quot;Rate limit exceeded.\&quot;\&quot;\&quot;\n    pass\n\n\nclass RPCProtocolError(RPCError):\n    \&quot;\&quot;\&quot;Protocol-level error from RPC.\&quot;\&quot;\&quot;\n    pass\n\n\nclass RPCClient:\n    \&quot;\&quot;\&quot;\n    Robust Tezos RPC client with retry logic and rate limiting.\n    \&quot;\&quot;\&quot;\n\n    def __init__(\n        self,\n        rpc_url: str,\n        timeout: int = 30,\n        max_retries: int = 3,\n        backoff_factor: float = 2.0,\n        rate_limit_delay: float = 0.1,\n        verify_tls: bool = True,\n        allow_public: bool = False\n    ):\n        \&quot;\&quot;\&quot;\n        Initialize RPC client.\n\n        Args:\n            rpc_url: Base URL of Tezos RPC endpoint\n            timeout: Request timeout in seconds\n            max_retries: Maximum number of retry attempts\n            backoff_factor: Exponential backoff multiplier\n            rate_limit_delay: Minimum delay between requests\n            verify_tls: Verify TLS certificates\n            allow_public: Allow connecting to public RPCs\n        \&quot;\&quot;\&quot;\n        self.rpc_url = rpc_url.rstrip(&#x27;/&#x27;)\n        self.timeout = timeout\n        self.max_retries = max_retries\n        self.backoff_factor = backoff_factor\n        self.rate_limit_delay = rate_limit_delay\n        self.verify_tls = verify_tls\n        self.allow_public = allow_public\n        self._last_request_time = 0\n        self._rpc_calls_log: List[Dict[str, Any]] = []\n\n        # Validate URL\n        parsed = urlparse(rpc_url)\n        if parsed.scheme not in (&#x27;http&#x27;, &#x27;https&#x27;):\n            raise ValueError(f\&quot;Invalid RPC URL scheme: {parsed.scheme}\&quot;)\n\n        # Check if public RPC\n        self.is_public = self._is_public_rpc(rpc_url)\n        if self.is_public and not allow_public:\n            logger.warning(f\&quot;Public RPC detected but not allowed: {rpc_url}\&quot;)\n\n        # Configure session with retry strategy\n        self.session = self._create_session()\n\n    def _is_public_rpc(self, url: str) -&gt; bool:\n        \&quot;\&quot;\&quot;Check if URL is a public RPC endpoint.\&quot;\&quot;\&quot;\n        public_patterns = [\n            &#x27;rpc.tzkt.io&#x27;,\n            &#x27;tezos.marigold.dev&#x27;,\n            &#x27;teztnets.xyz&#x27;,\n            &#x27;smartpy.io&#x27;,\n            &#x27;ecadast.com&#x27;,\n        ]\n        for pattern in public_patterns:\n            if pattern in url:\n                return True\n        return False\n\n    def _create_session(self) -&gt; requests.Session:\n        \&quot;\&quot;\&quot;Create a requests session with retry logic.\&quot;\&quot;\&quot;\n        session = requests.Session()\n\n        retry_strategy = Retry(\n            total=self.max_retries,\n            backoff_factor=self.backoff_factor,\n            status_forcelist=[408, 429, 500, 502, 503, 504],\n            allowed_methods=[\&quot;GET\&quot;, \&quot;POST\&quot;],\n        )\n\n        adapter = HTTPAdapter(\n            max_retries=retry_strategy,\n            pool_connections=10,\n            pool_maxsize=10\n        )\n\n        session.mount(\&quot;http://\&quot;, adapter)\n        session.mount(\&quot;https://\&quot;, adapter)\n\n        return session\n\n    def _rate_limit_wait(self) -&gt; None:\n        \&quot;\&quot;\&quot;Wait if necessary to respect rate limiting.\&quot;\&quot;\&quot;\n        now = time.time()\n        time_since_last = now - self._last_request_time\n        if time_since_last &lt; self.rate_limit_delay:\n            wait_time = self.rate_limit_delay - time_since_last\nn            time.sleep(wait_time)\n        self._last_request_time = time.time()\n\n    def _log_rpc_call(self, endpoint: str, method: str, success: bool, \n                      status_code: Optional[int] = None, error: Optional[str] = None) -&gt; None:\n        \&quot;\&quot;\&quot;Log RPC call for audit trail.\&quot;\&quot;\&quot;\n        log_entry = {\n            &#x27;timestamp&#x27;: time.time(),\n            &#x27;url&#x27;: f\&quot;{self.rpc_url}{endpoint}\&quot;,\n            &#x27;method&#x27;: method,\n            &#x27;success&#x27;: success,\n            &#x27;status_code&#x27;: status_code,\n            &#x27;error&#x27;: error\n        }\n        self._rpc_calls_log.append(log_entry)\n        if len(self._rpc_calls_log) &gt; 1000:\n            self._rpc_calls_log = self._rpc_calls_log[-1000:]\n\n    def get(self, endpoint: str, **kwargs) -&gt; Any:\n        \&quot;\&quot;\&quot;\n        Perform GET request to RPC endpoint.\n\n        Args:\n            endpoint: RPC endpoint path (e.g., &#x27;/chains/main/blocks/head&#x27;)\n            **kwargs: Additional arguments passed to requests\n\n        Returns:\n            JSON response data\n\n        Raises:\n            RPCError: On RPC failure\n        \&quot;\&quot;\&quot;\n        self._rate_limit_wait()\n        url = f\&quot;{self.rpc_url}{endpoint}\&quot;\n        \n        try:\n            if not self.verify_tls:\n                kwargs[&#x27;verify&#x27;] = False\n\n            response = self.session.get(\n                url,\n                timeout=self.timeout,\n                **kwargs\n            )\n\n            # Handle rate limiting\n            if response.status_code == 429:\n                self._log_rpc_call(endpoint, &#x27;GET&#x27;, False, response.status_code, &#x27;Rate limited&#x27;)\n                raise RPCRateLimitError(f\&quot;Rate limited by {url}\&quot;)\n\n            response.raise_for_status()\n\n            self._log_rpc_call(endpoint, &#x27;GET&#x27;, True, response.status_code)\n\n            return response.json()\n\n        except requests.exceptions.SSLError as e:\n            self._log_rpc_call(endpoint, &#x27;GET&#x27;, False, None, f&#x27;TLS error: {str(e)}&#x27;)\n            logger.warning(f\&quot;TLS error for {url}: {e}\&quot;)\n            if self.verify_tls:\n                logger.info(\&quot;Retrying with TLS verification disabled\&quot;)\n                return self.get(endpoint, verify=False, **kwargs)\n            raise RPCConnectionError(f\&quot;TLS error: {e}\&quot;)\n\n        except requests.exceptions.Timeout as e:\n            self._log_rpc_call(endpoint, &#x27;GET&#x27;, False, None, f&#x27;Timeout: {str(e)}&#x27;)\n            raise RPCConnectionError(f\&quot;Timeout after {self.timeout}s: {e}\&quot;)\n\n        except requests.exceptions.ConnectionError as e:\n            self._log_rpc_call(endpoint, &#x27;GET&#x27;, False, None, f&#x27;Connection error: {str(e)}&#x27;)\n            raise RPCConnectionError(f\&quot;Connection error: {e}\&quot;)\n\n        except requests.exceptions.HTTPError as e:\n            self._log_rpc_call(endpoint, &#x27;GET&#x27;, False, response.status_code, str(e))\n            if response.status_code == 404:\n                return None\n            raise RPCProtocolError(f\&quot;HTTP {response.status_code}: {e}\&quot;)\n\n        except json.JSONDecodeError as e:\n            self._log_rpc_call(endpoint, &#x27;GET&#x27;, False, None, f&#x27;Invalid JSON: {str(e)}&#x27;)\n            raise RPCError(f\&quot;Invalid JSON response: {e}\&quot;)\n\n    def post(self, endpoint: str, data: Optional[Dict] = None, **kwargs) -&gt; Any:\n        \&quot;\&quot;\&quot;\n        Perform POST request to RPC endpoint.\n\n        Args:\n            endpoint: RPC endpoint path\n            data: Request body data\n            **kwargs: Additional arguments passed to requests\n\n        Returns:\n            JSON response data\n        \&quot;\&quot;\&quot;\n        self._rate_limit_wait()\n        url = f\&quot;{self.rpc_url}{endpoint}\&quot;\n\n        try:\n            response = self.session.post(\n                url,\n                json=data,\n                timeout=self.timeout,\n                **kwargs\n            )\n\n            response.raise_for_status()\n\n            self._log_rpc_call(endpoint, &#x27;POST&#x27;, True, response.status_code)\n\n            return response.json()\n\n        except Exception as e:\n            self._log_rpc_call(endpoint, &#x27;POST&#x27;, False, None, str(e))\n            raise RPCError(f\&quot;POST request failed: {e}\&quot;)\n\n    # Tezos-specific RPC methods\n\n    def get_head(self) -&gt; Dict[str, Any]:\n        \&quot;\&quot;\&quot;Get head block.\&quot;\&quot;\&quot;\n        return self.get(&#x27;/chains/main/blocks/head&#x27;)\n\n    def get_block(self, level: int) -&gt; Dict[str, Any]:\n        \&quot;\&quot;\&quot;Get block by level.\&quot;\&quot;\&quot;\n        return self.get(f&#x27;/chains/main/blocks/{level}&#x27;)\n\n    def get_block_hash(self, level: int) -&gt; Optional[str]:\n        \&quot;\&quot;\&quot;Get block hash by level.\&quot;\&quot;\&quot;\n        block = self.get(f&#x27;/chains/main/blocks/{level}&#x27;)\n        return block.get(&#x27;hash&#x27;) if block else None\n\n    def get_chain_id(self) -&gt; str:\n        \&quot;\&quot;\&quot;Get chain identifier.\&quot;\&quot;\&quot;\n        return self.get(&#x27;/chains/main/chain_id&#x27;)\n\n    def get_current_level(self) -&gt; int:\n        \&quot;\&quot;\&quot;Get current block level.\&quot;\&quot;\&quot;\n        head = self.get_head()\n        return int(head.get(&#x27;metadata&#x27;, {}).get(&#x27;level&#x27;, {}).get(&#x27;level&#x27;, 0))\n\n    def get_constants(self) -&gt; Dict[str, Any]:\n        \&quot;\&quot;\&quot;Get protocol constants.\&quot;\&quot;\&quot;\n        return self.get(&#x27;/chains/main/blocks/head/context/constants&#x27;)\n\n    def get_protocol(self) -&gt; Dict[str, Any]:\n        \&quot;\&quot;\&quot;Get current protocol info.\&quot;\&quot;\&quot;\n        return self.get(&#x27;/chains/main/blocks/header/protocol&#x27;)\n\n    def get_protocol_hash(self) -&gt; str:\n        \&quot;\&quot;\&quot;Get current protocol hash.\&quot;\&quot;\&quot;\n        return self.get_head().get(&#x27;protocol&#x27;, &#x27;&#x27;)\n\n    def get_protocol_name(self, protocol_hash: Optional[str] = None) -&gt; Optional[str]:\n        \&quot;\&quot;\&quot;Get human-readable protocol name.\&quot;\&quot;\&quot;\n        if protocol_hash is None:\n            protocol_hash = self.get_protocol_hash()\n        return PROTOCOL_VERSIONS.get(protocol_hash, &#x27;Unknown&#x27;)\n\n    def get_baking_rights(\n        self,\n        level: Optional[int] = None,\n        delegate: Optional[str] = None,\n        max_priority: int = 64,\n        all: bool = False\n    ) -&gt; List[Dict[str, Any]]:\n        \&quot;\&quot;\&quot;\n        Get baking rights for a level or range.\n        \n        Args:\n            level: Specific level or None for current future cycle\n            delegate: Filter by delegate address\n            max_priority: Maximum priority to include\n            all: Get all delegates&#x27; rights\n        \&quot;\&quot;\&quot;\n        params = []\n        if level is not None:\n            params.append(f&#x27;level={level}&#x27;)\n        if delegate is not None:\n            params.append(f&#x27;delegate={delegate}&#x27;)\n        if max_priority != 64:\n            params.append(f&#x27;max_priority={max_priority}&#x27;)\n        if all:\n            params.append(&#x27;all=true&#x27;)\n        \n        query = &#x27;&amp;&#x27;.join(params)\n        endpoint = f&#x27;/chains/main/blocks/head/helpers/baking_rights?{query}&#x27;\n        \n        result = self.get(endpoint)\n        return result if result else []\n\n    def get_endorsing_rights(\n        self,\n        level: Optional[int] = None,\n        delegate: Optional[str] = None\n    ) -&gt; List[Dict[str, Any]]:\n        \&quot;\&quot;\&quot;\n        Get endorsing rights for a level or range.\n        \n        Args:\n            level: Specific level or None for current future cycle\n            delegate: Filter by delegate address\n        \&quot;\&quot;\&quot;\n        params = []\n        if level is not None:\n            params.append(f&#x27;level={level}&#x27;)\n        if delegate is not None:\n            params.append(f&#x27;delegate={delegate}&#x27;)\n        \n        query = &#x27;&amp;&#x27;.join(params)\n        endpoint = f&#x27;/chains/main/blocks/head/helpers/endorsing_rights?{query}&#x27;\n        \n        result = self.get(endpoint)\n        return result if result else []\n\n    def get_delegate_balance(self, delegate: str) -&gt; Optional[int]:\n        \&quot;\&quot;\&quot;Get delegate balance.\&quot;\&quot;\&quot;\n        return self.get(f&#x27;/chains/main/blocks/head/context/contracts/{delegate}/balance&#x27;)\n\n    def get_delegated_contracts(self, delegate: str) -&gt; List[str]:\n        \&quot;\&quot;\&quot;Get contracts delegated to this delegate.\&quot;\&quot;\&quot;\n        result = self.get(f&#x27;/chains/main/blocks/head/context/delegates/{delegate}/delegated_contracts&#x27;)\n        return result if result else []\n\n    def get_delegate_info(self, delegate: str) -&gt; Optional[Dict[str, Any]]:\n        \&quot;\&quot;\&quot;Get full delegate information.\&quot;\&quot;\&quot;\n        return self.get(f&#x27;/chains/main/blocks/head/context/delegates/{delegate}&#x27;)\n\n    def get_full_cycle(self, cycle: int) -&gt; List[Dict[str, Any]]:\n        \&quot;\&quot;\&quot;\n        Get baking rights for an entire cycle.\n        Returns list of rights for all levels in the cycle.\n        \&quot;\&quot;\&quot;\n        constants = self.get_constants()\n        blocks_per_cycle = constants.get(&#x27;blocks_per_cycle&#x27;, 4096)\n        \n        start_level = cycle * blocks_per_cycle\n        end_level = start_level + blocks_per_cycle\n        \n        rights = []\n        for level in range(start_level, end_level):\n            try:\n                level_rights = self.get_baking_rights(level=level, all=True)\n                if level_rights:\n                    rights.extend(level_rights)\n            except RPCError as e:\n                logger.error(f\&quot;Failed to get rights for level {level}: {e}\&quot;)\n        \n        return rights\n\n    def get_rpc_calls_log(self) -&gt; List[Dict[str, Any]]:\n        \&quot;\&quot;\&quot;Get log of all RPC calls made.\&quot;\&quot;\&quot;\n        return self._rpc_calls_log.copy()\n\n    def health_check(self) -&gt; Tuple[bool, str]:\n        \&quot;\&quot;\&quot;\n        Check if RPC endpoint is healthy.\n        \n        Returns:\n            Tuple of (healthy, message)\n        \&quot;\&quot;\&quot;\n        try:\n            start_time = time.time()\n            chain_id = self.get_chain_id()\n            elapsed = time.time() - start_time\n            \n            if chain_id and len(chain_id) == 51:  # Base58 hash length\n                return True, f\&quot;OK (response time: {elapsed:.3f}s)\&quot;\n            return False, f\&quot;Invalid chain_id: {chain_id}\&quot;\n        \n        except Exception as e:\n            return False, str(e)\n\n\nclass MultiRPCClient:\n    \&quot;\&quot;\&quot;\n    Client that queries multiple RPC endpoints and reconciles results.\n    \&quot;\&quot;\&quot;\n\n    def __init__(\n        self,\n        rpc_urls: List[str],\n        primary_url: Optional[str] = None,\n        max_concurrent: int = 5,\n        **kwargs\n    ):\n        \&quot;\&quot;\&quot;\n        Initialize multi-RPC client.\n\n        Args:\n            rpc_urls: List of RPC endpoint URLs\n            primary_url: Primary/local RPC to prefer\n            max_concurrent: Maximum concurrent requests\n            **kwargs: Passed to RPCClient instances\n        \&quot;\&quot;\&quot;\n        self.rpc_urls = rpc_urls\n        self.primary_url = primary_url or (rpc_urls[0] if rpc_urls else None)\n        self.max_concurrent = max_concurrent\n        self.kwargs = kwargs\n\n        self.clients: List[RPCClient] = []\n        for url in rpc_urls:\n            try:\n                self.clients.append(RPCClient(url, **kwargs))\n            except Exception as e:\n                logger.error(f\&quot;Failed to create client for {url}: {e}\&quot;)\n\n    def query_all(self, method: str, *args, **kwargs) -&gt; Dict[str, Any]:\n        \&quot;\&quot;\&quot;\n        Query all RPC endpoints in parallel.\n\n        Returns:\n            Dict mapping URL to result or error\n        \&quot;\&quot;\&quot;\n        results = {}\n        \n        with ThreadPoolExecutor(max_workers=self.max_concurrent) as executor:\n            futures = {\n                executor.submit(getattr(client, method), *args, **kwargs): client.rpc_url\n                for client in self.clients\n            }\n            \n            for future in as_completed(futures):\n                url = futures[future]\n                try:\n                    results[url] = future.result()\n                except Exception as e:\n                    results[url] = {&#x27;error&#x27;: str(e), &#x27;type&#x27;: type(e).__name__}\n        \n        return results\n\n    def get_consensus(self, method: str, *args, **kwargs) -&gt; Tuple[Any, Dict[str, Any]]:\n        \&quot;\&quot;\&quot;\n        Get consensus result from multiple RPCs.\n\n        Returns:\n            Tuple of (consensus_value, all_results)\n        \&quot;\&quot;\&quot;\n        all_results = self.query_all(method, *args, **kwargs)\n        \n        # Count occurrences of each result\n        value_counts = {}\n        for url, result in all_results.items():\n            if &#x27;error&#x27; not in result:\n                # Use hash for comparison (handles dicts)\n                value_key = json.dumps(result, sort_keys=True)\n                value_counts[value_key] = value_counts.get(value_key, 0) + 1\n\n        if not value_counts:\n            return None, all_results\n\n        # Get most common value\n        consensus_key = max(value_counts, key=value_counts.get)\n        consensus_value = json.loads(consensus_key)\n        \n        return consensus_value, all_results\n\n    def detect_split_brain(self) -&gt; Tuple[bool, str]:\n        \&quot;\&quot;\&quot;\n        Detect split-brain scenario where RPCs disagree.\n\n        Returns:\n            Tuple of (is_split_brain, details)\n        \&quot;\&quot;\&quot;\n        head_results = self.query_all(&#x27;get_head&#x27;)\n        \n        head_hashes = {}\n        for url, result in head_results.items():\n            if isinstance(result, dict) and &#x27;hash&#x27; in result:\n                head_hashes[url] = result[&#x27;hash&#x27;]\n\n        if len(set(head_hashes.values())) &gt; 1:\n            return True, f\&quot;RPCs disagree on head: {head_hashes}\&quot;\n\n        return False, \&quot;All RPCs agree on head\&quot;\n\n    def get_best_client(self) -&gt; Optional[RPCClient]:\n        \&quot;\&quot;\&quot;Get the best (primary or fastest) RPC client.\&quot;\&quot;\&quot;\n        if self.primary_url:\n            for client in self.clients:\n                if client.rpc_url == self.primary_url:\n                    return client\n        return self.clients[0] if self.clients else None\nRPCEOF\n&quot;,
+      &quot;duration&quot;: 0.2
+    }
+  ],
+  &quot;task_complete&quot;: false
+}
+```</pre></details>

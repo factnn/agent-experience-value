@@ -1,0 +1,531 @@
+<!doctype html><meta charset="utf-8"><style>body{font:16px system-ui;max-width:1100px;margin:30px auto;padding:20px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f4f5f7;padding:16px}summary{cursor:pointer;padding:12px;border-top:1px solid #ccc}input{padding:10px;width:80%}a{color:#2256ab}</style><a href="index.html">目录</a>
+<h1>Row 63489: issue-002562_copy0011</h1>
+<p>未标注；错误关键词只是候选。请分别记录事件起因、纠正动作、后续验证与终局结果。</p>
+<pre>{
+  &quot;row_id&quot;: 63489,
+  &quot;shard&quot;: &quot;train-00006-of-00010.parquet&quot;,
+  &quot;task&quot;: &quot;issue-002562_copy0011&quot;,
+  &quot;task_family_hint&quot;: &quot;issue-002562&quot;,
+  &quot;source_hint&quot;: &quot;issue&quot;,
+  &quot;teacher_raw&quot;: &quot;hosted_vllm/glm&quot;,
+  &quot;trial_name&quot;: &quot;issue-002562_copy0011__Vf2K265&quot;,
+  &quot;run_id&quot;: &quot;d5a53fa4-2767-4463-a7c8-6c190e90b7bd&quot;,
+  &quot;branch&quot;: &quot;main&quot;,
+  &quot;runtime_result&quot;: &quot;AgentTimeoutError&quot;,
+  &quot;terminal_outcome&quot;: &quot;unknown&quot;,
+  &quot;instruction_sha256&quot;: &quot;63f7a7587c57cc7d1a09755ea5697c579052a074ca2615c1f7e0f15929afd465&quot;,
+  &quot;trajectory_sha256&quot;: &quot;577def595190ecaab2281a82ddcc63e46076f42f4ee65bbee7a63c7ccdb68c99&quot;,
+  &quot;assistant_turns&quot;: 5,
+  &quot;parsed_action_turns&quot;: 5,
+  &quot;unparsed_turn_indices&quot;: [],
+  &quot;operation_sequence&quot;: [
+    &quot;read&quot;,
+    &quot;inspect&quot;,
+    &quot;search&quot;,
+    &quot;search&quot;,
+    &quot;execute&quot;,
+    &quot;inspect&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;,
+    &quot;edit&quot;
+  ],
+  &quot;motifs&quot;: [
+    &quot;edit&gt;edit&quot;,
+    &quot;execute&gt;inspect&quot;,
+    &quot;inspect&gt;edit&quot;,
+    &quot;inspect&gt;search&quot;,
+    &quot;read&gt;inspect&quot;,
+    &quot;search&gt;execute&quot;,
+    &quot;search&gt;search&quot;
+  ],
+  &quot;error_candidate_turns&quot;: [
+    2,
+    6
+  ],
+  &quot;self_reported_complete&quot;: false,
+  &quot;characters&quot;: 25261,
+  &quot;has_conversations&quot;: true
+}</pre>
+<details id="turn-0"><summary>Turn 0 · user · 10465 chars</summary><pre>You are an AI assistant tasked with solving command-line tasks in a Linux environment. You will be given a task description and the output from previously executed commands. Your goal is to solve the task by providing batches of shell commands.
+
+Format your response as JSON with the following structure:
+
+{
+  &quot;analysis&quot;: &quot;Analyze the current state based on the terminal output provided. What do you see? What has been accomplished? What still needs to be done?&quot;,
+  &quot;plan&quot;: &quot;Describe your plan for the next steps. What commands will you run and why? Be specific about what you expect each command to accomplish.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;ls -la\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;cd project\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ],
+  &quot;task_complete&quot;: true
+}
+
+Required fields:
+- &quot;analysis&quot;: Your analysis of the current situation
+- &quot;plan&quot;: Your plan for the next steps
+- &quot;commands&quot;: Array of command objects to execute
+
+Optional fields:
+- &quot;task_complete&quot;: Boolean indicating if the task is complete (defaults to false if not present)
+
+Command object structure:
+- &quot;keystrokes&quot;: String containing the exact keystrokes to send to the terminal (required)
+- &quot;duration&quot;: Number of seconds to wait for the command to complete before the next command will be executed (defaults to 1.0 if not present)
+
+IMPORTANT: The text inside &quot;keystrokes&quot; will be used completely verbatim as keystrokes. Write commands exactly as you want them sent to the terminal:
+- You must end every command with a newline (\n) or it will not execute.
+- For special key sequences, use tmux-style escape sequences:
+  - C-c for Ctrl+C
+  - C-d for Ctrl+D
+
+The &quot;duration&quot; attribute specifies the number of seconds to wait for the command to complete (default: 1.0) before the next command will be executed. On immediate tasks (e.g., cd, ls, echo, cat) set a duration of 0.1 seconds. On commands (e.g., gcc, find, rustc) set a duration of 1.0 seconds. On slow commands (e.g., make, python3 [long running script], wget [file]) set an appropriate duration as you determine necessary.
+
+It is better to set a smaller duration than a longer duration. It is always possible to wait again if the prior output has not finished, by running {&quot;keystrokes&quot;: &quot;&quot;, &quot;duration&quot;: 10.0} on subsequent requests to wait longer. Never wait longer than 60 seconds; prefer to poll to see intermediate result status.
+
+Important notes:
+- Each command&#x27;s keystrokes are sent exactly as written to the terminal
+- Do not include extra whitespace before or after the keystrokes unless it&#x27;s part of the intended command
+- Extra text before or after the JSON will generate warnings but be tolerated
+- The JSON must be valid - use proper escaping for quotes and special characters within strings
+- Commands array can be empty if you want to wait without taking action
+
+Task Description:
+# Self-contained coding task: expose max_iter for the underlying Lasso/Lars in SparseCoder
+
+Problem description
+- Bug/feature request:
+  SparseCoder currently delegates sparse coding to Lasso/LassoLars/LARS depending on the chosen algorithm. When using algorithm=&#x27;lasso_cd&#x27;, SparseCoder forwards some parameters to the Lasso/Lars estimator, but max_iter (which controls the maximum iterations of the underlying solver) is not passed through. This can trigger convergence warnings in example code (e.g., in examples/decomposition/plot_sparse_coding.py) because the underlying estimator may reach its default max_iter without converging.
+- Goal:
+  Introduce a way for users to specify max_iter (and related iterative solver parameters) for the underlying estimator used by SparseCoder, without requiring deep changes to the public API. Concretely, add a transform_max_iter (or similar) parameter to SparseCoder and propagate it to the underlying sparse coding solver (LassoLars, etc.) when applicable.
+
+What to implement
+- Add a parameter (e.g., transform_max_iter) to SparseCoder that controls the max_iter passed to the underlying solver.
+- Propagate this parameter through the internal call path that builds the sparse code so the underlying Lasso/Lars/LassoLars solver receives max_iter.
+- Keep backward compatibility: default behavior remains unchanged if the user does not specify transform_max_iter.
+
+Files to modify (2 target files)
+- sklearn/decomposition/sparse_coder.py
+- sklearn/decomposition/dict_learning.py
+You should only modify these files (and not the whole repository) to implement the feature.
+
+Before state (code snippets)
+Note: The snippets below show the &quot;before&quot; state from the patch (i.e., how the code looked prior to the fix). You should implement the corresponding changes so that the new behavior is available.
+
+1) sklearn/decomposition/sparse_coder.py (before)
+
+- SparseCoder constructor signature (no transform_max_iter parameter)
+```python
+class SparseCoder(BaseEstimator, SparseCodingMixin):
+    ...
+    def __init__(self, dictionary, transform_algorithm=&#x27;omp&#x27;,
+                 transform_n_nonzero_coefs=None, transform_alpha=None,
+                 split_sign=False, n_jobs=None, positive_code=False):
+        self._set_sparse_coding_params(dictionary.shape[0],
+                                       transform_algorithm,
+                                       transform_n_nonzero_coefs,
+                                       transform_alpha, split_sign, n_jobs,
+                                       positive_code)
+        self.components_ = dictionary
+```
+
+- _set_sparse_coding_params (before)
+```python
+    def _set_sparse_coding_params(self, n_components,
+                                transform_algorithm, transform_n_nonzero_coefs,
+                                transform_alpha, split_sign, n_jobs,
+                                positive_code):
+        self.n_components = n_components
+        self.transform_algorithm = transform_algorithm
+        self.transform_n_nonzero_coefs = transform_n_nonzero_coefs
+        self.transform_alpha = transform_alpha
+        self.split_sign = split_sign
+        self.n_jobs = n_jobs
+        self.positive_code = positive_code
+```
+
+- transform() method (before)
+```python
+        code = sparse_encode(
+            X, self.components_, algorithm=self.transform_algorithm,
+            n_nonzero_coefs=self.transform_n_nonzero_coefs,
+            alpha=self.transform_alpha, n_jobs=self.n_jobs,
+            positive=self.positive_code)
+```
+
+2) sklearn/decomposition/dict_learning.py (before)
+
+- _sparse_encode function (before) where LassoLars is instantiated
+```python
+            lasso_lars = LassoLars(alpha=alpha, fit_intercept=False,
+                                   verbose=verbose, normalize=False,
+                                   precompute=gram, fit_path=False,
+                                   positive=positive)
+            lasso_lars.fit(dictionary.T, X.T, Xy=cov)
+            new_code = lasso_lars.coef_
+```
+
+- sparse_encode docstring (before) for max_iter
+```python
+    max_iter : int, 1000 by default
+        Maximum number of iterations to perform if `algorithm=&#x27;lasso_cd&#x27;`.
+```
+
+- sparse_encode call inside dict_learning (before)
+```python
+        code = sparse_encode(X, dictionary, algorithm=method, alpha=alpha,
+                             init=code, n_jobs=n_jobs, positive=positive_code)
+```
+
+- dict_learning signature (before) (no method_max_iter)
+```python
+def dict_learning(X, n_components, alpha, max_iter=100, tol=1e-8,
+                  transform_algorithm=&#x27;omp&#x27;, transform_n_nonzero_coefs=None,
+                  transform_alpha=None, n_jobs=None, dict_init=None,
+                  code_init=None, verbose=False, random_state=None,
+                  return_n_iter=False, positive_dict=False,
+                  positive_code=False):
+```
+
+What you will implement (the expected behavior)
+- Extend SparseCoder to accept a transform_max_iter parameter (defaulting to a reasonable value, e.g., 1000) and pass it through to the underlying sparse encoding routine.
+- Update the internal parameter handling so that transform_max_iter is stored and used when constructing the sparse code.
+- In the Lasso/Lars pathway, forward the transform_max_iter value as max_iter to LassoLars (and other relevant solvers if used) so that the underlying solver respects the user-specified limit.
+
+Acceptance criteria
+- SparseCoder accepts a new parameter (e.g., transform_max_iter) and uses it to set the max_iter for the underlying solver when appropriate.
+- The underlying sparse coding call (sparse_encode) is updated to pass max_iter through when transform_max_iter is provided.
+- Default behavior remains unchanged if transform_max_iter is not specified (backwards compatible).
+- No changes to public API beyond adding the optional parameter; all existing defaults work as before unless the user opts in.
+
+How to implement (high level steps)
+- In sklearn/decomposition/sparse_coder.py:
+  - Add transform_max_iter to the constructor signature with default 1000.
+  - Extend _set_sparse_coding_params to accept and store transform_max_iter.
+  - In transform(), pass max_iter=self.transform_max_iter to sparse_encode call.
+- In sklearn/decomposition/dict_learning.py:
+  - If you want to align behavior broadly, add method_max_iter parameter to dict_learning (default 1000) and propagate it to calls to sparse_encode where appropriate, so the LassoLars/LARS under the hood gets max_iter.
+  - Update docstrings to reflect the new parameter and behavior.
+- Ensure tests or example code using SparseCoder can optionally specify transform_max_iter and observe no convergence warnings due to insufficient iterations.
+
+Notes
+- The goal is to provide a clean, backward-compatible way for users to control the iteration budget of the underlying solver.
+- Do not reveal or reproduce the patch diff in the final submission; describe the changes and expected behavior as above.
+- You can limit changes to the two files above if you want to scope the task; broader propagation (e.g., into dict_learning.py walls) is optional but recommended for consistency.
+
+Files to create/modify in /app/
+- app/sklearn/decomposition/sparse_coder.py
+- app/sklearn/decomposition/dict_learning.py
+
+Provide the modified code implementing the changes in those two files, ensuring the before-state blocks above are preserved in the task description (as shown) and the new behavior is implemented in the /app/ copy.
+
+Current terminal state:
+Current Terminal Screen:
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-1"><summary>Turn 1 · assistant · 1515 chars</summary><pre>&lt;think&gt;Let me analyze the task:
+
+1. I need to modify two files in sklearn/decomposition/:
+   - sparse_coder.py - Add `transform_max_iter` parameter to SparseCoder
+   - dict_learning.py - Update sparse_encode to pass max_iter through
+
+2. The changes needed:
+   - In sparse_coder.py:
+     - Add `transform_max_iter` parameter to `__init__` with default 1000
+     - Extend `_set_sparse_coding_params` to accept and store `transform_max_iter`
+     - In `transform()`, pass `max_iter=self.transform_max_iter` to `sparse_encode`
+   
+   - In dict_learning.py:
+     - Update `_sparse_encode` function to pass `max_iter` to LassoLars when appropriate
+     - Update `sparse_encode` docstring if needed
+     - Consider adding `method_max_iter` to `dict_learning` function
+
+Let me start by looking at the current state of these files.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;I&#x27;m starting fresh in the /app directory. I need to implement a feature to expose max_iter for the underlying Lasso/Lars in SparseCoder. This involves modifying two files: sklearn/decomposition/sparse_coder.py and sklearn/decomposition/dict_learning.py.&quot;,
+  &quot;plan&quot;: &quot;First, I&#x27;ll explore the current state of the files to understand their structure, then implement the required changes:\n1. View the current sparse_coder.py file\n2. View the current dict_learning.py file\n3. Make the necessary modifications to add transform_max_iter parameter&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;cat sklearn/decomposition/sparse_coder.py\n&quot;,
+      &quot;duration&quot;: 0.5
+    }
+  ]
+}</pre></details>
+<details id="turn-2"><summary>Turn 2 · user · 350 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# cat sklearn/decomposition/sparse_coder.py
+cat: sklearn/decomposition/sparse_coder.py: No such file or directory
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-3"><summary>Turn 3 · assistant · 730 chars</summary><pre>&lt;think&gt;The file doesn&#x27;t exist yet. Let me first check what&#x27;s in the /app directory and see what the structure is. I need to find the sklearn files or create them.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;The file sklearn/decomposition/sparse_coder.py doesn&#x27;t exist yet. I need to explore the directory structure to understand what&#x27;s available.&quot;,
+  &quot;plan&quot;: &quot;Let me check what&#x27;s in the /app directory and find where the sklearn files are located.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;ls -la\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;find /app -name &#x27;sparse_coder.py&#x27; 2&gt;/dev/null\n&quot;,
+      &quot;duration&quot;: 0.5
+    },
+    {
+      &quot;keystrokes&quot;: &quot;find /app -name &#x27;dict_learning.py&#x27; 2&gt;/dev/null\n&quot;,
+      &quot;duration&quot;: 0.5
+    }
+  ]
+}</pre></details>
+<details id="turn-4"><summary>Turn 4 · user · 522 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# ls -la
+total 0
+drwxr-xr-x 2 root root  10 Apr  9 13:09 .
+drwxr-xr-x 1 root root 102 Apr 17 11:55 ..
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# find /app -name &#x27;sparse_coder.py&#x27; 2&gt;/dev/null
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# find /app -name &#x27;dict_learning.py&#x27; 2&gt;/dev/null
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-5"><summary>Turn 5 · assistant · 946 chars</summary><pre>&lt;think&gt;The /app directory is empty. I need to create the sklearn directory structure and the files. Let me first check if there&#x27;s a sklearn installation somewhere that I can reference, or I&#x27;ll need to create the files from scratch based on the task description.
+
+Let me check if sklearn is installed somewhere on the system.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;The /app directory is empty and the sklearn files don&#x27;t exist yet. I need to create the directory structure and the files. Let me first check if sklearn is installed system-wide that I can reference.&quot;,
+  &quot;plan&quot;: &quot;Check if sklearn is installed somewhere in the system, then create the necessary directory structure and files in /app.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;python3 -c \&quot;import sklearn; print(sklearn.__file__)\&quot;\n&quot;,
+      &quot;duration&quot;: 1.0
+    },
+    {
+      &quot;keystrokes&quot;: &quot;ls -la /usr/local/lib/python*/dist-packages/sklearn/decomposition/\n&quot;,
+      &quot;duration&quot;: 0.5
+    }
+  ]
+}</pre></details>
+<details id="turn-6"><summary>Turn 6 · user · 623 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# python3 -c &quot;import sklearn; print(sklearn.__file__)&quot;
+Traceback (most recent call last):
+  File &quot;&lt;string&gt;&quot;, line 1, in &lt;module&gt;
+ModuleNotFoundError: No module named &#x27;sklearn&#x27;
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# ls -la /usr/local/lib/python*/dist-packages/sklearn/decomposition/
+ls: cannot access &#x27;/usr/local/lib/python*/dist-packages/sklearn/decomposition/&#x27;: No such file or directory
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-7"><summary>Turn 7 · assistant · 1290 chars</summary><pre>&lt;think&gt;The sklearn module is not installed, and the files don&#x27;t exist. Based on the task description, I need to create the modified versions of these files from scratch. The task provides the &quot;before&quot; state snippets, so I should create the files implementing the new behavior.
+
+Let me create the directory structure and then create the two files with the necessary modifications:
+1. sklearn/decomposition/sparse_coder.py - Add transform_max_iter parameter
+2. sklearn/decomposition/dict_learning.py - Update sparse_encode to handle max_iter
+
+I&#x27;ll need to write the complete code for both files based on the task description and the before state provided.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;Sklearn is not installed and the files don&#x27;t exist. Based on the task description, I need to create the directory structure and write the modified files from scratch, implementing the new transform_max_iter feature.&quot;,
+  &quot;plan&quot;: &quot;Create the sklearn/decomposition directory structure and write the two modified files with the transform_max_iter feature implemented.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;mkdir -p /app/sklearn/decomposition\n&quot;,
+      &quot;duration&quot;: 0.1
+    },
+    {
+      &quot;keystrokes&quot;: &quot;touch /app/sklearn/__init__.py /app/sklearn/decomposition/__init__.py\n&quot;,
+      &quot;duration&quot;: 0.1
+    }
+  ]
+}</pre></details>
+<details id="turn-8"><summary>Turn 8 · user · 379 chars</summary><pre>Previous response had warnings:
+WARNINGS: - Extra text detected before JSON object
+
+New Terminal Output:
+
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# mkdir -p /app/sklearn/decomposition
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app# touch /app/sklearn/__init__.py /app/sklearn/decomposition/__init__.py
+root@21920899-db7a-4c29-bdf0-07926b6f808f:/app#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></details>
+<details id="turn-9"><summary>Turn 9 · assistant · 8441 chars</summary><pre>&lt;think&gt;Now I need to create the two files with the required modifications. Let me start with sparse_coder.py. I need to:
+
+1. Add transform_max_iter parameter to SparseCoder.__init__ with default 1000
+2. Update _set_sparse_coding_params to accept and store transform_max_iter
+3. In transform(), pass max_iter=self.transform_max_iter to sparse_encode call
+
+For dict_learning.py, I need to:
+1. Update sparse_encode to accept max_iter parameter
+2. Pass max_iter to LassoLars when applicable
+3. Update docstrings
+
+Let me write these files. I&#x27;ll need to create the full content of these files since they don&#x27;t exist.&lt;/think&gt;{
+  &quot;analysis&quot;: &quot;Directory structure is created. Now I need to write the two modified files with the transform_max_iter feature implemented.&quot;,
+  &quot;plan&quot;: &quot;Create the sparse_coder.py file with the transform_max_iter parameter added to the SparseCoder class, including the updated constructor, _set_sparse_coding_params method, and transform method.&quot;,
+  &quot;commands&quot;: [
+    {
+      &quot;keystrokes&quot;: &quot;cat &gt; /app/sklearn/decomposition/sparse_coder.py &lt;&lt; &#x27;EOF&#x27;\n\&quot;\&quot;\&quot;Sparse Coding\&quot;\&quot;\&quot;\n\n# Author: Vlad Niculae, Gael Varoquaux, Alexandre Gramfort\n# License: BSD 3 clause\n\nimport warnings\nimport numbers\n\nimport numpy as np\n\nfrom ..base import BaseEstimator, TransformerMixin\nfrom ..utils import check_array, check_random_state\nfrom ..utils.validation import check_is_fitted\nfrom ..utils.extmath import randomized_svd\nfrom ..utils.fixes import delayed\nfrom joblib import Parallel, Memory\n\nfrom .dict_learning import dict_learning, DictionaryLearning, \\\n    sparse_encode, MiniBatchDictionaryLearning\n\n\nclass SparseCodingMixin:\n    \&quot;\&quot;\&quot;Mixin for sparse coding transformers.\&quot;\&quot;\&quot;\n\n\nclass SparseCoder(BaseEstimator, SparseCodingMixin):\n    \&quot;\&quot;\&quot;Sparse coding\n\n    Finds a sparse representation of data against a fixed, precomputed\n    dictionary.\n\n    Each row of the result is the solution to a sparse coding problem.\n    The goal is to find a sparse array `code` such that::\n\n        X ~= code * dictionary\n\n    Read more in the :ref:`User Guide &lt;SparseCoder&gt;`.\n\n    Parameters\n    ----------\n    dictionary : array of shape (n_components, n_features)\n        The value of the fixed dictionary to be used for the sparse\n        coding of the signal. Items must be normalized to unit norm\n        (by column) before being passed to this function.\n\n    transform_algorithm : {&#x27;lasso_lars&#x27;, &#x27;lasso_cd&#x27;, &#x27;lars&#x27;, &#x27;omp&#x27;, &#x27;threshold&#x27;}, \\\n            default=&#x27;omp&#x27;\n        Algorithm used to transform the data:\n\n        - `&#x27;lars&#x27;`: uses the least angle regression method (linear model\n          to predict positive values).\n        - `&#x27;lasso_lars&#x27;`: uses Lars to solve the lasso problem.\n        - `&#x27;lasso_cd&#x27;`: uses the coordinate descent method to compute the\n          Lasso solution.\n        - `&#x27;omp&#x27;`: uses Orthogonal Matching Pursuit to solve the l0 problem.\n        - `&#x27;threshold&#x27;`: squashes to zero all coefficients less than alpha\n          from the projection ``dictionary * X&#x27;``.\n\n    transform_n_nonzero_coefs : int, default=None\n        Number of non-zero coefficients to target in each column of the\n        solution. This is only used by `algorithm=&#x27;lars&#x27;` and `algorithm=&#x27;omp&#x27;`\n        and is overridden by `alpha` in the `omp` case.\n\n    transform_alpha : float, default=None\n        If `alpha` is None and `algorithm=&#x27;lasso_lars&#x27;`, then alpha is set\n        to the lambda max value. If `alpha` is None and `algorithm=&#x27;omp&#x27;`,\n        then alpha is set to 0.001. If `alpha` is None and `algorithm=&#x27;lasso_cd&#x27;`,\n        then alpha is set to 0.001.\n\n        For `algorithm=&#x27;lars&#x27;`, `alpha` is the penalty applied to the\n        L1-norm of the solution.\n\n        For `algorithm=&#x27;threshold&#x27;`, `alpha` is the absolute value of the\n        threshold below which coefficients will be squashed to zero.\n\n    split_sign : bool, default=False\n        Whether to split the sparse feature vector into the concatenation of\n        its negative and positive part. This can improve the performance of\n        downstream classifiers.\n\n    n_jobs : int, default=None\n        Number of parallel jobs to run.\n\n    positive_code : bool, default=False\n        Whether to enforce positivity when finding the code.\n\n        .. versionadded:: 0.20\n\n    transform_max_iter : int, default=1000\n        Maximum number of iterations to perform if algorithm=&#x27;lasso_cd&#x27; or\n        algorithm=&#x27;lasso_lars&#x27;.\n\n        .. versionadded:: 0.24\n\n    Attributes\n    ----------\n    components_ : array of shape (n_components, n_features)\n        The fixed dictionary that is used for the sparse coding.\n\n    n_components_ : int\n        Number of components.\n\n    Examples\n    --------\n    &gt;&gt;&gt; import numpy as np\n    &gt;&gt;&gt; from sklearn.decomposition import SparseCoder\n    &gt;&gt;&gt; dictionary = np.array([[1, 0], [0, 1]])\n    &gt;&gt;&gt; X = np.array([[1, 2], [3, 4]])\n    &gt;&gt;&gt; coder = SparseCoder(dictionary=dictionary)\n    &gt;&gt;&gt; coder.transform(X)\n    array([[1., 2.],\n           [3., 4.]])\n\n    See Also\n    --------\n    DictionaryLearning : Estimate a dictionary from data.\n    MiniBatchDictionaryLearning : Online dictionary learning.\n    SparsePCA : Sparse Principal Components Analysis.\n    \&quot;\&quot;\&quot;\n\n    def __init__(self, dictionary, transform_algorithm=&#x27;omp&#x27;,\n                 transform_n_nonzero_coefs=None, transform_alpha=None,\n                 split_sign=False, n_jobs=None, positive_code=False,\n                 transform_max_iter=1000):\n        self._set_sparse_coding_params(dictionary.shape[0],\n                                       transform_algorithm,\n                                       transform_n_nonzero_coefs,\n                                       transform_alpha, split_sign, n_jobs,\n                                       positive_code, transform_max_iter)\n        self.components_ = dictionary\n\n    def _set_sparse_coding_params(self, n_components,\n                                  transform_algorithm, transform_n_nonzero_coefs,\n                                  transform_alpha, split_sign, n_jobs,\n                                  positive_code, transform_max_iter):\n        self.n_components = n_components\n        self.transform_algorithm = transform_algorithm\n        self.transform_n_nonzero_coefs = transform_n_nonzero_coefs\n        self.transform_alpha = transform_alpha\n        self.split_sign = split_sign\n        self.n_jobs = n_jobs\n        self.positive_code = positive_code\n        self.transform_max_iter = transform_max_iter\n\n    def transform(self, X):\n        \&quot;\&quot;\&quot;Encode the data as a sparse combination of the dictionary atoms.\n\n        Parameters\n        ----------\n        X : ndarray of shape (n_samples, n_features)\n            Test data to be transformed, must have the same number of\n            features as the data used to train the model.\n\n        Returns\n        -------\n        X_new : ndarray of shape (n_samples, n_components)\n            Transformed data.\n        \&quot;\&quot;\&quot;\n        check_is_fitted(self)\n        X = check_array(X)\n\n        code = sparse_encode(\n            X, self.components_, algorithm=self.transform_algorithm,\n            n_nonzero_coefs=self.transform_n_nonzero_coefs,\n            alpha=self.transform_alpha, n_jobs=self.n_jobs,\n            positive=self.positive_code, max_iter=self.transform_max_iter)\n\n        if self.split_sign:\n            # split positive and negative values\n            n_features = code.shape[1]\n            split_code = np.empty((len(code), 2 * n_features))\n            split_code[:, :n_features] = np.maximum(code, 0)\n            split_code[:, n_features:] = -np.minimum(code, 0)\n            code = split_code\n\n        return code\n\n    def fit(self, X, y=None):\n        \&quot;\&quot;\&quot;Do nothing and return the estimator unchanged.\n\n        This method is just there to implement the usual API and hence\n        work in pipelines.\n\n        Parameters\n        ----------\n        X : Ignored\n            Not used, present here for API consistency by convention.\n\n        y : Ignored\n            Not used, present here for API consistency by convention.\n\n        Returns\n        -------\n        self : object\n            Returns the instance itself.\n        \&quot;\&quot;\&quot;\n        # To support the usual API, fit does nothing.\n        return self\nEOF\n&quot;,
+      &quot;duration&quot;: 0.5
+    }
+  ]
+}</pre></details>
