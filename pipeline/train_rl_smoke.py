@@ -16,6 +16,13 @@ import torch
 from datasets import Dataset
 from peft import LoraConfig
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainerCallback, set_seed
+# TRL 0.29 imports a public FSDPModule symbol introduced after torch 2.5.
+# Alias the real 2.5 class from its old location; no dummy implementation.
+# This runner is strictly single-device and never enables FSDP.
+import torch.distributed.fsdp as torch_fsdp
+if not hasattr(torch_fsdp, 'FSDPModule') and torch.__version__.startswith('2.5.'):
+    from torch.distributed._composable.fsdp import FSDPModule
+    torch_fsdp.FSDPModule = FSDPModule
 from trl import GRPOConfig, GRPOTrainer
 from rl_environment import ROOT, MessageEnv, dataset_rows, acceptance
 
@@ -121,7 +128,9 @@ def main():
     config = vars(args) | {'trl': '0.29.0', 'algorithm': 'GRPO', 'purpose': 'engineering only',
                          'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'),
                          'git_commit': subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-                         'pid': os.getpid()}
+                         'pid': os.getpid(),
+                         'source_sha256': {name: hashlib.sha256((ROOT/'pipeline'/name).read_bytes()).hexdigest()
+                                           for name in ['train_rl_smoke.py', 'rl_environment.py']}}
     (out/'run.json').write_text(json.dumps(config, indent=2)+'\n')
     (out/'environment_acceptance.json').write_text(json.dumps(acceptance(), indent=2)+'\n')
     versions = {p: importlib.metadata.version(p) for p in ['torch', 'transformers', 'trl', 'datasets', 'peft', 'accelerate', 'tokenizers']}
@@ -154,6 +163,7 @@ def main():
         peft_config=LoraConfig(r=8, lora_alpha=16, lora_dropout=0,
                               target_modules=['q_proj', 'v_proj'], task_type='CAUSAL_LM'),
     )
+    assert not trainer.is_fsdp_enabled and trainer.accelerator.num_processes == 1
     trainer.evidence_dir = out
     trainer.evidence_phase = 'train'
     trainer.generation_seconds = 0.0
