@@ -1,5 +1,8 @@
 # 01 — Scope: What Makes Agent Experience Valuable?
 
+> **历史记录提示（2026-09-30）：** 当前在线 RL 主线见 [PROJECT_STATE.md](PROJECT_STATE.md)。本文原始计划、预注册和结果保留；SFT 闸门不作为 RL 的停止条件，旧轨迹缺标签不作为在线环境奖励不可得的证据。
+
+
 **Working title:** *From Experience to Capability: What Makes Agent Experience Valuable?*
 
 ## 1. One-sentence paper story

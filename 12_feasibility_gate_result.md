@@ -1,5 +1,8 @@
 # 12 — 可行性闸门实验结果（2026-09-30）
 
+> **历史记录提示（2026-09-30）：** 当前在线 RL 主线见 [PROJECT_STATE.md](PROJECT_STATE.md)。本文原始计划、预注册和结果保留；SFT 闸门不作为 RL 的停止条件，旧轨迹缺标签不作为在线环境奖励不可得的证据。
+
+
 执行 [11_preregistration_feasibility.md](11_preregistration_feasibility.md) 里跑之前写死的实验。
 **本文件不给新判据，只报告结果与字面裁决，并把判据本身的缺陷挂出来。**
 

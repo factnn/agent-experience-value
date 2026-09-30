@@ -1,5 +1,8 @@
 # 03 — Experiment Plan: Measuring Transfer Value of Agent Experience
 
+> **历史记录提示（2026-09-30）：** 当前在线 RL 主线见 [PROJECT_STATE.md](PROJECT_STATE.md)。本文原始计划、预注册和结果保留；SFT 闸门不作为 RL 的停止条件，旧轨迹缺标签不作为在线环境奖励不可得的证据。
+
+
 ## 1. Core empirical target
 
 For base learner \(\pi\) and experience subset \(S\):

@@ -1,5 +1,8 @@
 # Agent Experience Value
 
+> **当前主线（2026-09-30）：在线 agent RL 的经验获取与任务预算分配。**
+> 先读 [PROJECT_STATE.md](PROJECT_STATE.md)。以下保留早期 SFT 阶段的研究叙述和实验记录；其中 SFT 优先级、标签瓶颈、投资闸门与后续建议已被当前主线取代。SFT 负结果不构成对 RL 或经验分配研究的否定。
+
 **Which properties of interactive agent experience predict post-training transfer to unseen
 tasks, tools and environments?**
 

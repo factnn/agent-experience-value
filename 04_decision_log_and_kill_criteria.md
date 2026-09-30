@@ -1,5 +1,8 @@
 # 04 — Decision Log, Kill Criteria, and Research Discipline
 
+> **历史记录提示（2026-09-30）：** 当前在线 RL 主线见 [PROJECT_STATE.md](PROJECT_STATE.md)。本文原始计划、预注册和结果保留；SFT 闸门不作为 RL 的停止条件，旧轨迹缺标签不作为在线环境奖励不可得的证据。
+
+
 This file exists to stop the project from drifting every time a new paper appears.
 
 ## 1. Why we chose this problem
