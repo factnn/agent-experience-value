@@ -76,3 +76,9 @@ GFS Uniform 的 16 题评测全部完成、同题/同 seed/原始 token/mask 审
 GFS Frontier 的完整 16 题评测已结束，保存的 prompt/completion/mask/segments/bridges、奖励、停止原因和用户轮数全部与共同起点精确一致。ID=3/8、留出组合=2/8，两个 G 均为 0；相对同条件 Uniform，V_ID=0、V_transfer=-0.125。这是未发生参数更新的推理对照，核对复用已有轨迹、没有额外模型调用。见 [first_complete_frontier_control.json](rl/bfcl_intervention_20261008/first_complete_frontier_control.json)。一题差异、单训练 seed 和实际成本不等的限制仍成立，不给方法排名。
 
 GFS Coverage 训练完成两组、38,818 新生成 token，任务顺序也是 22→16，两组奖励全零、无新梯度、参数与共同起点相同。规则的概率分布虽不同，此次实际任务暴露却与 Frontier 一致；不能把两个方法名当作两个独立经验干预。Coverage 的原定完整评测及 Trading 三分支仍继续，不按结果跳过或追加预算。
+
+## 唯一 Uniform 成功翻转的具体含义
+
+复用保存轨迹核查 task 190：共同起点与 Uniform 的前四轮均通过官方检查，最后一轮创建工单的 title/priority 相同。起点的 description 少了用户明确指定字符串末尾的句号，Uniform 保留该句号；起点最终 state 与 reference 的递归对比只有这一个字段差异。因此 +12.5pp 对应的是一次精确字符串遵从修正，不能单凭它宣称工具组合能力提高。早期调用路径也有差异，但两边此前四轮均已通过。见 [uniform_reward_flip_case_audit.json](rl/bfcl_intervention_20261008/uniform_reward_flip_case_audit.json)。
+
+这不是判定 checker 错误：用户确实指定了包含句号的描述。官方奖励和 G/V 保持原样，案例分析没有新增模型调用、替换指标或事后定义 predictor。更强的能力收益仍需完成整批，并在后续预先定义的面板与独立训练重复中验证。
