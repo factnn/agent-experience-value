@@ -27,7 +27,9 @@ class BFCLConversation:
     def tool_call(self,call,name=None):
         if self.completed:raise RuntimeError('episode already ended')
         try:response=self.actual.call(call)
-        except (ValueError,SyntaxError,TypeError,KeyError) as error:
+        except Exception as error:
+            # Simulator methods may raise ordinary execution errors, e.g.
+            # missing files. They are feedback, never a crashed policy episode.
             response=f'Error during execution: {error}'
             self.actual.responses.append(response)
         self.events.append({'turn':self.turn,'call':call,'response':response})
