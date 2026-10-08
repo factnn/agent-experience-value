@@ -56,6 +56,13 @@ class ConversationTests(unittest.TestCase):
         self.assertFalse(any('check' in m or 'valid' in m for m in visible))
         visible.clear();self.assertTrue(c.messages())
 
+    def test_failed_boundary_diagnostics_do_not_mutate_later(self):
+        key='multi_turn_base_26';c=BFCLConversation(self.tasks[key],self.answers[key])
+        c.finish_user_turn({'role':'assistant','content':'Done without actions.'})
+        before=repr(c.grades[0])
+        c.tool_call("touch(file_name='late_change.txt')")
+        self.assertEqual(repr(c.grades[0]),before)
+
 
 if __name__=='__main__':
     suite=unittest.defaultTestLoader.loadTestsFromTestCase(ConversationTests)

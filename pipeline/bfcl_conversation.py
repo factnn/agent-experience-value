@@ -46,7 +46,9 @@ class BFCLConversation:
         valid=bool(result['valid']) and (has_calls or not reference_calls)
         # Latch failures at the correct user boundary. Later repairs cannot erase
         # a previous turn's failed official state/response check.
-        self.grades.append({'turn':self.turn,'valid':valid,'check':result})
+        # Diagnostics may reference mutable filesystem objects; freeze them at
+        # this user boundary, just as we latch the validity flag.
+        self.grades.append({'turn':self.turn,'valid':valid,'check':copy.deepcopy(result)})
         self.turn+=1
         if self.completed:return []
         next_messages=copy.deepcopy(self.task['question'][self.turn])
