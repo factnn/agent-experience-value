@@ -2,7 +2,7 @@
 
 更新：2026-10-08。本文记录用户最新方向，作为后续工作的入口；历史实验与预注册保留原文。
 
-**执行进展：** 在线分配工程 pilot 已完成并审计：Uniform 训练 123,163 token / 10 步，新实例 9/12；Frontier 125,791 token / 11 步，新实例 10/12。两臂分配阶段前四次选题相同，进入分配阶段的状态也不同，尚不能归因难度分配效果。GPU 4/5 已释放。详见 [17_allocation_pilot_result.md](17_allocation_pilot_result.md)。下一步回到经验价值测量：候选 BFCL 研究划分已形成 87 训练 / 22 开发 / 22 ID / 53 未见工具组合题，另隔离 16 历史题；开发集 22 题 / 83 轮的 oracle、no-op、重置、隔离及官方执行器一致性验收已通过；共同状态恢复（5 项 CPU 检查）和真实 user 轮次控制器（3 项 CPU 检查）也通过，见 [18 组件验收](18_learning_state_and_conversation_acceptance.md)；Qwen3/GRPO 真实检查点恢复实测通过，新生成 token、奖励、优势与最终参数逐项相同，见 [19 恢复实测](19_qwen3_resume_acceptance.md)，恢复组新梯度为零；多用户轮次 RL 与语义验收尚未完成，未启动新基准训练。设计见 [16_benchmark_and_fork_design.md](16_benchmark_and_fork_design.md)，实时状态见 [rl/STATUS.json](rl/STATUS.json)。
+**执行进展：** 在线分配工程 pilot 已完成并审计：Uniform 训练 123,163 token / 10 步，新实例 9/12；Frontier 125,791 token / 11 步，新实例 10/12。两臂分配阶段前四次选题相同，进入分配阶段的状态也不同，尚不能归因难度分配效果。GPU 4/5 已释放。详见 [17_allocation_pilot_result.md](17_allocation_pilot_result.md)。下一步回到经验价值测量：候选 BFCL 研究划分已形成 87 训练 / 22 开发 / 22 ID / 53 未见工具组合题，另隔离 16 历史题；开发集 22 题 / 83 轮的 oracle、no-op、重置、隔离及官方执行器一致性验收已通过；共同状态恢复（5 项 CPU 检查）和真实 user 轮次控制器（3 项 CPU 检查）也通过，见 [18 组件验收](18_learning_state_and_conversation_acceptance.md)；Qwen3/GRPO 真实检查点恢复实测通过，新生成 token、奖励、优势与最终参数逐项相同，见 [19 恢复实测](19_qwen3_resume_acceptance.md)，恢复组新梯度为零；BFCL 真实多用户生成与 GRPO mask 接口已通过：8 条交互全部完成，但终局 0/8、梯度为零、参数未更新，见 [20 接入结果](20_bfcl_model_integration_result.md)；奖励/执行校准与语义验收尚未完成，未启动科学基准训练。设计见 [16_benchmark_and_fork_design.md](16_benchmark_and_fork_design.md)，实时状态见 [rl/STATUS.json](rl/STATUS.json)。
 
 ## 研究问题与方向变化
 
@@ -49,6 +49,6 @@ SFT 结果保留为历史与工程资产；如将来使用共同冷启动，两�
 
 ## 下一次汇报应交付什么
 
-组件与当前 Qwen3/TRL 真实恢复路径已验证；下一次交付多用户轮次模型生成/mask 接入、非零梯度更新及语义重叠审查。冻结任务组、起点、信号、分支预算/超额、重复和 ID/迁移指标后再启动新实验。候选清单已固定哈希，但尚不是正式冻结实验协议。
+组件与当前 Qwen3/TRL 真实恢复路径已验证；多用户轮次生成/mask 接口已通过；下一次交付有界开发校准、奖励与执行失败诊断、非零梯度更新及语义重叠审查。冻结任务组、起点、信号、分支预算/超额、重复和 ID/迁移指标后再启动新实验。候选清单已固定哈希，但尚不是正式冻结实验协议。
 
 历史工程约束保留在 [13_rl_experiment_contract_draft.md](13_rl_experiment_contract_draft.md)；后续科学设计以 [15](15_scope_and_evidence_ladder.md) / [16](16_benchmark_and_fork_design.md) 为入口。

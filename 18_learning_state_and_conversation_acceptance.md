@@ -49,3 +49,7 @@ CPU 验收：[conversation_acceptance.json](rl/bfcl_research_split_candidate/con
 ### 实测结果
 
 上述有界运行已完成，原始生成 token、奖励、优势、最终权重和累计成本完全相同。见 [19_qwen3_resume_acceptance.md](19_qwen3_resume_acceptance.md)。恢复组全成功、新梯度为零；其参数变化来自已有优化器状态，不声称新增学习信号。该实测补充本文 CPU 组件结果，不改变 BFCL 生成接入尚未验收的状态。
+
+### 多用户模型接入后续
+
+实际 Qwen3 生成与官方 GRPO token/mask 接口已验收，见 [20 接入结果](20_bfcl_model_integration_result.md)。8 条交互完成全部用户轮次，但终局 0/8、新梯度为零；因此此处的接口进展不能替代非零梯度学习验收。
