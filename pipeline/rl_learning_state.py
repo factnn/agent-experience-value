@@ -80,7 +80,11 @@ def restore_learning_state(path,model,optimizer,scheduler,expected_provenance,ru
     if set(state['module_training'])!=dict(model.named_modules()).keys():raise ValueError('model module registry mismatch')
     if state['rng']['torch_cuda'] is not None and len(state['rng']['torch_cuda'])!=torch.cuda.device_count():
         raise ValueError('visible CUDA device count mismatch')
-    allocator=TaskAllocator.from_state_dict(state['allocator'],rule=rule)
+    if state['allocator'].get('kind')=='bfcl_combination':
+        from bfcl_allocation import CombinationAllocator
+        allocator=CombinationAllocator.from_state_dict(state['allocator'],rule=rule)
+    else:
+        allocator=TaskAllocator.from_state_dict(state['allocator'],rule=rule)
     with torch.no_grad():
         for name,param in model.named_parameters():
             if param.requires_grad:param.copy_(state['trainable'][name].to(param.device))

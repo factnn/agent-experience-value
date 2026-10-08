@@ -20,7 +20,8 @@ class BFCLTrainer(GRPOTrainer):
         with unwrap_model_for_generation(self.model_wrapped,self.accelerator,
                 generation_kwargs=self.generation_kwargs) as model,torch.no_grad():
             def record(row):append(self.evidence_dir/'generation_calls.jsonl',row|{'policy_step':self.state.global_step})
-            stats=sample_episodes(model,self.processing_class,episodes,self.generation_config,record)
+            stats=sample_episodes(model,self.processing_class,episodes,self.generation_config,record,
+                segment_cap=getattr(self,'segment_cap',1024))
             self.generation_seconds+=stats['generation_seconds'];self.sampled_tokens+=stats['sampled_tokens']
         for i,e in enumerate(episodes):
             append(self.evidence_dir/'rollouts.jsonl',e.evidence()|{'rollout_index':i,
@@ -31,7 +32,8 @@ class BFCLTrainer(GRPOTrainer):
     def _generate_and_score_completions(self,inputs):
         self.episodes=[TokenEpisode(self.processing_class,*self.registry[x['task_id']],
             budget=self.args.max_completion_length,
-            enable_thinking=self.chat_template_kwargs.get('enable_thinking',False)) for x in inputs]
+            enable_thinking=self.chat_template_kwargs.get('enable_thinking',False),
+            **getattr(self,'episode_limits',{})) for x in inputs]
         result=super()._generate_and_score_completions(inputs)
         mask=result['tool_mask'];loss_mask=mask*result['completion_mask']
         for i,e in enumerate(self.episodes):

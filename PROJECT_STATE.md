@@ -2,6 +2,8 @@
 
 更新：2026-10-08。本文记录用户最新方向，作为后续工作的入口；历史实验与预注册保留原文。
 
+**2026-10-08 下一批已冻结：** [共同起点短程干预](22_bfcl_common_start_intervention.md)：GFS 全部 15 训练题 / Trading 全部 23 训练题，各比较 Uniform、Frontier、Coverage；共同 base 等价状态带八组有偿探测历史，探测不更新参数；每分支 32,768 新生成 token 阈值；同一 8 ID + 8 留出组合题面板测 G/V，一训练 seed，探索性结论。协议、起点成本、完整组超额和失败都保留，最多三张实际空闲 GPU。科学结果尚未产生。
+
 **已有工程证据：** 在线分配工程 pilot 已完成并审计：Uniform 训练 123,163 token / 10 步，新实例 9/12；Frontier 125,791 token / 11 步，新实例 10/12。两臂分配阶段前四次选题相同，进入分配阶段的状态也不同，尚不能归因难度分配效果。GPU 4/5 已释放。详见 [17_allocation_pilot_result.md](17_allocation_pilot_result.md)。下一步回到经验价值测量：候选 BFCL 研究划分已形成 87 训练 / 22 开发 / 22 ID / 53 未见工具组合题，另隔离 16 历史题；开发集 22 题 / 83 轮的 oracle、no-op、重置、隔离及官方执行器一致性验收已通过；共同状态恢复（5 项 CPU 检查）和真实 user 轮次控制器（3 项 CPU 检查）也通过，见 [18 组件验收](18_learning_state_and_conversation_acceptance.md)；Qwen3/GRPO 真实检查点恢复实测通过，新生成 token、奖励、优势与最终参数逐项相同，见 [19 恢复实测](19_qwen3_resume_acceptance.md)，恢复组新梯度为零；BFCL 真实多用户生成与 GRPO mask 接口已通过：8 条交互全部完成，但终局 0/8、梯度为零、参数未更新，见 [20 接入结果](20_bfcl_model_integration_result.md)；奖励/执行校准与语义验收尚未完成，未启动科学基准训练。设计见 [16_benchmark_and_fork_design.md](16_benchmark_and_fork_design.md)，实时状态见 [rl/STATUS.json](rl/STATUS.json)。
 
 **最新开发校准：** 固定 base、两种真实模式、固定六题清单，按 30 分钟软上限停止。实际 40 条交互 / 3 条全局中止，数学＋交易推理组 [0,0,1,1]、票务＋交易非推理组 [1,1,0,1]，出现真实终局混合奖励。参数未更新、审计通过、GPU 4 已释放。详见 [21 校准结果](21_bfcl_fixed_policy_calibration_result.md)。87 训练题 / 317 轮的 runtime 参考自一致验收通过；文本筛查发现共享首轮子任务，不能声称无模板共享。下一步进入共同起点的干预数据，仍须冻结具体分支/历史成本/重复/评测协议。
