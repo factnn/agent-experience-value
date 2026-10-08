@@ -18,9 +18,14 @@ def audit(path):
     assert len(groups)==len(updates)==summary['global_step']==2
     assert len(rollouts)==4*len(groups)
     assert sum(len(c['generated_ids']) for c in calls)==summary['sampled_tokens']
+    for call in calls:
+        if 'generation_allowance' in call:
+            assert call['generation_allowance']==min(run['per_segment_generation_cap'],call['remaining_completion_budget'])
+            assert len(call['generated_ids'])<=call['generation_allowance']
     if len(updates)>1:assert updates[1]['before_sha256']==updates[0]['after_sha256']
     assert summary['final_fingerprint']==updates[-1]['after_sha256']
     for r in rollouts:
+        if 'enable_thinking' in r:assert r['enable_thinking']==run['thinking']
         ids=r['completion_ids'];mask=r['model_token_mask'];full=r['prompt_ids']+ids
         assert len(ids)==len(mask)<=run['whole_completion_budget'] and set(mask)<={0,1}
         assert r['policy_fingerprint']==updates[r['policy_step']]['before_sha256']

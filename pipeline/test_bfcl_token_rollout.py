@@ -5,7 +5,7 @@ import json
 import unittest
 from transformers import AutoTokenizer
 from bfcl_safe_runtime import ROOT,PKG
-from bfcl_token_rollout import TokenEpisode,parse_calls,development_tasks
+from bfcl_token_rollout import TokenEpisode,parse_calls,development_tasks,generation_buckets
 
 
 class TokenTests(unittest.TestCase):
@@ -59,6 +59,33 @@ class TokenTests(unittest.TestCase):
         self.assertFalse(e.conversation.grades[0]['valid'])
         evidence=json.loads(json.dumps(e.evidence()))
         self.assertFalse(evidence['grades'][0]['valid'])
+
+    def test_batch_peer_cannot_shorten_remaining_allowance(self):
+        key='multi_turn_base_26'
+        a=TokenEpisode(self.tokenizer,self.tasks[key],self.answers[key])
+        b=TokenEpisode(self.tokenizer,self.tasks[key],self.answers[key])
+        # A has 64 left; B has 3000 left. Only model-independent budget
+        # bookkeeping is synthetic here; actual accept/bridge/tokenizer run.
+        for e,used in [(a,4032),(b,1096)]:
+            e.completion_ids=[self.tokenizer.pad_token_id]*used;e.mask=[1]*used
+        buckets=generation_buckets([a,b])
+        self.assertEqual([(cap,[id(e) for e in es]) for cap,es in buckets],[(64,[id(a)]),(1024,[id(b)])])
+        a.accept([1]*64);self.assertEqual(a.stop_reason,'generation_cap')
+        answer=self.tokens('word '*90)
+        self.assertGreater(len(answer),64);self.assertLess(len(answer),1024)
+        b.accept(answer)
+        self.assertTrue(b.active);self.assertEqual(b.conversation.turn,1)
+
+    def test_thinking_mode_reaches_initial_and_all_external_headers(self):
+        key='multi_turn_base_26'
+        for thinking in [False,True]:
+            e=TokenEpisode(self.tokenizer,self.tasks[key],self.answers[key],enable_thinking=thinking)
+            suffix='<|im_start|>assistant\n'+('' if thinking else '<think>\n\n</think>\n\n')
+            self.assertTrue(self.tokenizer.decode(e.prompt_ids).endswith(suffix))
+            for message in [{'role':'tool','content':'Tool response.'},{'role':'user','content':'Next request.'}]:
+                e.bridge([message])
+                self.assertTrue(self.tokenizer.decode(e.bridges[-1]['ids']).endswith(suffix))
+            self.assertEqual(e.evidence()['enable_thinking'],thinking)
 
 
 if __name__=='__main__':unittest.main(verbosity=2)

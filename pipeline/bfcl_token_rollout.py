@@ -59,12 +59,26 @@ def parse_calls(text):
     return calls
 
 
+def generation_buckets(episodes,segment_cap=1024):
+    """Batch only episodes with the same independently computed allowance."""
+    assert segment_cap>0
+    buckets={}
+    for episode in episodes:
+        if not episode.active:continue
+        allowance=min(segment_cap,episode.budget-len(episode.completion_ids))
+        assert allowance>0
+        buckets.setdefault(allowance,[]).append(episode)
+    return list(buckets.items())
+
+
 class TokenEpisode:
-    def __init__(self,tokenizer,task,reference,budget=4096,max_calls=16,max_segments=16):
+    def __init__(self,tokenizer,task,reference,budget=4096,max_calls=16,max_segments=16,
+                 enable_thinking=False):
         self.tokenizer=tokenizer;self.conversation=BFCLConversation(task,reference)
+        self.enable_thinking=bool(enable_thinking)
         self.prompt=initial_prompt(task)
         self.prompt_ids=tokenizer.apply_chat_template(self.prompt,tokenize=True,
-            add_generation_prompt=True,enable_thinking=False,return_dict=False)
+            add_generation_prompt=True,enable_thinking=self.enable_thinking,return_dict=False)
         self.completion_ids=[];self.mask=[];self.segments=[];self.bridges=[]
         self.budget=budget;self.max_calls=max_calls;self.max_segments=max_segments
         self.stop_reason=None
@@ -79,7 +93,7 @@ class TokenEpisode:
         # Template ONLY new external messages. Old generated assistant bytes
         # (including embedded EOS and reasoning) remain exactly untouched.
         text='\n'+self.tokenizer.apply_chat_template(messages,tokenize=False,
-            add_generation_prompt=True,enable_thinking=False)
+            add_generation_prompt=True,enable_thinking=self.enable_thinking)
         ids=self.tokenizer.encode(text,add_special_tokens=False)
         if len(self.completion_ids)+len(ids)>=self.budget:
             self.stop_reason='external_bridge_budget';return
@@ -115,7 +129,8 @@ class TokenEpisode:
 
     def evidence(self):
         c=self.conversation
-        return {'task_id':c.task['id'],'prompt_ids':self.prompt_ids,'completion_ids':self.completion_ids,
+        return {'task_id':c.task['id'],'enable_thinking':self.enable_thinking,
+            'prompt_ids':self.prompt_ids,'completion_ids':self.completion_ids,
             'model_token_mask':self.mask,'segments':self.segments,'bridges':self.bridges,
             'events':c.events,'grades':json.loads(json.dumps(c.grades,default=lambda value:{
                 'runtime_type':type(value).__qualname__,'representation':str(value)})),
