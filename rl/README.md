@@ -1,3 +1,5 @@
+2026-10-08 CPU follow-up: common-state component restoration passed 5 checks (including exact stochastic AdamW continuation); BFCL user-turn controller passed 3 checks over all 22 development oracle conversations. Full Qwen3/TRL fork and generation/mask integration remain. No new GPUs used. See [acceptance and next bounded check](../18_learning_state_and_conversation_acceptance.md).
+
 2026-10-08 completed: both allocation arms passed final audits, GPUs released. Uniform: 123,163 training tokens, 10 updates, 9/12 new-instance successes. Frontier: 125,791 tokens, 11 updates, 10/12. First four post-warmup task choices were identical; post-warmup policy states differed. This pilot validates the engineering chain, not an allocation effect. See [full result](../17_allocation_pilot_result.md) and [next scientific design](../16_benchmark_and_fork_design.md).
 
 Earlier launch record:

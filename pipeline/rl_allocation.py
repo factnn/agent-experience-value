@@ -4,6 +4,7 @@ Uses only previously observed training-task rewards. Cost accounting includes
 warmup, failures and discarded samples supplied by the rollout collector.
 """
 from collections import deque
+import copy
 import math
 import random
 
@@ -67,3 +68,41 @@ class TaskAllocator:
         self.total_episodes += len(rewards)
         self.completed_batches.add(batch_id)
         self.pending = None
+
+    def state_dict(self):
+        if self.pending is not None:
+            raise RuntimeError('checkpoint only after the complete rollout group is observed')
+        return {'version': 1, 'task_ids': list(self.task_ids), 'rule': self.rule,
+                'exploration': self.exploration, 'window': self.window,
+                'history': {k: list(v) for k,v in self.history.items()},
+                'warmup': list(self.warmup), 'rng_state': self.rng.getstate(),
+                'completed_batches': list(self.completed_batches),
+                'total_sampled_tokens': self.total_sampled_tokens,
+                'total_episodes': self.total_episodes, 'selection_count': self.selection_count}
+
+    @classmethod
+    def from_state_dict(cls, state, rule=None):
+        state=copy.deepcopy(state)
+        if state['version'] != 1:
+            raise ValueError('unsupported allocator checkpoint version')
+        target_rule=state['rule'] if rule is None else rule
+        if target_rule != state['rule'] and state['selection_count'] < len(state['task_ids']):
+            raise ValueError('finish common warmup before changing the allocation rule')
+        result=cls(state['task_ids'],target_rule,exploration=state['exploration'],window=state['window'])
+        if set(state['history']) != set(result.task_ids) or sorted(state['warmup']) != sorted(result.task_ids):
+            raise ValueError('allocator task registry mismatch')
+        if state['selection_count'] != len(state['completed_batches']) or len(set(state['completed_batches'])) != len(state['completed_batches']):
+            raise ValueError('invalid completed-group accounting')
+        for key,history in state['history'].items():
+            if len(history)>result.window or any(r not in [0,1] for r in history):
+                raise ValueError('invalid reward history')
+            result.history[key].extend(history)
+        if state['total_sampled_tokens']<state['selection_count'] or state['total_episodes']<sum(len(h) for h in result.history.values()):
+            raise ValueError('invalid cumulative costs or episode counts')
+        def tuples(value):
+            return tuple(tuples(v) for v in value) if isinstance(value,(tuple,list)) else value
+        result.rng.setstate(tuples(state['rng_state']))
+        result.warmup=state['warmup'];result.completed_batches=set(state['completed_batches'])
+        result.total_sampled_tokens=state['total_sampled_tokens']
+        result.total_episodes=state['total_episodes'];result.selection_count=state['selection_count']
+        return result
