@@ -45,3 +45,7 @@ CPU 验收：[conversation_acceptance.json](rl/bfcl_research_split_candidate/con
 单卡 4、同一 send fixture、seed 20260930、2048 thinking tokens/trajectory、4 rollouts/group、GRPO 两步；每个进程硬限 1200 秒。先不中断两步，再由 step-1 的 HF checkpoint 和组件快照恢复第二步。检查新采样、优势、梯度、完整状态和累计成本；不测价值信号优劣。结果尚未产生。
 
 兼容性：现有 Torch 2.5 下，Transformers 5 拒绝原生 optimizer/RNG 的 `torch.load`。恢复流程使用 HF 的 safetensors adapter 与 trainer progress，并由本项目 callback 恢复本地生成、checksum/provenance 校验后的组件快照；跳过原生 optimizer/RNG loader。没有关闭全局安全检查或升级共享环境。此路径与未经修改的原生 HF resume 有区别，需单独验收。
+
+### 实测结果
+
+上述有界运行已完成，原始生成 token、奖励、优势、最终权重和累计成本完全相同。见 [19_qwen3_resume_acceptance.md](19_qwen3_resume_acceptance.md)。恢复组全成功、新梯度为零；其参数变化来自已有优化器状态，不声称新增学习信号。该实测补充本文 CPU 组件结果，不改变 BFCL 生成接入尚未验收的状态。
