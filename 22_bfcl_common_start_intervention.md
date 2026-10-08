@@ -38,3 +38,11 @@ Coverage 衡量可见可用工具组合的历史获取不足，不是 oracle 执
 `pipeline/run_bfcl_intervention.py` 构建共同状态、训练与独立评测；`bfcl_allocation.py` 实现组合规则。恢复复用已验收的 checksum/provenance/model/optimizer/scheduler/RNG 校验路径；起点 global_step=0，没有虚构暖启动参数更新。BFCL 奖励、真实 user 轮次和原始 token 的外部 mask 沿用既有组件。新组合分配与完整恢复有针对性 CPU 检查。
 
 先在一张实际空闲 GPU 构建共同状态，再最多三张空闲 GPU 执行分支/评测，低于用户四卡上限。保存协议、源文件哈希、PID、命令、日志、每组进度；CPU 调度器发布完成组并 push，最终汇总 G/V 或明确未完成项。二进制学习状态/adapter 本地保留，GitHub 发布可审计清单与轨迹。
+
+## 已完成的共同起点（2026-10-08 09:48 UTC）
+
+八组全部完成，32 条轨迹中 11 次官方终局成功；31 条对话完整结束，1 条触及生成段长度上限。生成 90,122 个模型 token、1,361,916 个非 padding 输入位置、9,738 个外部反馈 token；生成耗时 2,580.8 秒，main wall 2,607.9 秒。所有输出，包括失败和截断，均计入共同获取成本。原始 token/mask 审计通过，见 [common_audit.json](rl/bfcl_intervention_20261008/common_audit.json)。
+
+探测没有 optimizer 更新，trainable 参数 fingerprint 前后相同；完整组件状态已保存。首两个 GFS 分支从同一 payload 恢复成功，权重校验值、空 AdamW/constant scheduler、RNG 和有偿历史一致。Trainer 的 AcceleratedOptimizer 包装内恢复原始 AdamW，修正在首个分支启动前完成并留痕；原始协议、探测数据与算法未改。
+
+GPU 4 执行共同起点评测、GPU 5/6 执行 GFS Uniform/Frontier。后续 Coverage 与 Trading 分支仍在固定队列中。**当前尚未审计实际 fresh gradient，也没有 G/V 结果；11/32 是固定共同策略的探测成功率。**
