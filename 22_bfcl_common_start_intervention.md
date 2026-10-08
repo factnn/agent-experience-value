@@ -70,3 +70,9 @@ Frontier 构成现成的未改变模型对照。用保存的原始 prompt/comple
 GFS Uniform 的 16 题评测全部完成、同题/同 seed/原始 token/mask 审计通过。ID 从共同起点 3/8 到 3/8，G_ID=0；整体划分留出组合从 2/8 到 3/8，G=+0.125。唯一二元结果变化是 `multi_turn_base_190`（TravelAPI+TicketAPI）从失败变成功。见 [first_complete_uniform_gain.json](rl/bfcl_intervention_20261008/first_complete_uniform_gain.json)。
 
 这是一训练 seed、两个获取决定、每题一条采样轨迹下的一题翻转，不是稳定迁移优势；没有定义或拟合新 predictor，也未改变策略/预算。Uniform 作为自身参照 V=0，其他规则的 V 待各自完整面板；整批六分支矩阵尚未完成。
+
+## 第二份完整面板与 Coverage 暴露核对（2026-10-08）
+
+GFS Frontier 的完整 16 题评测已结束，保存的 prompt/completion/mask/segments/bridges、奖励、停止原因和用户轮数全部与共同起点精确一致。ID=3/8、留出组合=2/8，两个 G 均为 0；相对同条件 Uniform，V_ID=0、V_transfer=-0.125。这是未发生参数更新的推理对照，核对复用已有轨迹、没有额外模型调用。见 [first_complete_frontier_control.json](rl/bfcl_intervention_20261008/first_complete_frontier_control.json)。一题差异、单训练 seed 和实际成本不等的限制仍成立，不给方法排名。
+
+GFS Coverage 训练完成两组、38,818 新生成 token，任务顺序也是 22→16，两组奖励全零、无新梯度、参数与共同起点相同。规则的概率分布虽不同，此次实际任务暴露却与 Frontier 一致；不能把两个方法名当作两个独立经验干预。Coverage 的原定完整评测及 Trading 三分支仍继续，不按结果跳过或追加预算。
