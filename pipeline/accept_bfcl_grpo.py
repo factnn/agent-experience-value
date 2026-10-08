@@ -1,6 +1,5 @@
 """Bounded development-only BFCL/Qwen multi-user-turn GRPO acceptance."""
 import argparse
-import copy
 import hashlib
 import json
 import os
@@ -10,7 +9,8 @@ from train_rl_smoke import (GRPOTrainer,GRPOConfig,AutoTokenizer,AutoModelForCau
     LoraConfig,Dataset,UpdateEvidence,append,fingerprint,set_seed,torch)
 from trl.models import unwrap_model_for_generation
 from bfcl_safe_runtime import ROOT
-from bfcl_token_rollout import TokenEpisode,initial_prompt,development_tasks,generation_buckets
+from bfcl_token_rollout import TokenEpisode,initial_prompt,development_tasks
+from bfcl_sampling import sample_episodes
 
 
 class BFCLTrainer(GRPOTrainer):
@@ -19,23 +19,9 @@ class BFCLTrainer(GRPOTrainer):
         assert [e.prompt for e in episodes]==prompts
         with unwrap_model_for_generation(self.model_wrapped,self.accelerator,
                 generation_kwargs=self.generation_kwargs) as model,torch.no_grad():
-            while any(e.active for e in episodes):
-                for budget,active in generation_buckets(episodes):
-                    sequences=[e.input_ids for e in active];width=max(map(len,sequences))
-                    ids=torch.tensor([[self.pad_token_id]*(width-len(s))+s for s in sequences],device=self.accelerator.device)
-                    attention=torch.tensor([[0]*(width-len(s))+[1]*len(s) for s in sequences],device=ids.device)
-                    config=copy.deepcopy(self.generation_config);config.max_new_tokens=budget
-                    before=time.perf_counter()
-                    output=model.generate(input_ids=ids,attention_mask=attention,
-                        generation_config=config,disable_compile=True)[:,width:].tolist()
-                    self.generation_seconds+=time.perf_counter()-before
-                    for e,generated in zip(active,output):
-                        if self.eos_token_id in generated:generated=generated[:generated.index(self.eos_token_id)+1]
-                        self.sampled_tokens+=len(generated)
-                        append(self.evidence_dir/'generation_calls.jsonl',{'policy_step':self.state.global_step,
-                            'task_id':e.conversation.task['id'],'input_ids':e.input_ids,'generated_ids':generated,
-                            'generation_allowance':budget,'remaining_completion_budget':e.budget-len(e.completion_ids)})
-                        e.accept(generated)
+            def record(row):append(self.evidence_dir/'generation_calls.jsonl',row|{'policy_step':self.state.global_step})
+            stats=sample_episodes(model,self.processing_class,episodes,self.generation_config,record)
+            self.generation_seconds+=stats['generation_seconds'];self.sampled_tokens+=stats['sampled_tokens']
         for i,e in enumerate(episodes):
             append(self.evidence_dir/'rollouts.jsonl',e.evidence()|{'rollout_index':i,
                 'policy_step':self.state.global_step,'policy_fingerprint':self.current_fingerprint})
