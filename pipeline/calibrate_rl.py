@@ -54,18 +54,19 @@ def summarize(path):
                         'sampled_tokens': sum(sum(g['sampled_tokens']) for g in raw_calls),
                         'generation_seconds': batch[0]['seconds'],
                         'environment_error_results': sum('error' in e['result'] or any(v is False for k,v in e['result'].items() if k.endswith('_status')) for r in batch for e in r['events'])})
+    expected = run.get('task_limit', 6)
     cap_hits = sum(r['cap_hits'] for r in results)
     mixed = sum(r['mixed_reward_group'] for r in results)
     mixed_families = sorted({r['family'] for r in results if r['mixed_reward_group']})
     total_tokens = sum(r['sampled_tokens'] for r in results)
-    return {'condition': run['condition'], 'status': 'complete' if len(results)==6 else 'partial',
+    return {'condition': run['condition'], 'status': 'complete' if len(results)==expected else 'partial',
             'episodes': len(rows), 'successes': sum(r['reward'] for r in rows),
             'trajectory_cap_hits': cap_hits, 'mixed_reward_groups': mixed,
             'families_with_mixed_rewards': mixed_families,
             'sampled_tokens_including_discarded': total_tokens,
             'discarded_tokens': total_tokens - sum(r['model_tokens_retained'] for r in results),
             'generation_seconds': sum(r['generation_seconds'] for r in results),
-            'readiness_screen_passed': len(results)==6 and cap_hits <= 6 and mixed >= 3 and len(mixed_families)>=2,
+            'readiness_screen_passed': (len(results)==6 and cap_hits <= 6 and mixed >= 3 and len(mixed_families)>=2) if expected==6 else None,
             'raw_token_history_audit': 'passed', 'tasks': results,
             'interpretation': 'Development calibration only; no RL update or allocation/transfer effect estimate.'}
 
@@ -75,10 +76,11 @@ def main():
     ap.add_argument('--condition', choices=['original','protocol'], required=True)
     ap.add_argument('--out', required=True)
     ap.add_argument('--max-completion-length',type=int,default=2048)
+    ap.add_argument('--task-limit',type=int,choices=range(1,7),default=6)
     args=ap.parse_args()
     out=ROOT/args.out;out.mkdir(parents=True,exist_ok=False)
     start=time.perf_counter();set_seed(20261008);torch.set_num_threads(4)
-    tasks=tasks_for(args.condition)
+    tasks=tasks_for(args.condition)[:args.task_limit]
     for task in tasks:
         env=MessageEnv();env.reset(json.dumps(task));assert env._reward()==0
         oracle(env);assert env._reward()==1
