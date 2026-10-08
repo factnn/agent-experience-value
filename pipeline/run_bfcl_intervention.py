@@ -91,7 +91,12 @@ class BranchState(TrainerCallback):
     def __init__(self,t,common):self.t=t;self.common=common
     def on_train_begin(self,args,state,control,**kwargs):
         t=self.t
-        allocator,progress=restore_learning_state(self.common/'components',t.model,t.optimizer,
+        from accelerate.optimizer import AcceleratedOptimizer
+        assert isinstance(t.optimizer,AcceleratedOptimizer) and t.optimizer.scaler is None
+        # HF prepares the optimizer before this callback. The common step-zero
+        # state was saved before training, so validate/restore the SAME AdamW
+        # backend, not the transparent single-process Accelerate wrapper type.
+        allocator,progress=restore_learning_state(self.common/'components',t.model,t.optimizer.optimizer,
             t.lr_scheduler,provenance(t.protocol))
         assert state.global_step==progress['global_step']==0 and t._step==0 and t._buffered_inputs is None
         # Pool restriction and rule are the only declared interventions; all
@@ -105,6 +110,8 @@ class BranchState(TrainerCallback):
         write(t.evidence_dir/'restored.json',{'common_payload_sha256':manifest['payload_sha256'],
             'trainable_sha256':manifest['trainable_sha256'],'policy_fingerprint':t.current_fingerprint,
             'optimizer_global_step':0,'fresh_rollout_buffer':True,'inherited_tokens':t.inherited_tokens,
+            'optimizer_backend':type(t.optimizer.optimizer).__qualname__,
+            'optimizer_wrapper':type(t.optimizer).__qualname__,
             'initial_signals':t.allocator.signals(),'initial_probabilities':t.allocator.probabilities(),
             'inherited_allocator_state':allocator.state_dict()})
     def on_step_end(self,args,state,control,**kwargs):

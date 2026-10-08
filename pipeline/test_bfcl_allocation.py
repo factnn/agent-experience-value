@@ -50,4 +50,25 @@ class AllocationChecks(unittest.TestCase):
             self.assertEqual(b.total_sampled_tokens,303)
             self.assertEqual(a.rng.getstate(),b.rng.getstate())
 
+    def test_prepared_optimizer_restores_same_backend(self):
+        from accelerate import Accelerator
+        from accelerate.optimizer import AcceleratedOptimizer
+        model=torch.nn.Linear(2,1);optimizer=torch.optim.AdamW(model.parameters(),lr=.01)
+        scheduler=torch.optim.lr_scheduler.LambdaLR(optimizer,lambda _:1.)
+        provenance={'base_revision':'local','task_manifest_sha256':'test','algorithm_config_sha256':'test'}
+        with tempfile.TemporaryDirectory() as root:
+            saved=Path(root)/'saved'
+            save_learning_state(saved,model,optimizer,scheduler,self.history(),
+                {'global_step':0,'at_optimizer_boundary':True},provenance)
+            wrapper=Accelerator(cpu=True).prepare(optimizer)
+            self.assertIsInstance(wrapper,AcceleratedOptimizer)
+            self.assertIs(wrapper.optimizer,optimizer)
+            # Exactly the HF Trainer order: prepare optimizer, create scheduler,
+            # on_train_begin restores the underlying state then training starts.
+            new_scheduler=torch.optim.lr_scheduler.LambdaLR(wrapper,lambda _:1.)
+            restored,progress=restore_learning_state(saved,model,wrapper.optimizer,new_scheduler,provenance)
+            self.assertEqual(progress['global_step'],0);self.assertEqual(restored.total_sampled_tokens,303)
+            model(torch.ones(1,2)).sum().backward();wrapper.step();new_scheduler.step();wrapper.zero_grad(set_to_none=True)
+            self.assertTrue(wrapper.state)
+
 if __name__=='__main__':unittest.main()
