@@ -1,5 +1,7 @@
 # Online RL engineering progress
 
+2026-10-08: all 72 fixed-policy development calibration episodes completed; no optimizer updates. Protocol/4K achieved 14/24 successes with 7/24 cap hits; all panels failed the declared cap screen. See [calibration report](../14_rl_calibration_result.md) and [comparison](calibration_20261008_comparison.json). Allocation code is tested but has not trained a model. GPUs released.
+
 2026-09-30: online multi-turn RL engineering loop **verified**; full four-step reasoning-mode run and final-policy resampling completed, audit passed, GPUs released. No allocation-effect or transfer result yet. Latest machine-readable state: [STATUS.json](STATUS.json).
 
 - Research direction: [PROJECT_STATE.md](../PROJECT_STATE.md).
@@ -9,7 +11,7 @@
 - CPU acceptance: `python pipeline/rl_environment.py`; evidence: [environment_acceptance.json](environment_acceptance.json). Checks oracle success, reset, instance isolation, invalid/duplicate actions, wrong identity, collateral deletion and tool limit.
 - Trainer integration underway: TRL 0.29.0 GRPO with its official `environment_factory` and environment-feedback loss masking. Transformers 5.2.0 required by that API. Isolated `.venv-rl` leaves SFT environment intact.
 - Reference: [pinned TRL agent-training documentation](https://huggingface.co/docs/trl/v0.29.0/en/grpo_trainer#agent-training).
-- Next: bounded single-GPU online rollout/update/resample; record state/action/feedback, policy version, parameter changes, reward-group variance, tokens and timing. No allocation comparison yet.
+- Next: freeze a bounded allocation-pilot contract and connect the tested allocator to online training. No allocation comparison yet.
 
 ## Reproduce the bounded run
 
