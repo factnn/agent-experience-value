@@ -53,5 +53,12 @@ class TokenTests(unittest.TestCase):
         with self.assertRaises(ValueError):parse_calls('<tool_call>{"name":"__import__","arguments":{}}</tool_call>')
         with self.assertRaises(ValueError):parse_calls('<tool_call>unfinished')
 
+    def test_failed_state_diagnostics_are_json_serializable(self):
+        key='multi_turn_base_26';e=TokenEpisode(self.tokenizer,self.tasks[key],self.answers[key])
+        e.accept(self.tokens('Done without actions.'))
+        self.assertFalse(e.conversation.grades[0]['valid'])
+        evidence=json.loads(json.dumps(e.evidence()))
+        self.assertFalse(evidence['grades'][0]['valid'])
+
 
 if __name__=='__main__':unittest.main(verbosity=2)

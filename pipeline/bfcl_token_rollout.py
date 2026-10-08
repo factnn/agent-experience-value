@@ -117,5 +117,7 @@ class TokenEpisode:
         c=self.conversation
         return {'task_id':c.task['id'],'prompt_ids':self.prompt_ids,'completion_ids':self.completion_ids,
             'model_token_mask':self.mask,'segments':self.segments,'bridges':self.bridges,
-            'events':c.events,'grades':c.grades,'completed_user_turns':c.turn,
+            'events':c.events,'grades':json.loads(json.dumps(c.grades,default=lambda value:{
+                'runtime_type':type(value).__qualname__,'representation':str(value)})),
+            'completed_user_turns':c.turn,
             'total_user_turns':len(c.task['question']),'reward':c.reward(),'stop_reason':self.stop_reason}
