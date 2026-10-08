@@ -46,3 +46,5 @@ Coverage 衡量可见可用工具组合的历史获取不足，不是 oracle 执
 探测没有 optimizer 更新，trainable 参数 fingerprint 前后相同；完整组件状态已保存。首两个 GFS 分支从同一 payload 恢复成功，权重校验值、空 AdamW/constant scheduler、RNG 和有偿历史一致。Trainer 的 AcceleratedOptimizer 包装内恢复原始 AdamW，修正在首个分支启动前完成并留痕；原始协议、探测数据与算法未改。
 
 GPU 4 执行共同起点评测、GPU 5/6 执行 GFS Uniform/Frontier。后续 Coverage 与 Trading 分支仍在固定队列中。**当前尚未审计实际 fresh gradient，也没有 G/V 结果；11/32 是固定共同策略的探测成功率。**
+
+解释边界补充（仅元数据核对，不改协议）：组合在整个 87 题研究训练划分中留出，但本批定向分支只在 GFS / Trading 子池更新。GFS 子池没有 MathAPI，Trading 子池没有 MessageAPI，Vehicle/Travel 也未进入这两个子池。因此本批迁移是“整体划分留出的组合面板上的收益”，不能自动解释成“每个组成工具都经过该分支训练后的纯组合泛化”。报告会逐组合列出该分支更新任务池中缺少的组成类；更多 primary 条件与更完整共同学习阶段仍保留在后续 scope。

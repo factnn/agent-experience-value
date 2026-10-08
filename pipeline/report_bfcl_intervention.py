@@ -92,6 +92,11 @@ def main():
                 'paired_outcomes':[{ 'task_id':r['task_id'],'split':r['split'],
                     'common':b['rewards'],'uniform':u['rewards'],'branch':r['rewards']}
                     for r,b,u in zip(rows,base_rows,uniform)]}
+            available_classes=sorted({c for task in p['conditions'][condition]
+                for c in p['training_registry'][task].split('+')})
+            item['classes_available_in_condition_training_pool']=available_classes
+            item['heldout_constituent_classes_absent_from_condition_pool']={stratum:sorted(set(stratum.split('+'))-set(available_classes))
+                for stratum in sorted({r['stratum'] for r in rows if r['split']=='composition_transfer_eval'})}
             for s in ['id_eval','composition_transfer_eval']:
                 item[s]={'rate':rate(rows,s),'G':rate(rows,s)-rate(base_rows,s),'V':rate(rows,s)-rate(uniform,s)}
             probabilities=restored['initial_probabilities'];signals=restored['initial_signals']
@@ -116,6 +121,7 @@ def main():
             item['actual_acquisition_cost_ratio_to_uniform']=item['train_cost']['new_model_tokens']/uniform_cost
             item['stopped_at_token_budget']=item['stop_reason']=='raw_token_budget'
     result['cost_interpretation']='Equal declared thresholds with whole-group overshoot are not exact equal realized compute; V is a descriptive paired contrast at reported actual costs, not proof of per-compute allocation superiority.'
+    result['transfer_interpretation']='Combinations withheld from the global 87-task research train split; the directed condition pools need not contain every constituent class. This wave is not a strict test that each heldout constituent received parameter updates.'
     target=root/'comparison.json';target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'audit':'passed','result':str(target),'common_rates':result['common_rates'],
         'rows':[{k:r[k] for k in ['condition','rule','id_eval','composition_transfer_eval','optimizer_steps','fresh_nonzero_gradient_steps','same_task_sequence_as_uniform']} for r in result['rows']]},ensure_ascii=False))
