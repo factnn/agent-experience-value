@@ -1,3 +1,5 @@
+2026-10-08 ongoing: uniform/frontier online allocation pilot launched on GPUs 4/5. Both first groups produced rewards `[1,1,0,0]`, nonzero gradients (~0.0262), and changed parameters. Each charged 15,863 raw generated tokens. Still in common warmup; allocation-effect results pending. See [pilot protocol](ALLOCATION_PILOT_PROTOCOL.md), [first-update audit](allocation_pilot_20261008_first_update_audit.json), and [live status](STATUS.json). A CPU watcher pushes completed-update milestones and performs final audits.
+
 # Online RL engineering progress
 
 2026-10-08: all 72 fixed-policy development calibration episodes completed; no optimizer updates. Protocol/4K achieved 14/24 successes with 7/24 cap hits; all panels failed the declared cap screen. See [calibration report](../14_rl_calibration_result.md) and [comparison](calibration_20261008_comparison.json). Allocation code is tested but has not trained a model. GPUs released.
