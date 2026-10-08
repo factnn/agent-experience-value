@@ -64,3 +64,9 @@ GFS 两条已完成分支各只有两个获取决定。Uniform 新生成 34,245 
 Frontier 构成现成的未改变模型对照。用保存的原始 prompt/completion/mask/segments/bridges、奖励、停止原因和轮数逐条对照共同起点；当前已完成前缀 11 条逐项精确一致，未新增模型调用，见 [前缀核对](rl/bfcl_intervention_20261008/unchanged_frontier_control_prefix.json)。最终报告在完整面板上重新核对；如出现差异，标为采样/运行差异待查，不解释为学习收益。Uniform 已观察到 token/停止行为变化，但不能将其当二元任务收益；也不比较不同长度的未完成面板。
 
 本轮继续完成六个声明分支与同一面板，不给单臂临时追加预算、不增加校准任务。更多获取决定、独立训练重复和后续 coverage 的有变差信号，应在下一批采样前定义；原始大 scope 保留。
+
+## 第一份完整面板 G（GFS / Uniform，后续分支仍在执行）
+
+GFS Uniform 的 16 题评测全部完成、同题/同 seed/原始 token/mask 审计通过。ID 从共同起点 3/8 到 3/8，G_ID=0；整体划分留出组合从 2/8 到 3/8，G=+0.125。唯一二元结果变化是 `multi_turn_base_190`（TravelAPI+TicketAPI）从失败变成功。见 [first_complete_uniform_gain.json](rl/bfcl_intervention_20261008/first_complete_uniform_gain.json)。
+
+这是一训练 seed、两个获取决定、每题一条采样轨迹下的一题翻转，不是稳定迁移优势；没有定义或拟合新 predictor，也未改变策略/预算。Uniform 作为自身参照 V=0，其他规则的 V 待各自完整面板；整批六分支矩阵尚未完成。
