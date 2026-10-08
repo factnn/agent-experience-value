@@ -77,10 +77,13 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--max-completion-length',type=int,default=2048)
     ap.add_argument('--task-limit',type=int,choices=range(1,7),default=6)
+    ap.add_argument('--task-offset',type=int,choices=range(6),default=0)
     args=ap.parse_args()
     out=ROOT/args.out;out.mkdir(parents=True,exist_ok=False)
     start=time.perf_counter();set_seed(20261008);torch.set_num_threads(4)
-    tasks=tasks_for(args.condition)[:args.task_limit]
+    if args.task_offset + args.task_limit > 6:
+        raise ValueError('requested task range exceeds the six-task development manifest')
+    tasks=tasks_for(args.condition)[args.task_offset:args.task_offset+args.task_limit]
     for task in tasks:
         env=MessageEnv();env.reset(json.dumps(task));assert env._reward()==0
         oracle(env);assert env._reward()==1
@@ -113,7 +116,7 @@ def main():
     run['policy_fingerprint']=trainer.current_fingerprint
     (out/'run.json').write_text(json.dumps(run,indent=2)+'\n')
     for i,row in enumerate(rows):
-        set_seed(20261008+i)
+        set_seed(20261008+args.task_offset+i)
         trainer.evidence_phase=f"calibration:{i}"
         with torch.no_grad():
             trainer._generate_and_score_completions([copy.deepcopy(row) for _ in range(4)])
