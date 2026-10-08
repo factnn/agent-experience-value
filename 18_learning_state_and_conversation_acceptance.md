@@ -39,3 +39,7 @@ CPU 验收：[conversation_acceptance.json](rl/bfcl_research_split_candidate/con
 ## 下一项有界验收
 
 先在原有小工具环境验证 Qwen3/TRL 完整 checkpoint 恢复与一组 fresh rollout/update，不改已完成 E0 协议。随后在 BFCL 开发任务上接通真正的多用户轮次，验证原始生成、mask、奖励和有效更新。成本与配置确认后再冻结科学分叉实验；当前候选切分与研究范围保留，不因接口方便而重新定义 goal。
+
+### Qwen3 工程实测进行中
+
+单卡 4、同一 send fixture、seed 20260930、2048 thinking tokens/trajectory、4 rollouts/group、GRPO 两步；每个进程硬限 1200 秒。先不中断两步，再由 step-1 的 HF checkpoint 和组件快照恢复第二步。检查新采样、优势、梯度、完整状态和累计成本；不测价值信号优劣。结果尚未产生。
