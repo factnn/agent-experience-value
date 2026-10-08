@@ -48,3 +48,9 @@ Coverage 衡量可见可用工具组合的历史获取不足，不是 oracle 执
 GPU 4 执行共同起点评测、GPU 5/6 执行 GFS Uniform/Frontier。后续 Coverage 与 Trading 分支仍在固定队列中。**当前尚未审计实际 fresh gradient，也没有 G/V 结果；11/32 是固定共同策略的探测成功率。**
 
 解释边界补充（仅元数据核对，不改协议）：组合在整个 87 题研究训练划分中留出，但本批定向分支只在 GFS / Trading 子池更新。GFS 子池没有 MathAPI，Trading 子池没有 MessageAPI，Vehicle/Travel 也未进入这两个子池。因此本批迁移是“整体划分留出的组合面板上的收益”，不能自动解释成“每个组成工具都经过该分支训练后的纯组合泛化”。报告会逐组合列出该分支更新任务池中缺少的组成类；更多 primary 条件与更完整共同学习阶段仍保留在后续 scope。
+
+## 首次真实更新已审计（2026-10-08 09:58 UTC）
+
+同一个完整起点出发，GFS Uniform 首组 task 21 奖励 `[1,0,1,1]`，标准化优势非零，梯度范数 0.0335635，trainable fingerprint 从 `8684bab2…` 变为 `db714a65…`；7,685 个模型 token 进入 loss，895 个外部 token 排除。GFS Frontier 首组 task 22 为 `[0,0,0,0]`，优势/梯度为零、参数未变；10,831 个模型 token 全计入获取成本，1,540 外部 token 排除。两组各四条对话全部完成、无截断，且属于同一可见 GFS+Twitter 组合的不同题。
+
+见 [first_update_audit.json](rl/bfcl_intervention_20261008/first_update_audit.json)：共同 payload、起点权重、成本、原始 token/mask 和优势公式逐项核对通过。**这是本批 actual fresh gradient/parameter update 的证据，不是能力收益，也不是 Uniform 胜出的证据。** 剩余固定预算训练和共同面板评测正在执行；G/V 尚待完整结果。
