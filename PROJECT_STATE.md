@@ -2,7 +2,7 @@
 
 更新：2026-10-08。本文记录用户最新方向，作为后续工作的入口；历史实验与预注册保留原文。
 
-**执行进展：** 在线分配工程 pilot 已完成并审计：Uniform 训练 123,163 token / 10 步，新实例 9/12；Frontier 125,791 token / 11 步，新实例 10/12。两臂分配阶段前四次选题相同，进入分配阶段的状态也不同，尚不能归因难度分配效果。GPU 4/5 已释放。详见 [17_allocation_pilot_result.md](17_allocation_pilot_result.md)。下一步回到经验价值测量：候选 BFCL 研究划分已形成 87 训练 / 22 开发 / 22 ID / 53 未见工具组合题，另隔离 16 历史题；运行与语义验收尚未完成，未启动新基准训练。设计见 [16_benchmark_and_fork_design.md](16_benchmark_and_fork_design.md)，实时状态见 [rl/STATUS.json](rl/STATUS.json)。
+**执行进展：** 在线分配工程 pilot 已完成并审计：Uniform 训练 123,163 token / 10 步，新实例 9/12；Frontier 125,791 token / 11 步，新实例 10/12。两臂分配阶段前四次选题相同，进入分配阶段的状态也不同，尚不能归因难度分配效果。GPU 4/5 已释放。详见 [17_allocation_pilot_result.md](17_allocation_pilot_result.md)。下一步回到经验价值测量：候选 BFCL 研究划分已形成 87 训练 / 22 开发 / 22 ID / 53 未见工具组合题，另隔离 16 历史题；开发集 22 题 / 83 轮的 oracle、no-op、重置、隔离及官方执行器一致性验收已通过；多用户轮次 RL 与语义验收尚未完成，未启动新基准训练。设计见 [16_benchmark_and_fork_design.md](16_benchmark_and_fork_design.md)，实时状态见 [rl/STATUS.json](rl/STATUS.json)。
 
 ## 研究问题与方向变化
 
