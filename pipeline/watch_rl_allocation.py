@@ -62,13 +62,13 @@ def main():
             print(json.dumps({'pair_audit_exit_code':result.returncode,'output':result.stdout,'error':result.stderr}),flush=True)
             pair_audited=result.returncode==0
         if pair_audited:stage.append('rl/allocation_pilot_20261008_comparison.json')
-        done=len(runs)==2 and all(r['status'] in ['complete','failed_or_timed_out','audit_failed'] for r in runs)
         active=sum(alive(r.get('pid')) for r in runs)
+        done=len(runs)==2 and active==0 and all(r['status'] in ['complete','failed_or_timed_out','audit_failed'] for r in runs)
         status={'status':'allocation_pilot_complete' if pair_audited else 'allocation_pilot_finished_with_errors' if done else 'allocation_pilot_running',
                 'updated_at_utc':datetime.now(timezone.utc).isoformat(),'active_gpu_count':active,
                 'runs':runs,'protocol':'rl/ALLOCATION_PILOT_PROTOCOL.md',
                 'note':'Single-seed engineering pilot; final comparison requires both audits. All generated costs charged; no confirmed efficacy claim.'}
-        signature=[(r['status'],r['progress'].get('optimizer_steps'),r['completed_eval_tasks']) for r in runs]+[pair_audited]
+        signature=[(r['status'],r['progress'].get('optimizer_steps'),r['completed_eval_tasks']) for r in runs]+[pair_audited,active]
         if len(runs)==2 and signature!=previous:
             (ROOT/'rl/STATUS.json').write_text(json.dumps(status,indent=2)+'\n')
             added=call(['git','add','--',*stage])
