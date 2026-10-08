@@ -9,7 +9,9 @@ from bfcl_safe_runtime import state_checker
 
 
 def diagnose(path):
-    run=json.loads((path/'run.json').read_text());tasks,answers=development_tasks(run['task_ids'])
+    run=json.loads((path/'run.json').read_text())
+    selected=run.get('task_ids') or run['protocol']['task_ids']
+    tasks,answers=development_tasks(selected)
     trajectories=[json.loads(x) for x in (path/'rollouts.jsonl').read_text().splitlines()]
     outcomes=[]
     for row in trajectories:
@@ -25,7 +27,8 @@ def diagnose(path):
                 'error_type':grade['check'].get('error_type'),
                 'error_message':grade['check'].get('error_message')})
         assert c.reward()==row['reward']
-        outcomes.append({'task_id':key,'policy_step':row['policy_step'],'rollout_index':row['rollout_index'],
+        outcomes.append({'task_id':key,'policy_step':row.get('policy_step'),
+            'calibration_group':row.get('group'),'mode':row.get('mode'),'rollout_index':row['rollout_index'],
             'official_reward':c.reward(),'per_turn':turns,
             'state_matches_at_all_boundaries':len(turns)==len(tasks[key]['question']) and all(t['state_matches'] for t in turns),
             'response_mismatch_with_matching_state_turns':[t['turn'] for t in turns if t['state_matches'] and not t['official_valid']],

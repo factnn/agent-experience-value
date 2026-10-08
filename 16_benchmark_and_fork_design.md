@@ -1,6 +1,6 @@
 # 主基准候选与短程干预矩阵
 
-2026-10-08。**研究设计草案，尚未冻结新训练协议。** 已生成可核对的题目清单；开发集奖励/运行验收已通过；多用户轮次 RL 与语义重叠验收仍待完成。不据此声称正式实验已就绪。
+2026-10-08。**研究设计草案，尚未冻结新训练协议。** 已生成可核对的题目清单；开发/训练池 runtime、真实多用户 token/mask 接入与 Qwen3 完整状态恢复已有工程证据；固定策略开发校准已出现两组真实终局奖励差异，见 [21](21_bfcl_fixed_policy_calibration_result.md)。文本重叠筛查发现共享首轮子任务，不能声称无模板共享；科学分支尚未训练。不据此声称正式实验已就绪。
 
 ## 主测试场候选：本地 pinned BFCL 多轮 base
 
@@ -18,7 +18,7 @@
 
 迁移组合：GorillaFileSystem+MathAPI（11）；VehicleControlAPI+TwitterAPI（14）；TradingBot+MessageAPI（13）；TravelAPI+TicketAPI（15）。它检验的是**已见模拟工具的未见可用组合**，不能直接叫未见工具、执行路径组合或跨真实环境迁移。
 
-[manifest.json](rl/bfcl_research_split_candidate/manifest.json)保存每题 ID、可见工具类、问题/初始状态哈希和用户轮数。划分仅使用可见工具类、题目哈希和既有曝光记录，不使用 gold `path` 或答案作为特征。相同问题及问题+状态的跨划分精确重叠检查已通过；语义近重复还未验收。开发/ID 在非留出组合内按固定哈希分配；少于三题的稀有组合只入训练，评测并不覆盖全部训练组合。
+[manifest.json](rl/bfcl_research_split_candidate/manifest.json)保存每题 ID、可见工具类、问题/初始状态哈希和用户轮数。划分仅使用可见工具类、题目哈希和既有曝光记录，不使用 gold `path` 或答案作为特征。相同问题及问题+状态的跨划分精确重叠检查已通过；文本/模板筛查与一对共享首轮样例核对已完成，完整语义独立性未认证；见 [筛查](rl/bfcl_research_split_candidate/text_overlap_screen.json)与[核对](rl/bfcl_research_split_candidate/text_overlap_review.json)。开发/ID 在非留出组合内按固定哈希分配；少于三题的稀有组合只入训练，评测并不覆盖全部训练组合。
 
 复现：`python pipeline/audit_bfcl_research_split.py`。当前四种增强类别全部不进入新训练或评测，避免同题变体跨集合。
 
@@ -34,11 +34,11 @@
 
 | 维度 | 设计 | 当前状态 |
 |---|---|---|
-| 共同起点 z_early | 在训练部分构建共同学习状态，保存权重+优化器+调度器+RNG+训练/分配历史；从同一文件分叉 | 快照组件与随机 AdamW 续训 CPU 验收已实现；Qwen3/TRL 恢复待验收。不能复用 E0 两臂分别结束的状态冒充共同起点 |
+| 共同起点 z_early | 在训练部分构建共同学习状态，保存权重+优化器+调度器+RNG+训练/分配历史；从同一文件分叉 | 快照组件、随机 AdamW 续训及真实 Qwen3/TRL 更新边界恢复验收已通过，见 [19](19_qwen3_resume_acceptance.md)。不能复用 E0 两臂分别结束的状态冒充共同起点 |
 | 任务组/配置 | 按四个 primary 工具类组织预先定义的训练任务组；组内比较三种规则，并检查各组存在实际可改变的工具组合暴露 | 待多轮成本/信号验收后冻结任务组和有效干预长度 |
 | 规则 | 每个任务组下 Uniform / Frontier / Coverage，算法、奖励和 rollout 配置相同 | 目标为多个干预条件，而非三个总体均值 |
 | 起点参照 | 未继续训练的同一 z_early 在共同 ID/迁移集的分数 | 必须测，E0 未测 base 不能声称 RL 净增益 |
-| 获取预算 | 全部生成 token；起点构建/探测、分支获取和评测分账；实际超额及输入/GPU 开销单列 | E0 实测成本已有，BFCL 多用户轮次成本待测 |
+| 获取预算 | 全部生成 token；起点构建/探测、分支获取和评测分账；实际超额及输入/GPU 开销单列 | E0 与 BFCL 固定策略成本已有；本轮 65,500 生成 token / 约 0.507 单卡 main 小时，不把生成 token 当全部计算成本 |
 | 确认重复 | 独立训练/采样重复，共享起点与对照按配对设计分析 | 数量/种子须在采样前冻结；评测题数不替代训练重复 |
 | 信号校准 | 起点信号对各分支 ID/迁移 G、相对 Uniform 的 V 的预测；留出部分任务组/干预条件验证 | 不用三个规则均值拟合普适关系；不以事后相关性作轨迹属性因果证据 |
 | 第二阶段 | 按训练预算预先选择 z_later，复验最有信息量的相同对照 | 阶段选择不看最终迁移排名；阶段学习状态差异需明确 |
@@ -47,10 +47,10 @@ E0 实际分配阶段只有 4/5 组，前四次选题完全相同，且 warmup �
 
 ## 启动新采样之前剩余工作
 
-1. **开发集已验收：** 22 题共 83 个用户轮次的 oracle 检查通过；no-op、重置、实例隔离及非字面量/未文档化调用反例通过。新执行器与官方执行器的标准参考动作状态/响应一致。证据见 [runtime_acceptance.json](rl/bfcl_research_split_candidate/runtime_acceptance.json)，复现 `.venv-rl/bin/python pipeline/bfcl_safe_runtime.py`。只使用开发集，没有运行 ID/迁移得分或模型采样。尚需训练集验收和更广的奖励反例；oracle 自一致不证明完整奖励有效性。
-2. 真实 user 轮次控制器在开发集 22 题的完整 oracle 对话验收已通过，见 [18 组件验收](18_learning_state_and_conversation_acceptance.md)。下一步将多用户轮次接入在线 RL；不能把后续用户消息换成普通工具反馈后仍称完整 BFCL 任务。若使用第一轮子任务，必须另名、单列奖励和结论范围。
+1. **开发集已验收：** 22 题共 83 个用户轮次的 oracle 检查通过；no-op、重置、实例隔离及非字面量/未文档化调用反例通过。新执行器与官方执行器的标准参考动作状态/响应一致。证据见 [runtime_acceptance.json](rl/bfcl_research_split_candidate/runtime_acceptance.json)，复现 `.venv-rl/bin/python pipeline/bfcl_safe_runtime.py`。后续已补真实开发模型采样与全部 87 训练题 / 317 轮 runtime 自一致验收，见 [training_runtime_acceptance.json](rl/bfcl_research_split_candidate/training_runtime_acceptance.json)，没有 ID/迁移得分。更广的奖励语义仍有局限；oracle 自一致不证明完整奖励有效性。
+2. 真实 user 轮次控制器在开发集 22 题的完整 oracle 对话验收已通过，见 [18 组件验收](18_learning_state_and_conversation_acceptance.md)。实际 Qwen3/GRPO token/mask 接口已通过，开发校准已出现真实混合终局奖励；下一步进入共同起点的科学干预；不能把后续用户消息换成普通工具反馈后仍称完整 BFCL 任务。若使用第一轮子任务，必须另名、单列奖励和结论范围。
 3. 本地官方调用执行器使用 Python `eval` 和全局缓存。新模型调用应通过方法白名单、AST/literal 参数或结构化工具分发执行，并显式重置每个 episode；保留标准 checker 语义。八个模拟 API 的实际主机副作用须检查，不能从类名推断。
 4. 审查语义/模板重叠；如需调整清单，保存新版本，不追认当前候选为已冻结划分。
-5. 完整 checkpoint/optimizer/history 分叉恢复验收；冻结分支预算、起点成本、重复、评测采样、信号可见性与停止规则。
+5. 沿用已验收的完整 checkpoint/optimizer/history 恢复路径，冻结具体分支预算、起点成本、重复、评测采样、信号可见性与停止规则。
 
 更强的跨工具/跨环境测试保留为扩展。若 BFCL 只能支持组合层级的可靠测量，第一篇相应限制迁移结论，长期 scope 不取消。

@@ -70,11 +70,19 @@ def report(path):
         uncensored=[r for r in rs if not r['stop_reason'].startswith('global_')]
         paired_rs=[r for r in rs if r['task_id'] in paired]
         failure_counts=Counter(g['check'].get('error_type','unknown') for r in rs for g in r['grades'] if not g['valid'])
+        per_task=[]
+        for group in gs:
+            sample_rows=[r for r in rs if r['group']==group['group']]
+            fractions=[sum(g['valid'] for g in r['grades'])/r['total_user_turns'] for r in sample_rows]
+            per_task.append({'task_id':group['task_id'],'terminal_rewards':group['rewards'],
+                'official_valid_turn_fractions':fractions,'censored':group['censored'],
+                'note':'Per-turn diagnostic only; training reward was not changed and no optimizer ran.'})
         panels[mode]={'attempted_groups':len(gs),'uncensored_groups':sum(not g['censored'] for g in gs),
             'attempted_rollouts':len(rs),'globally_censored_rollouts':len(rs)-len(uncensored),
             'successes_uncensored':sum(r['reward'] for r in uncensored),'uncensored_rollouts':len(uncensored),
             'paired_task_successes':sum(r['reward'] for r in paired_rs),'paired_task_rollouts':len(paired_rs),
             'mixed_reward_task_ids':[g['task_id'] for g in gs if not g['censored'] and g['mixed_rewards']],
+            'per_task_turn_diagnostics':per_task,
             'complete_user_conversations':sum(r['completed_user_turns']==r['total_user_turns'] for r in rs),
             'valid_user_turns':sum(g['valid'] for r in rs for g in r['grades']),
             'completed_user_turns':sum(r['completed_user_turns'] for r in rs),
@@ -82,12 +90,14 @@ def report(path):
             'failure_types':dict(failure_counts),
             'tool_error_responses':sum('error' in e['response'].lower() for r in rs for e in r['events']),
             'sampled_tokens':sum(g['sampled_tokens'] for g in gs),
+            'input_token_positions_no_padding':sum(len(c['input_ids']) for c in calls if c['mode']==mode),
             'external_tokens':sum(len(r['model_token_mask'])-sum(r['model_token_mask']) for r in rs),
             'generation_seconds':sum(g['generation_seconds'] for g in gs)}
     result={'audit':'passed','status':summary['status'],'stop_reason':summary['stop_reason'],
         'optimizer_updates':0,'weights_unchanged':True,'thinking_prefixes_verified':True,
         'planned_task_ids':protocol['task_ids'],'paired_uncensored_task_ids':paired,
         'observed_groups':groups,'panels':panels,'total_sampled_tokens':summary['sampled_tokens'],
+        'total_input_token_positions_no_padding':sum(len(c['input_ids']) for c in calls),
         'wall_seconds':summary['wall_seconds'],'single_gpu_main_wall_hours':summary['wall_seconds']/3600,
         'source_files_still_match':all(hashlib.sha256((ROOT/'pipeline'/name).read_bytes()).hexdigest()==digest for name,digest in run['source_sha256'].items()),
         'interpretation':'Complete mixed binary-reward groups indicate a potential GRPO learning signal at this fixed base/config; no update or intervention gain was measured. Preserve full scientific task pool, not successful-case selection. Global censoring is reported separately.'}
