@@ -11,6 +11,33 @@ def lines(path):return [json.loads(s) for s in path.read_text().splitlines()] if
 def rate(rows,split):
     selected=[r for r in rows if r['split']==split]
     return sum(sum(r['rewards'])/len(r['rewards']) for r in selected)/len(selected)
+
+def unchanged_policy_consistency(base_rows,branch_rows):
+    """Compare already sampled trajectories; no new inference or reward changes."""
+    baseline={(r['task_id'],r['rollout_index']):r for r in base_rows}
+    fields=['prompt_ids','completion_ids','model_token_mask','segments','bridges',
+        'reward','stop_reason','completed_user_turns','total_user_turns']
+    differences=[]
+    for row in branch_rows:
+        key=(row['task_id'],row['rollout_index'])
+        if key not in baseline:raise ValueError('evaluation task outside baseline')
+        changed=[field for field in fields if row[field]!=baseline[key][field]]
+        if changed:differences.append({'task_id':key[0],'rollout_index':key[1],'differing_fields':changed})
+    return {'checked_rollouts':len(branch_rows),'baseline_rollouts':len(base_rows),
+        'status':'exact_match' if not differences else 'runtime_or_sampling_difference_requires_review',
+        'differences':differences,'new_model_calls':0,
+        'scope':'Model inference control only; optimizer counters/history can differ despite unchanged parameters.'}
+
+def signal_variation(rows):
+    """Flag constants rather than fitting an unidentifiable predictor."""
+    result={}
+    for field in ['posterior_success','frontier','coverage_deficit','observed_episodes']:
+        values=[r['expected_signals_before_sampling'][field] for r in rows]
+        span=max(values)-min(values)
+        result[field]={'values':values,'range':span,
+            'status':'constant_no_predictive_contrast' if span<=1e-12 else 'varies_descriptive_only',
+            'predictive_model_fitted':False}
+    return result
 def audit_sampling(out):
     calls=lines(out/'generation_calls.jsonl');rollouts=lines(out/'rollouts.jsonl')
     key='policy_step' if any('policy_step' in r for r in calls) else 'group'
@@ -92,6 +119,20 @@ def main():
                 'paired_outcomes':[{ 'task_id':r['task_id'],'split':r['split'],
                     'common':b['rewards'],'uniform':u['rewards'],'branch':r['rewards']}
                     for r,b,u in zip(rows,base_rows,uniform)]}
+            item['acquisition_decisions']=len(allocations)
+            item['largest_group_fraction_of_acquisition_tokens']=max(a['sampled_tokens'] for a in allocations)/summary['branch_sampled_tokens']
+            item['group_signal_and_update_diagnostics']=[{
+                'task_id':a['task_id'],'combination':a['combination'],
+                'prior_combination_signal':a['signals_before'][a['combination']],
+                'observed_rewards':g['rewards'],'observed_advantages':g['advantages'],
+                'sampled_tokens':a['sampled_tokens'],'stop_reasons':a['stop_reasons'],
+                'parameters_changed':u['parameters_changed']}
+                for a,g,u in zip(allocations,groups,updates)]
+            item['final_parameters_equal_common']=summary['final_fingerprint']==common['policy_fingerprint']
+            assert summary['final_manifest']['frozen_base_sha256']==common['common_manifest']['frozen_base_sha256']
+            if item['final_parameters_equal_common']:
+                item['unchanged_model_evaluation_control']=unchanged_policy_consistency(
+                    lines(root/'eval_common/rollouts.jsonl'),lines(evaluation/'rollouts.jsonl'))
             available_classes=sorted({c for task in p['conditions'][condition]
                 for c in p['training_registry'][task].split('+')})
             item['classes_available_in_condition_training_pool']=available_classes
@@ -100,6 +141,9 @@ def main():
             for s in ['id_eval','composition_transfer_eval']:
                 item[s]={'rate':rate(rows,s),'G':rate(rows,s)-rate(base_rows,s),'V':rate(rows,s)-rate(uniform,s)}
             probabilities=restored['initial_probabilities'];signals=restored['initial_signals']
+            combo_probabilities=Counter()
+            for task,probability in probabilities.items():combo_probabilities[p['training_registry'][task]]+=probability
+            item['initial_combo_probabilities']=dict(combo_probabilities)
             item['expected_signals_before_sampling']={feature:sum(probability*signals[p['training_registry'][task]][feature]
                 for task,probability in probabilities.items())
                 for feature in ['posterior_success','frontier','coverage_deficit','observed_episodes']}
@@ -122,6 +166,9 @@ def main():
             item['stopped_at_token_budget']=item['stop_reason']=='raw_token_budget'
     result['cost_interpretation']='Equal declared thresholds with whole-group overshoot are not exact equal realized compute; V is a descriptive paired contrast at reported actual costs, not proof of per-compute allocation superiority.'
     result['transfer_interpretation']='Combinations withheld from the global 87-task research train split; the directed condition pools need not contain every constituent class. This wave is not a strict test that each heldout constituent received parameter updates.'
+    result['initial_signal_variation']={'all_conditions':signal_variation(result['rows']),
+        'within_condition':{c:signal_variation([r for r in result['rows'] if r['condition']==c]) for c in p['conditions']}}
+    result['analysis_addendum']='gpt8 feedback: retain original strategies/budgets; flag constant Coverage deficit, retain recorded task/combo probabilities and exposure, separate estimation granularity from update/transfer efficacy. No post-result replacement predictor or regression.'
     target=root/'comparison.json';target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'audit':'passed','result':str(target),'common_rates':result['common_rates'],
         'rows':[{k:r[k] for k in ['condition','rule','id_eval','composition_transfer_eval','optimizer_steps','fresh_nonzero_gradient_steps','same_task_sequence_as_uniform']} for r in result['rows']]},ensure_ascii=False))

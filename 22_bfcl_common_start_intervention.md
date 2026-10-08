@@ -54,3 +54,13 @@ GPU 4 执行共同起点评测、GPU 5/6 执行 GFS Uniform/Frontier。后续 Co
 同一个完整起点出发，GFS Uniform 首组 task 21 奖励 `[1,0,1,1]`，标准化优势非零，梯度范数 0.0335635，trainable fingerprint 从 `8684bab2…` 变为 `db714a65…`；7,685 个模型 token 进入 loss，895 个外部 token 排除。GFS Frontier 首组 task 22 为 `[0,0,0,0]`，优势/梯度为零、参数未变；10,831 个模型 token 全计入获取成本，1,540 外部 token 排除。两组各四条对话全部完成、无截断，且属于同一可见 GFS+Twitter 组合的不同题。
 
 见 [first_update_audit.json](rl/bfcl_intervention_20261008/first_update_audit.json)：共同 payload、起点权重、成本、原始 token/mask 和优势公式逐项核对通过。**这是本批 actual fresh gradient/parameter update 的证据，不是能力收益，也不是 Uniform 胜出的证据。** 剩余固定预算训练和共同面板评测正在执行；G/V 尚待完整结果。
+
+## gpt8 分析补充：保留策略，检查可识别性（2026-10-08）
+
+`docs/ref/gpt8.md` 对已发布数据的审查指出：本批共同探测每组合恰好一组，候选组合的初始 coverage deficit 全为 0.5。故任意起点分配概率下 E[d] 都为 0.5，无法解释收益差异。候选组合的 observed episodes 也恒为 4。报告现在逐条件/总体标记这些常量为“无预测对比”，不拟合、不事后更换 coverage 定义。原始任务概率按既有可见类组合求和并保留，策略与预算不改；这些分布/暴露记录是诊断数据，不是根据成绩新挑选的预测假说。见 [初始信号核对](rl/bfcl_intervention_20261008/initial_signal_identifiability.json)。
+
+GFS 两条已完成分支各只有两个获取决定。Uniform 新生成 34,245 token、Frontier 38,818 token；实际成本差约 13.4%，第二组长任务占各自输出获取成本 77.6% / 72.1%。Uniform 一组有新非零梯度，第二组虽然优势全零，Adam momentum 仍改变参数；Frontier 两组全零，最终模型参数与起点相同。报告增加逐组 prior 信号—实际奖励/优势—参数变化以及长组成本占比，区分信号估计噪声、组合估计单位与具体题目差异、更新效率和最终收益，不将两组全失败解释为难度假说失败。
+
+Frontier 构成现成的未改变模型对照。用保存的原始 prompt/completion/mask/segments/bridges、奖励、停止原因和轮数逐条对照共同起点；当前已完成前缀 11 条逐项精确一致，未新增模型调用，见 [前缀核对](rl/bfcl_intervention_20261008/unchanged_frontier_control_prefix.json)。最终报告在完整面板上重新核对；如出现差异，标为采样/运行差异待查，不解释为学习收益。Uniform 已观察到 token/停止行为变化，但不能将其当二元任务收益；也不比较不同长度的未完成面板。
+
+本轮继续完成六个声明分支与同一面板，不给单臂临时追加预算、不增加校准任务。更多获取决定、独立训练重复和后续 coverage 的有变差信号，应在下一批采样前定义；原始大 scope 保留。
