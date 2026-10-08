@@ -1,3 +1,7 @@
+2026-10-08 latest: real Qwen3/GRPO checkpoint continuation passed with exactly matching fresh token sequences and final parameters ([result](../19_qwen3_resume_acceptance.md)). BFCL multi-user generation and external-token loss masking also passed actual-model auditing: 8 complete conversations, 0/8 terminal successes, zero gradients and unchanged weights ([result and diagnostics](../20_bfcl_model_integration_result.md)). GPU 4 released. Execution/reward calibration is the next bottleneck; no scientific allocation or transfer result.
+
+Earlier component record:
+
 2026-10-08 CPU follow-up: common-state component restoration passed 5 checks (including exact stochastic AdamW continuation); BFCL user-turn controller passed 3 checks over all 22 development oracle conversations. Full Qwen3/TRL fork and generation/mask integration remain. No new GPUs used. See [acceptance and next bounded check](../18_learning_state_and_conversation_acceptance.md).
 
 2026-10-08 completed: both allocation arms passed final audits, GPUs released. Uniform: 123,163 training tokens, 10 updates, 9/12 new-instance successes. Frontier: 125,791 tokens, 11 updates, 10/12. First four post-warmup task choices were identical; post-warmup policy states differed. This pilot validates the engineering chain, not an allocation effect. See [full result](../17_allocation_pilot_result.md) and [next scientific design](../16_benchmark_and_fork_design.md).
