@@ -22,6 +22,22 @@ from rl_learning_state import save_learning_state,restore_learning_state
 from calibrate_rl import PROTOCOL
 
 
+class ResumeTrainer(AllocationTrainer):
+    # Transformers 5 blocks native torch.load with torch<2.6. The callback
+    # restores our checksum/provenance-validated, locally created component
+    # payload instead; HF still restores safe adapter weights and progress.
+    def _load_optimizer_and_scheduler(self,checkpoint):
+        if checkpoint is not None:
+            assert (Path(checkpoint)/'components/manifest.json').is_file()
+            return
+        return super()._load_optimizer_and_scheduler(checkpoint)
+
+    def _load_rng_state(self,checkpoint):
+        assert (Path(checkpoint)/'components/manifest.json').is_file()
+        # Already restored at on_train_begin; per-update sampling also uses
+        # the explicit pilot seed. Do not reload an unverified native pickle.
+
+
 class ResumeEvidence(TrainerCallback):
     def __init__(self,trainer,provenance,resume):
         self.trainer=trainer;self.provenance=provenance;self.resume=resume
@@ -80,7 +96,7 @@ def main():
         'resume':str(args.resume) if args.resume else None,
         'git_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()},indent=2)+'\n')
     def reward(environments,**kwargs):return [e._reward() for e in environments]
-    trainer=AllocationTrainer(model=model,args=config,processing_class=tokenizer,
+    trainer=ResumeTrainer(model=model,args=config,processing_class=tokenizer,
         train_dataset=Dataset.from_list([row]),reward_funcs=reward,environment_factory=MessageEnv,
         peft_config=LoraConfig(r=8,lora_alpha=16,lora_dropout=0,target_modules=['q_proj','v_proj'],task_type='CAUSAL_LM'))
     assert trainer.accelerator.num_processes==1 and not trainer.is_fsdp_enabled
