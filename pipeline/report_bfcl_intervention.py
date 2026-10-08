@@ -2,6 +2,7 @@
 import argparse
 from collections import Counter
 import json
+import math
 from pathlib import Path
 from bfcl_token_rollout import ROOT
 
@@ -77,6 +78,7 @@ def main():
             assert [r['seed'] for r in rows]==[r['seed'] for r in base_rows]
             eval_cost=audit_sampling(evaluation);assert eval_cost['new_model_tokens']==read(evaluation/'summary.json')['sampled_tokens']
             metrics=lines(train/'metrics.jsonl');grad_steps=[r['step'] for r in metrics if r.get('grad_norm',0)>0]
+            assert all(math.isfinite(r['grad_norm']) for r in metrics if 'grad_norm' in r)
             item={'condition':condition,'rule':rule,'initial_signals':restored['initial_signals'],
                 'initial_probabilities':restored['initial_probabilities'],
                 'actual_combo_exposure':dict(Counter(a['combination'] for a in allocations)),
@@ -92,12 +94,28 @@ def main():
                     for r,b,u in zip(rows,base_rows,uniform)]}
             for s in ['id_eval','composition_transfer_eval']:
                 item[s]={'rate':rate(rows,s),'G':rate(rows,s)-rate(base_rows,s),'V':rate(rows,s)-rate(uniform,s)}
+            probabilities=restored['initial_probabilities'];signals=restored['initial_signals']
+            item['expected_signals_before_sampling']={feature:sum(probability*signals[p['training_registry'][task]][feature]
+                for task,probability in probabilities.items())
+                for feature in ['posterior_success','frontier','coverage_deficit','observed_episodes']}
+            item['initial_task_distribution_entropy']= -sum(x*math.log(x) for x in probabilities.values() if x)
             # Matched strata are secondary, not chosen after seeing results.
             matched=[r for r in rows if condition in r['stratum']]
             item['matched_strata_outcomes']=[r['task_id'] for r in matched]
+            for s in ['id_eval','composition_transfer_eval']:
+                base_matched=[r for r in base_rows if condition in r['stratum']]
+                uniform_matched=[r for r in uniform if condition in r['stratum']]
+                item['matched_'+s]={'rate':rate(matched,s),
+                    'G':rate(matched,s)-rate(base_matched,s),
+                    'V':rate(matched,s)-rate(uniform_matched,s)}
             result['rows'].append(item);condition_rows.append(item)
         ref=condition_rows[0]['task_sequence']
-        for item in condition_rows:item['same_task_sequence_as_uniform']=item['task_sequence']==ref
+        uniform_cost=condition_rows[0]['train_cost']['new_model_tokens']
+        for item in condition_rows:
+            item['same_task_sequence_as_uniform']=item['task_sequence']==ref
+            item['actual_acquisition_cost_ratio_to_uniform']=item['train_cost']['new_model_tokens']/uniform_cost
+            item['stopped_at_token_budget']=item['stop_reason']=='raw_token_budget'
+    result['cost_interpretation']='Equal declared thresholds with whole-group overshoot are not exact equal realized compute; V is a descriptive paired contrast at reported actual costs, not proof of per-compute allocation superiority.'
     target=root/'comparison.json';target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'audit':'passed','result':str(target),'common_rates':result['common_rates'],
         'rows':[{k:r[k] for k in ['condition','rule','id_eval','composition_transfer_eval','optimizer_steps','fresh_nonzero_gradient_steps','same_task_sequence_as_uniform']} for r in result['rows']]},ensure_ascii=False))
