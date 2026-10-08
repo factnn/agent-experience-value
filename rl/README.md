@@ -1,3 +1,7 @@
+2026-10-08 completed: both allocation arms passed final audits, GPUs released. Uniform: 123,163 training tokens, 10 updates, 9/12 new-instance successes. Frontier: 125,791 tokens, 11 updates, 10/12. First four post-warmup task choices were identical; post-warmup policy states differed. This pilot validates the engineering chain, not an allocation effect. See [full result](../17_allocation_pilot_result.md) and [next scientific design](../16_benchmark_and_fork_design.md).
+
+Earlier launch record:
+
 2026-10-08 ongoing: uniform/frontier online allocation pilot launched on GPUs 4/5. Both first groups produced rewards `[1,1,0,0]`, nonzero gradients (~0.0262), and changed parameters. Each charged 15,863 raw generated tokens. Still in common warmup; allocation-effect results pending. See [pilot protocol](ALLOCATION_PILOT_PROTOCOL.md), [first-update audit](allocation_pilot_20261008_first_update_audit.json), and [live status](STATUS.json). A CPU watcher pushes completed-update milestones and performs final audits.
 
 # Online RL engineering progress
