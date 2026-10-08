@@ -60,9 +60,12 @@ def main():
         'protocol':str(args.protocol)}
     write(status_path,status)
     set_seed(protocol['seed']);torch.set_num_threads(4)
+    assert torch.cuda.is_available() and torch.cuda.device_count()==1,'Select exactly one idle GPU'
     tokenizer=AutoTokenizer.from_pretrained(ROOT/'smoke/model',local_files_only=True);tokenizer.padding_side='left'
     model=AutoModelForCausalLM.from_pretrained(ROOT/'smoke/model',dtype=torch.bfloat16,
-        attn_implementation='sdpa',local_files_only=True).eval()
+        attn_implementation='sdpa',local_files_only=True).to('cuda:0').eval()
+    assert next(model.parameters()).device.type=='cuda'
+    run['execution_device']=str(next(model.parameters()).device)
     model.requires_grad_(False)
     initial_hash=tensor_hash(model.named_parameters());run['initial_weights_sha256']=initial_hash
     write(out/'run.json',run)
