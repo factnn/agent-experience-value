@@ -1,3 +1,5 @@
+**可并行准备：** 当前三卡批次继续；下一剂量诊断的阈值、开发评测和完整检查点实现要求已整理于 [26](26_dose_experiment_preparation.md)，尚未启动新 GPU 实验。
+
 **gpt9 后续路线：** 4B 主研究、先剂量与独立重复，再阶段和按任务组留出的预测验证，随后选择性规模/家族/环境外推；当前 full-pool 两个 seed 仍只有一个任务条件/共同历史，详见 [25](25_gpt9_research_roadmap.md)。
 
 **新批次已启动：** GPU 4 起点评测，5/6 执行全池 seed0 Uniform/Frontier；两分支实际恢复同一祖先 payload、空 AdamW 与 90,122 有偿历史通过，87 题全池和声明的新 allocation seed 已核对。后续四分支固定排队，最多三卡；详见 [24](24_bfcl_followup_design.md) 与 [实时状态](rl/STATUS.json)。
