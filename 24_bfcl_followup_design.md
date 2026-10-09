@@ -16,4 +16,4 @@
 
 ## 首组实际更新（2026-10-09）
 
-seed0 Uniform/Frontier 均选 task 91（MathAPI+VehicleControlAPI），完整四条经验逐项一致，奖励 `[0,0,1,0]`，各生成 14,964 token，原始 token/外部反馈 mask 审计通过。两臂均有非零梯度和参数变化，梯度范数约 0.025737，跨 GPU 数值略不同。见 [first_update_audit.json](rl/bfcl_intervention_followup_20261009/first_update_audit.json)。这组不形成不同经验暴露，不能归因分配效果；更新不等于能力收益。后续继续按已冻结预算/队列执行。
+seed0 Uniform/Frontier 均选 task 91（MessageAPI+VehicleControlAPI），完整四条经验逐项一致，奖励 `[0,0,1,0]`，各生成 14,964 token，原始 token/外部反馈 mask 审计通过。两臂均有非零梯度和参数变化，梯度范数约 0.025737，跨 GPU 数值略不同。见 [first_update_audit.json](rl/bfcl_intervention_followup_20261009/first_update_audit.json)。这组不形成不同经验暴露，不能归因分配效果；更新不等于能力收益。后续继续按已冻结预算/队列执行。

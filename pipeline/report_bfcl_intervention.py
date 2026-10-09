@@ -134,6 +134,13 @@ def main():
                 for a,g,u in zip(allocations,groups,updates)]
             item['final_parameters_equal_common']=summary['final_fingerprint']==common['policy_fingerprint']
             assert summary['final_manifest']['frozen_base_sha256']==common['common_manifest']['frozen_base_sha256']
+            if 'source_common_path' in p:
+                from audit_bfcl_parameter_displacement import audit as displacement_audit
+                displacement=displacement_audit(root/'common',train,p['algorithm']['lora_alpha']/p['algorithm']['lora_r'])
+                (train/'parameter_displacement.json').write_text(json.dumps(displacement,indent=2)+'\n')
+                item['endpoint_parameter_displacement']={k:displacement[k] for k in [
+                    'trainable_parameter_count','trainable_parameter_delta_l2','trainable_parameter_delta_rms',
+                    'effective_weight_delta_frobenius','lora_scaling','interpretation']}
             if item['final_parameters_equal_common']:
                 item['unchanged_model_evaluation_control']=unchanged_policy_consistency(
                     lines(root/'eval_common/rollouts.jsonl'),lines(evaluation/'rollouts.jsonl'))
@@ -142,6 +149,7 @@ def main():
             item['classes_available_in_condition_training_pool']=available_classes
             exposed_classes=sorted({c for a in allocations for c in a['combination'].split('+')})
             item['classes_actually_exposed_in_branch']=exposed_classes
+            item['class_exposure_basis']='Available-tool menus in acquired training tasks; not verified execution counts or per-tool gradient attribution.'
             item['heldout_constituent_classes_absent_from_branch_exposure']={stratum:sorted(set(stratum.split('+'))-set(exposed_classes))
                 for stratum in sorted({r['stratum'] for r in rows if r['split']=='composition_transfer_eval'})}
             item['heldout_constituent_classes_absent_from_condition_pool']={stratum:sorted(set(stratum.split('+'))-set(available_classes))
