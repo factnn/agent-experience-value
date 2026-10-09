@@ -1,3 +1,5 @@
+**2026-10-09 首个完整新面板对比：** seed0 Uniform 的新增留出题 5/24→9/24，ID 5/14不变；Frontier 的 ID 5/14→7/14，留出5/24不变。原始 token/面板/成本审计通过，但一条件 seed、Coverage/seed1未齐，不给稳定规则排名；详见 [27](27_full_pool_seed0_first_complete_result.md)。
+
 **可并行准备：** 当前三卡批次继续；下一剂量诊断的阈值、开发评测和完整检查点实现要求已整理于 [26](26_dose_experiment_preparation.md)，尚未启动新 GPU 实验。
 
 **gpt9 后续路线：** 4B 主研究、先剂量与独立重复，再阶段和按任务组留出的预测验证，随后选择性规模/家族/环境外推；当前 full-pool 两个 seed 仍只有一个任务条件/共同历史，详见 [25](25_gpt9_research_roadmap.md)。
