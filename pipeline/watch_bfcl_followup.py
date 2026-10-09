@@ -1,5 +1,8 @@
 """Run the prospectively frozen full-pool follow-up on at most three idle GPUs."""
 import json
+import argparse
+import fcntl
+import hashlib
 import os
 from pathlib import Path
 import signal
@@ -45,25 +48,88 @@ def launch(mode,name,gpu,extra):
     record['hard_seconds']=HARD_SECONDS;w.write(path,record)
     return job
 
+class AdoptedProcess:
+    """Observe an existing orphan; its original OS exit status is unavailable."""
+    def __init__(self,record,out):
+        self.pid=record['pid'];self.command=record['command'];self.out=out;self.returncode=None
+    def poll(self):
+        proc=Path('/proc')/str(self.pid)
+        try:
+            state=(proc/'stat').read_text().split(') ',1)[1].split()[0]
+            command=(proc/'cmdline').read_bytes().rstrip(b'\0').split(b'\0')
+            if state!='Z' and command==[s.encode() for s in self.command]:return None
+        except FileNotFoundError:pass
+        summary=self.out/'summary.json'
+        self.returncode=0 if summary.exists() and w.read(summary)['status']=='complete' else 1
+        return self.returncode
+
+def recover(p):
+    active=[];eval_queue=[];branch_queue=[];failed=[]
+    original=w.read(w.OUT/'scheduler.json')
+    specs=[('eval_common','eval',{'kind':'baseline'})]
+    for index,condition in enumerate(p['conditions']):
+        for rule in p['rules']:
+            specs.extend([
+                (f'train_{index}_{rule}','train',{'kind':'branch','index':index,'condition':condition,'rule':rule}),
+                (f'eval_{index}_{rule}','eval',{'kind':'eval','index':index,'rule':rule,'policy':str(w.OUT/f'train_{index}_{rule}')})])
+    for name,mode,spec in specs:
+        out=w.OUT/name;record_path=w.OUT/(name+'.launch.json')
+        if record_path.exists():
+            record=w.read(record_path);process=AdoptedProcess(record,out)
+            if process.poll() is None:
+                elapsed=(datetime.now(timezone.utc)-datetime.fromisoformat(record['started_at_utc'])).total_seconds()
+                job={'name':name,'mode':mode,'gpu':record['gpu'],'process':process,
+                    'log':(w.OUT/(name+'.console.log')).open('a'),'start':time.monotonic()-elapsed,
+                    'command':record['command'],'out':out,'last_signature':None}
+                if mode=='train':job.update({'index':spec['index'],'rule':spec['rule']})
+                active.append(job)
+            elif process.returncode:
+                failed.append({'name':name,'reason':'previous_process_exited_without_complete_summary','partial_data_retained':True})
+            continue
+        if out.exists():raise RuntimeError(f'{name}: output without launch ledger; preserve and inspect')
+        if mode=='train':branch_queue.append(spec)
+        elif spec['kind']=='baseline':eval_queue.append(spec)
+        else:
+            training=w.OUT/f"train_{spec['index']}_{spec['rule']}"/'summary.json'
+            if training.exists() and w.read(training)['status']=='complete':eval_queue.append(spec)
+    assert len(active)<=3 and len({j['gpu'] for j in active})==len(active)
+    stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+    w.write(w.OUT/f'scheduler_recovery_{stamp}.json',{'previous_scheduler_pid':original['pid'],
+        'replacement_scheduler_pid':os.getpid(),'protocol_sha256':hashlib.sha256(w.PROTOCOL.read_bytes()).hexdigest(),
+        'adopted':[{'name':j['name'],'pid':j['process'].pid,'gpu':j['gpu']} for j in active],
+        'reason':'Previous CPU scheduler exited; existing GPU jobs continued.',
+        'budgets_reset':False,'completed_or_partial_jobs_resampled':False,
+        'original_exit_status_unavailable':'Adopted jobs use PID lifecycle and complete output summaries; final data audit remains required.'})
+    original.update({'pid':os.getpid(),'previous_scheduler_pid':original['pid'],'resumed_at_utc':datetime.now(timezone.utc).isoformat()})
+    w.write(w.OUT/'scheduler.json',original)
+    return active,eval_queue+branch_queue,failed
+
 def main():
+    ap=argparse.ArgumentParser();ap.add_argument('--resume',action='store_true');args=ap.parse_args()
+    lock=open('/tmp/agent-experience-bfcl-followup-20261009.lock','w')
+    fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
     p=w.read(w.PROTOCOL)
-    w.OUT.mkdir(parents=True,exist_ok=False)
     common=w.ROOT/p['source_common_path']
     manifest=w.read(common/'components/manifest.json')
     assert manifest['payload_sha256']==p['source_common_payload_sha256']
     assert w.read(common/'summary.json')['status']=='complete'
+    if args.resume:
+        active,queue,failed=recover(p)
+    else:
+        w.OUT.mkdir(parents=True,exist_ok=False)
+        active=[];failed=[]
+        queue=[{'kind':'baseline'}]+[{'kind':'branch','index':i,'condition':c,'rule':r}
+            for i,c in enumerate(p['conditions']) for r in p['rules']]
     # Local link only; published source manifest references the archived first wave.
-    (w.OUT/'common').symlink_to(common,target_is_directory=True)
+    if not args.resume:(w.OUT/'common').symlink_to(common,target_is_directory=True)
     w.write(w.OUT/'source_common.json',{'path':p['source_common_path'],
         'payload_sha256':manifest['payload_sha256'],'inherited_probe_tokens':90122,
         'new_probe_tokens':0,'conditional_repeats':2,'source_protocol':p['source_common_protocol']})
-    w.write(w.OUT/'scheduler.json',{'pid':os.getpid(),'gpus':w.GPUS,'max_simultaneous_gpus':3,
+    if not args.resume:w.write(w.OUT/'scheduler.json',{'pid':os.getpid(),'gpus':w.GPUS,'max_simultaneous_gpus':3,
         'protocol':str(w.PROTOCOL.relative_to(w.ROOT)),
         'started_at_utc':datetime.now(timezone.utc).isoformat(),'hard_seconds':HARD_SECONDS})
-    queue=[{'kind':'baseline'}]+[{'kind':'branch','index':i,'condition':c,'rule':r}
-        for i,c in enumerate(p['conditions']) for r in p['rules']]
-    active=[];failed=[];status(active,queue,'running')
-    publish('Launch frozen full-pool conditional-repeat BFCL study',active)
+    status(active,queue,'running')
+    publish('Resume existing full-pool BFCL study without resampling' if args.resume else 'Launch frozen full-pool conditional-repeat BFCL study',active)
     while queue or active:
         completed=[]
         for job in active:
