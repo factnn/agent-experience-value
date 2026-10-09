@@ -46,10 +46,21 @@ def config_for(protocol,out):
         logging_steps=1,save_strategy='no',report_to='none',disable_tqdm=True,
         dataloader_num_workers=0,use_vllm=False,mask_truncated_completions=False,optim='adamw_torch')
 
-def provenance(protocol):
+def provenance(protocol, path=None):
     return {'base_revision':protocol['base_revision'],'task_manifest_sha256':protocol['manifest_sha256'],
         'algorithm_config_sha256':hashlib.sha256(json.dumps(protocol['algorithm'],sort_keys=True).encode()).hexdigest(),
-        'intervention_protocol_sha256':digest(PROTOCOL)}
+        'intervention_protocol_sha256':digest(PROTOCOL if path is None else path)}
+
+def common_restore_provenance(protocol):
+    """A declared descendant may reuse a frozen ancestor, with strict identity checks."""
+    source=protocol.get('source_common_protocol')
+    if source is None:return provenance(protocol)
+    path=ROOT/source['path']
+    assert digest(path)==source['sha256']
+    ancestor=json.loads(path.read_text())
+    for key in ['base_revision','manifest_sha256','data_sha256','algorithm','training_registry']:
+        assert protocol[key]==ancestor[key],f'incompatible ancestor {key}'
+    return provenance(ancestor,path)
 
 def episode(tokenizer,pair,p):
     a=p['algorithm']
@@ -96,13 +107,17 @@ class BranchState(TrainerCallback):
         # HF prepares the optimizer before this callback. The common step-zero
         # state was saved before training, so validate/restore the SAME AdamW
         # backend, not the transparent single-process Accelerate wrapper type.
+        if 'source_common_payload_sha256' in t.protocol:
+            assert json.loads((self.common/'components/manifest.json').read_text())['payload_sha256']==t.protocol['source_common_payload_sha256']
         allocator,progress=restore_learning_state(self.common/'components',t.model,t.optimizer.optimizer,
-            t.lr_scheduler,provenance(t.protocol))
+            t.lr_scheduler,common_restore_provenance(t.protocol))
         assert state.global_step==progress['global_step']==0 and t._step==0 and t._buffered_inputs is None
         # Pool restriction and rule are the only declared interventions; all
         # weights/moments/RNG/history remain inherited from one source payload.
         t.allocator=CombinationAllocator.from_state_dict(allocator.state_dict(),rule=t.rule,
             pool=t.protocol['conditions'][t.condition])
+        allocation_seed=t.protocol.get('branch_allocator_seeds',{}).get(t.condition)
+        if allocation_seed is not None:t.allocator.rng.seed(allocation_seed)
         t.inherited_tokens=t.allocator.total_sampled_tokens
         t.current_fingerprint=fingerprint(t.model)
         manifest=json.loads((self.common/'components/manifest.json').read_text())
@@ -112,6 +127,8 @@ class BranchState(TrainerCallback):
             'optimizer_global_step':0,'fresh_rollout_buffer':True,'inherited_tokens':t.inherited_tokens,
             'optimizer_backend':type(t.optimizer.optimizer).__qualname__,
             'optimizer_wrapper':type(t.optimizer).__qualname__,
+            'source_restore_provenance':common_restore_provenance(t.protocol),
+            'declared_allocator_seed_override':allocation_seed,
             'initial_signals':t.allocator.signals(),'initial_probabilities':t.allocator.probabilities(),
             'inherited_allocator_state':allocator.state_dict()})
     def on_step_end(self,args,state,control,**kwargs):
@@ -232,9 +249,12 @@ def evaluate(p,out,tokenizer,model,args,started):
 
 
 def main():
+    global PROTOCOL
     ap=argparse.ArgumentParser();ap.add_argument('--mode',choices=['common','train','eval'],required=True)
     ap.add_argument('--out',required=True);ap.add_argument('--common',type=Path);ap.add_argument('--policy',type=Path)
-    ap.add_argument('--condition');ap.add_argument('--rule',choices=['uniform','frontier','coverage']);args=ap.parse_args()
+    ap.add_argument('--condition');ap.add_argument('--rule',choices=['uniform','frontier','coverage'])
+    ap.add_argument('--protocol',type=Path,default=PROTOCOL);args=ap.parse_args()
+    PROTOCOL=args.protocol.resolve()
     started=time.perf_counter();p=json.loads(PROTOCOL.read_text());out=ROOT/args.out;out.mkdir(parents=True,exist_ok=False)
     assert digest(ROOT/'rl/bfcl_research_split_candidate/manifest.json')==p['manifest_sha256']
     assert digest(PKG/'bfcl_eval/data/BFCL_v4_multi_turn_base.json')==p['data_sha256']

@@ -1,3 +1,5 @@
+**2026-10-09 最新：** 第一批六分支与七个完整评测已结束并审计通过，GPU 已释放；完整 G/V 与限制见 [23](../23_bfcl_intervention_complete_result.md)，下一批冻结设计见 [24](../24_bfcl_followup_design.md)。以下带日期记录保留为历史。
+
 2026-10-08 current: first common-base intervention protocol frozen; two complete primary-class training pools x Uniform/Frontier/Coverage, paid eight-group common probe history, shared sixteen-task evaluation panel, exploratory single seed. See [design](../22_bfcl_common_start_intervention.md). CPU allocation/full-state checks passed; G/V pending. At most three idle GPUs, no paid API.
 
 2026-10-08 latest: fixed-base BFCL development calibration observed two complete mixed terminal-reward groups (Math+Trading thinking: [0,0,1,1]; Ticket+Trading nonthinking: [1,1,0,1]). Bounded 30-minute stop: 40 rollouts, three globally censored, 65,500 new tokens; exact unchanged base weights, no optimizer. GPU 4 released. See [calibration result](../21_bfcl_fixed_policy_calibration_result.md). Proceed to common-start value interventions; no RL/transfer gain measured yet.

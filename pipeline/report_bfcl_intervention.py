@@ -64,19 +64,23 @@ def audit_sampling(out):
         'rollouts':len(rollouts),'token_lineage_and_mask':'passed'}
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--root',type=Path,required=True);args=ap.parse_args();root=args.root
-    p=read(ROOT/'rl/BFCL_INTERVENTION_PROTOCOL_20261008.json');common=read(root/'common/summary.json')
+    ap=argparse.ArgumentParser();ap.add_argument('--root',type=Path,required=True)
+    ap.add_argument('--protocol',type=Path,default=ROOT/'rl/BFCL_INTERVENTION_PROTOCOL_20261008.json')
+    args=ap.parse_args();root=args.root
+    p=read(args.protocol);common=read(root/'common/summary.json')
     assert common['status']=='complete' and common['optimizer_updates']==0
     cost=audit_sampling(root/'common');assert cost['new_model_tokens']==common['sampled_tokens']
     baseline=read(root/'eval_common/summary.json');assert baseline['status']=='complete'
     base_rows=lines(root/'eval_common/outcomes.jsonl');assert len(base_rows)==len(p['eval_panel'])
-    assert [{k:r[k] for k in ['task_id','split','stratum']} for r in base_rows]==p['eval_panel']
+    assert [{k:r[k] for k in p['eval_panel'][0]} for r in base_rows]==p['eval_panel']
     baseline_cost=audit_sampling(root/'eval_common');assert baseline_cost['new_model_tokens']==baseline['sampled_tokens']
-    result={'status':'audited_complete','protocol':'rl/BFCL_INTERVENTION_PROTOCOL_20261008.json',
+    result={'status':'audited_complete','protocol':str(args.protocol.resolve().relative_to(ROOT)),
         'common_probe_cost':cost,'common_payload_sha256':common['common_manifest']['payload_sha256'],
         'common_optimizer_updates':0,'common_eval_cost':baseline_cost,
         'common_rates':{s:rate(base_rows,s) for s in ['id_eval','composition_transfer_eval']},
-        'rows':[],'limitations':p['inference_limits'],'repeat_count':1}
+        'rows':[],'limitations':p['inference_limits'],'repeat_count':p.get('conditional_training_repeats',1)}
+    result['common_probe_new_tokens_in_this_wave']=0 if 'source_common_path' in p else cost['new_model_tokens']
+    result['common_probe_inherited_tokens']=cost['new_model_tokens'] if 'source_common_path' in p else 0
     for index,condition in enumerate(p['conditions']):
         condition_rows=[]
         uniform=lines(root/f'eval_{index}_uniform/outcomes.jsonl')
@@ -101,7 +105,7 @@ def main():
             assert sum(a['sampled_tokens'] for a in allocations)==train_cost['new_model_tokens']
             assert summary['overshoot']<=4*p['algorithm']['whole_completion_budget']
             rows=lines(evaluation/'outcomes.jsonl');assert len(rows)==len(base_rows)
-            assert [{k:r[k] for k in ['task_id','split','stratum']} for r in rows]==p['eval_panel']
+            assert [{k:r[k] for k in p['eval_panel'][0]} for r in rows]==p['eval_panel']
             assert [r['seed'] for r in rows]==[r['seed'] for r in base_rows]
             eval_cost=audit_sampling(evaluation);assert eval_cost['new_model_tokens']==read(evaluation/'summary.json')['sampled_tokens']
             metrics=lines(train/'metrics.jsonl');grad_steps=[r['step'] for r in metrics if r.get('grad_norm',0)>0]
@@ -136,10 +140,24 @@ def main():
             available_classes=sorted({c for task in p['conditions'][condition]
                 for c in p['training_registry'][task].split('+')})
             item['classes_available_in_condition_training_pool']=available_classes
+            exposed_classes=sorted({c for a in allocations for c in a['combination'].split('+')})
+            item['classes_actually_exposed_in_branch']=exposed_classes
+            item['heldout_constituent_classes_absent_from_branch_exposure']={stratum:sorted(set(stratum.split('+'))-set(exposed_classes))
+                for stratum in sorted({r['stratum'] for r in rows if r['split']=='composition_transfer_eval'})}
             item['heldout_constituent_classes_absent_from_condition_pool']={stratum:sorted(set(stratum.split('+'))-set(available_classes))
                 for stratum in sorted({r['stratum'] for r in rows if r['split']=='composition_transfer_eval'})}
             for s in ['id_eval','composition_transfer_eval']:
                 item[s]={'rate':rate(rows,s),'G':rate(rows,s)-rate(base_rows,s),'V':rate(rows,s)-rate(uniform,s)}
+            if 'evaluation_role' in p['eval_panel'][0]:
+                item['evaluation_roles']={}
+                for role in sorted({r['evaluation_role'] for r in rows}):
+                    subset=[r for r in rows if r['evaluation_role']==role]
+                    base_subset=[r for r in base_rows if r['evaluation_role']==role]
+                    uniform_subset=[r for r in uniform if r['evaluation_role']==role]
+                    item['evaluation_roles'][role]={s:{'tasks':sum(r['split']==s for r in subset),
+                        'rate':rate(subset,s),'G':rate(subset,s)-rate(base_subset,s),
+                        'V':rate(subset,s)-rate(uniform_subset,s)} for s in ['id_eval','composition_transfer_eval']
+                        if any(r['split']==s for r in subset)}
             probabilities=restored['initial_probabilities'];signals=restored['initial_signals']
             combo_probabilities=Counter()
             for task,probability in probabilities.items():combo_probabilities[p['training_registry'][task]]+=probability
@@ -151,7 +169,7 @@ def main():
             # Matched strata are secondary, not chosen after seeing results.
             matched=[r for r in rows if condition in r['stratum']]
             item['matched_strata_outcomes']=[r['task_id'] for r in matched]
-            for s in ['id_eval','composition_transfer_eval']:
+            for s in ['id_eval','composition_transfer_eval'] if matched else []:
                 base_matched=[r for r in base_rows if condition in r['stratum']]
                 uniform_matched=[r for r in uniform if condition in r['stratum']]
                 item['matched_'+s]={'rate':rate(matched,s),
@@ -169,6 +187,19 @@ def main():
     result['initial_signal_variation']={'all_conditions':signal_variation(result['rows']),
         'within_condition':{c:signal_variation([r for r in result['rows'] if r['condition']==c]) for c in p['conditions']}}
     result['analysis_addendum']='gpt8 feedback: retain original strategies/budgets; flag constant Coverage deficit, retain recorded task/combo probabilities and exposure, separate estimation granularity from update/transfer efficacy. No post-result replacement predictor or regression.'
+    if p.get('conditional_training_repeats',1)>1:
+        result['conditional_repeat_scope']='Distinct training/allocation seeds, conditional on one inherited common policy/probe history; not independent common histories or learner stages.'
+        result['conditional_repeat_descriptive_summary']={}
+        for rule in p['rules']:
+            repeated=[r for r in result['rows'] if r['rule']==rule]
+            result['conditional_repeat_descriptive_summary'][rule]={}
+            for role in repeated[0]['evaluation_roles']:
+                result['conditional_repeat_descriptive_summary'][rule][role]={}
+                for split in repeated[0]['evaluation_roles'][role]:
+                    result['conditional_repeat_descriptive_summary'][rule][role][split]={
+                        metric:{'values':(values:=[r['evaluation_roles'][role][split][metric] for r in repeated]),
+                            'mean':sum(values)/len(values),'range':max(values)-min(values)}
+                        for metric in ['rate','G','V']}
     target=root/'comparison.json';target.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({'audit':'passed','result':str(target),'common_rates':result['common_rates'],
         'rows':[{k:r[k] for k in ['condition','rule','id_eval','composition_transfer_eval','optimizer_steps','fresh_nonzero_gradient_steps','same_task_sequence_as_uniform']} for r in result['rows']]},ensure_ascii=False))
