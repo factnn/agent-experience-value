@@ -25,3 +25,7 @@
 源代码、协议及 CPU 检查先 commit/push，再启动。独立会话 CPU 调度器负责固定队列、硬停止、原始 token/模型 mask、成本、剂量标签与全开发面板审计；每个训练组、保存点和评测题的进展自动 commit/push，保留日志、PID、启动命令和失败。权重与本地完整二进制状态不上传 Git，manifest/checksum 与原始文字证据上传。
 
 一条轨迹的三个相关剂量和一个开发面板不能支撑稳定排序、最优剂量、独立阶段效应或跨模型规律。后续范围保持 [25](25_gpt9_research_roadmap.md)。
+
+## 实际启动验收
+
+七项 CPU 检查和数据/祖先协议/源 payload checksum 预检通过。GPU 4 已启动单轨迹训练，现场恢复权重 fingerprint、原始 AdamW step 0、90,122 token 历史和新分配 seed 全部核对通过，见 [启动验收](rl/bfcl_intervention_dose_20261010/launch_acceptance.json)。新的真实模型保存/组件往返尚待首个剂量检查点，不提前宣称通过。
