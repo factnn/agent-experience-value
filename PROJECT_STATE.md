@@ -1,3 +1,7 @@
+**2026-10-10 全池批次完成：** 六分支/七评测全部完成并审计通过；Uniform 留出 9/24、7/24，Frontier 5/24、7/24，Coverage 4/24、9/24，起点 5/24。暂不作稳定规则排名，完整结果见 [28](28_full_pool_followup_complete_result.md)。
+
+**下一步已冻结：** 一条 Uniform 连续轨迹，32K/64K/128K 完整组件检查点，仅全部 22 开发题测量，不从留出结果选阶段；一张 GPU 4，详见 [29](29_dose_execution_protocol.md) 及 [实时状态](rl/STATUS.json)。下方 10 月 9 日启动/部分完成记录保留为历史。
+
 **2026-10-09 首个完整新面板对比：** seed0 Uniform 的新增留出题 5/24→9/24，ID 5/14不变；Frontier 的 ID 5/14→7/14，留出5/24不变。原始 token/面板/成本审计通过，但一条件 seed、Coverage/seed1未齐，不给稳定规则排名；详见 [27](27_full_pool_seed0_first_complete_result.md)。
 
 **可并行准备：** 当前三卡批次继续；下一剂量诊断的阈值、开发评测和完整检查点实现要求已整理于 [26](26_dose_experiment_preparation.md)，尚未启动新 GPU 实验。

@@ -1,7 +1,9 @@
 # Agent Experience Value
 
-> **当前主线（2026-10-08）：测量哪些经验价值信号预测在线 RL 后的迁移收益。保留大 scope，按证据收窄结论。**
+> **当前主线（2026-10-10）：测量哪些经验价值信号预测在线 RL 后的迁移收益。保留大 scope，按证据收窄结论。**
 > 先读 [PROJECT_STATE.md](PROJECT_STATE.md)、[研究目标与证据层级](15_scope_and_evidence_ladder.md)、[基准/分叉设计](16_benchmark_and_fork_design.md)；工程 pilot 已完成，见 [结果与识别局限](17_allocation_pilot_result.md)。当前 RL 运行状态见 [rl/STATUS.json](rl/STATUS.json)，实验记录见 [rl/README.md](rl/README.md)。以下保留早期 SFT 阶段的研究叙述和实验记录；其中 SFT 优先级、标签瓶颈、投资闸门与后续建议已被当前主线取代。SFT 负结果不构成对 RL 或经验分配研究的否定。
+
+**2026-10-10:** 全池六分支和七个完整评测审计通过，见 [完整条件重复结果](28_full_pool_followup_complete_result.md)。下一步是一条 Uniform 连续轨迹的开发集剂量诊断，见 [冻结执行设计](29_dose_execution_protocol.md)；研究仍向阶段、预测验证和规模/家族外推推进。
 
 **Which properties of interactive agent experience predict post-training transfer to unseen
 tasks, tools and environments?**
@@ -21,10 +23,9 @@ V_transfer(S ; π) = M_OOD( Train(π, S) ) − M_OOD( π )
 and ask which experience properties predict it, under one protocol: same base checkpoint,
 same token budget, same optimizer, same held-out evaluation.
 
-## Status — please read before judging the contents
+## Historical SFT status — superseded by the RL results above
 
-**There is no capability result in this repository yet.** Nothing here shows that any
-experience property predicts transfer, because that experiment has not been run.
+This section records the early SFT investigation. Current online RL capability measurements are in [the completed full-pool result](28_full_pool_followup_complete_result.md); a stable signal-to-transfer prediction law has not yet been established.
 
 What does exist:
 
