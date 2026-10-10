@@ -75,6 +75,19 @@ def main():
         'protocol_sha256':protocol_hash,'train_cost':cost,'inherited_probe_tokens':90122,'new_probe_tokens':0,
         'new_generation_tokens_total':cost['new_model_tokens']+all_eval_tokens,
         'checkpoint_labels':labels,'unique_policy_evaluations':rows,'limitations':p['inference_limits']}
+    amendment_path=ROOT/'rl/BFCL_DOSE_RESOURCE_AMENDMENT_20261010.json'
+    if amendment_path.exists():
+        amendment=read(amendment_path)
+        assert amendment['unchanged_scientific_protocol_sha256']==protocol_hash
+        launches=[read(path) for path in OUT.glob('*.launch.json')]
+        assert all(r['gpu'] in amendment['allowed_gpus'] for r in launches)
+        assert all(r['hard_seconds']==p['schedule']['hard_seconds_per_process'] for r in launches)
+        assert read(OUT/'scheduler.json')['max_simultaneous_gpus']<=4
+        result['resource_execution']={'amendment':str(amendment_path.relative_to(ROOT)),
+            'amendment_sha256':hashlib.sha256(amendment_path.read_bytes()).hexdigest(),
+            'gpus_used':sorted({r['gpu'] for r in launches}),
+            'maximum_authorized_simultaneous_gpus':amendment['max_simultaneous_gpu_processes'],
+            'training_resampled':False,'note':'Parallel development panels; no evaluation feedback to training.'}
     write(OUT/'comparison.json',result)
     print(json.dumps({'status':result['status'],'dose_labels':len(labels),
         'unique_panels':len(rows),'development_successes':[r['successes'] for r in rows]}))
