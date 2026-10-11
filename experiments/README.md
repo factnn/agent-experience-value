@@ -38,3 +38,4 @@
 | [E031](E031.md) | failure | `rl/bfcl_backward_diagnostic_20261011/default_1/failure.json` | 已分析 |
 | [E032](E032.md) | scheduler_failure | `rl/bfcl_backward_diagnostic_20261011/default_1/scheduler_failure.json` | 已分析 |
 | [E033](E033.md) | failures | `rl/bfcl_backward_diagnostic_20261011/failures.json` | 已分析 |
+| [E034](E034.md) | failures | `rl/bfcl_backward_diagnostic_v2_20261011/failures.json` | 待分析 |
