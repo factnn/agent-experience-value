@@ -21,3 +21,13 @@ CPU 比较事先使用 rtol=2e-5、atol=2e-7，容许 B=4 与四次 B=1 的浮�
 梯度缩小四倍不等于 AdamW 参数更新缩小四倍；动量、epsilon、weight decay 和裁剪需要分别考虑。不能由此直接解释历史剂量负收益，不能回写或缩放历史参数/动量，也不能悄悄把旧实验更名为修正后的算法。
 
 39 继续使用历史缩放直至冻结配对完成。随后先验证候选在完整 Trainer 循环中的分组/累积不变，再对新科学运行明确冻结使用的算法及数值设置；若改用单次归一化，必须保留旧证据并把它作为新配置。阶段内各干预臂和 Uniform 参照使用同一契约。此 CPU 检查没有消耗保留迁移题，也不产生经验价值收益标签。
+
+## 完整 CPU Trainer 循环补验（E041）
+
+实际 CPU Trainer.train 循环检查通过。历史/候选各从相同 tiny GPT2 参数开始，均按 0/1/2/3 顺序累计四微批、执行一次真实 AdamW 更新。候选 Accelerator backward 除数在 on_train_begin 与 train 结束后均为 1，HF 累积数仍为 4；优化器前梯度匹配独立整组目标，相对 L2 误差 9.1371e-8。历史路径依旧是目标梯度的四分之一。
+
+[原始结果](rl/bfcl_loss_normalization_cpu_20261011/full_loop/summary.json)、[复现脚本](pipeline/check_bfcl_loss_normalization_loop.py)。对照在 optimizer step 前比较梯度，实际执行 AdamW 并确认参数发生变化；所有 generate 路径均设为报错，不以合成轨迹冒充采样。tokenizer 仅提供 Trainer 接口，fixture 的实际输入 ID 限于小模型词表，未使用超出该词表的特殊 ID 做生成。
+
+固定合成输入、CPU 小模型、单次更新；没有生成。此检查证明完整 CPU loop 不会重置候选缩放设置，不代表 Qwen/LoRA GPU 或恢复分叉验收。两种配置的终点参数不同，不能把历史权重/AdamW 直接当修正后重训结果。zero 标量 loss 也不代表没有梯度。
+
+继续 39 的已冻结历史缩放 GPU 分叉对照；完成审阅后为候选单次归一化做独立 Qwen/LoRA GPU 接口及恢复验证，预先冻结配置和边界，不修改当前运行。随后科学矩阵统一算法契约并明确祖先历史。
