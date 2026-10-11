@@ -50,3 +50,5 @@
 [45](../45_stage0_task_opportunity_probe.md) 固定 step0 政策、全部87训练任务/16来源组，每题 feature4 + 独立validation4；各组先封存预测，再验证。主要指标为任务级Beta预测相对当前组级Beta预测的来源组宏平均Brier差。四GPU预排队，无optimizer更新，不使用21保留题。先冻结/push协议与代码再启动；16组完成且原始token/预测收据审计后解释局部校准，继续来源组RL迁移G/V，不把局部代理当迁移价值。
 
 **45 启动守卫退出：** 监督器1869880已退出，未启动任何GPU子进程、0新token。初始Goal连续unknown，随后原生get_goal及同daemon确认SQLite522 I/O错误。故障记录在原输出root/failures.json；协议与科学设计不变。等待独立incident `20261011_1626` 的仅全会话idle恢复器，恢复后先get_goal再审阅故障，并为新的执行尝试另立output root/协议版本；不绕过Goal守卫。
+
+**控制恢复/执行v2：** E053已审阅，16:29:57服务自行恢复active，无重启，原生get_goal亦active。45的新v2协议仅更换输出root与执行记录，全部科学字段不变；按既定守卫再次启动一次，不能因失败无限循环重试。

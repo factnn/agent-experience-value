@@ -12,4 +12,6 @@
 
 本次失败证据：`rl/bfcl_task_probe_stage0_20261011/failures.json` 与 `preflight_failure.log`。恢复收据预定为 `experiments/control_recovery_20261011_1626_receipt.json`，运行状态在 `experiments/.runtime/control_recovery_20261011_1626.json`。不是 Goal paused/blocked/complete 的状态变更。
 
-恢复器已以独立session启动，PID1871355；首个真实snapshot仍为两个会话、一个active、零unknown，decision=wait，尚未尝试重启。
+恢复器以独立session启动，PID1871355。实际首个snapshot显示服务已自行恢复、Goal active，decision=healthy；恢复器没有尝试重启，已写恢复收据后正常退出。之前的两会话/一active快照来自启动恢复器前的排查，不是恢复器本身的快照。通知入队未成功，当前回合已直接读取收据并重新调用原生get_goal。
+
+原生Goal恢复后的计数为1,895,313 token，低于故障前已返回的1,917,417；未修改计数，不把较低数值作为总研究开销。实验实际生成成本以Git中的原始账本为准。
