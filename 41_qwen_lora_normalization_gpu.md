@@ -17,3 +17,7 @@
 本次是实际模型的固定输入 backward/优化器接口验证，非完整 GPU Trainer.train、采样或完整学习状态分叉。来源第八步只重建权重/动量，没有重建当时 allocator/RNG。通过后结合 CPU 全循环结果，再验收修正配置的完整分叉；不能把历史参数与 AdamW 当作修正算法从头重训所得，也不由工程通过推断迁移收益。
 
 代码：`pipeline/diagnose_bfcl_normalization_gpu.py`、`pipeline/report_bfcl_normalization_gpu.py`、`pipeline/supervise_bfcl_normalization_gpu.py`。使用独立文件以保证正在运行的确定性历史对照不变。
+
+## 启动记录
+
+协议与代码先以 `b6fab608ba41d1cce468903317c0e4e0b4bad0a0` 发布，随后 15:50:22 UTC 启动监督器 PID 1854441、首例 PID 1854447。两次 Goal 读取 active，GPU 5 为 3 MiB 且无计算进程。初次启动包装器因错误的日志目录在创建子进程前退出；改用现有 `experiments/.runtime` 后成功，未执行或重试任何 GPU 例。
