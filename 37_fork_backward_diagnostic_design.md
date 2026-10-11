@@ -53,3 +53,5 @@ v2 启动前首次 Goal/资源检查通过，但逐案例的第二次检查未�
 v3 保留 v2 失败，仅增强诊断启动检查的可观察性：unknown 查询最多重查三次，间隔五秒；paused/blocked/complete/限额等明确状态立即停止，绝不自动恢复 Goal。获得 active 才启动；同一诊断案例不自动重试。三项 CPU 控制测试通过，独立输出/新协议保留全部执行史。
 
 [v3 协议](rl/BFCL_BACKWARD_DIAGNOSTIC_V3_PROTOCOL_20261011.json) SHA256：`ee9c1f777a2fde4fcf6bac1e113a1732093e668788201227cdcc021de912c220`。数值条件、顺序、模型、输入、预算和判据与 v2 一致；只增强启动检查及审计。
+
+v3 已启动于 GPU 4：监督器 PID 1812341，第一例 PID 1812360。实际逐案例 Goal 读取为 unknown→active，得到 active 后确认 GPU 4 无计算进程、显存 3 MiB 才启动；[记录](rl/bfcl_backward_diagnostic_v3_20261011/default_1.preflight.json)。四例结果仍待完成审计。
