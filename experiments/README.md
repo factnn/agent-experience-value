@@ -34,3 +34,4 @@
 | [E027](E027.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_3_step_010_e1/summary.json` | 已分析 |
 | [E028](E028.md) | audit_status | `rl/bfcl_intervention_dose_repeats_20261011/audit_status.json` | 已分析 |
 | [E029](E029.md) | complete | `rl/bfcl_stage_fork_acceptance_20261011/replay/summary.json` | 待分析 |
+| [E030](E030.md) | audit_status | `rl/bfcl_stage_fork_acceptance_20261011/audit_status.json` | 待分析 |
