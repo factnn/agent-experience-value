@@ -1,6 +1,6 @@
 # 分叉差异：固定轨迹反向传播诊断设计
 
-2026-10-11。依据 E029/E030 的实际失败准备；这是待实现与冻结的诊断设计，尚未启动 GPU，也不修改原精确重放判据。
+2026-10-11。依据 E029/E030 的实际失败准备；实现及 CPU 检查已完成，协议现已冻结，尚未启动 GPU，也不修改原精确重放判据。
 
 ## 要区分的问题
 
@@ -25,3 +25,11 @@
 - 任一条件失败：保留错误、部分证据、成本；先解释原因再设计新尝试，不自动重试到通过。
 
 这是帮助继续原科学目标的工程诊断，不是经验价值预测实验。原验收状态持续为 mismatch_requires_review；21 道保留迁移题继续关闭。完成诊断后回到 33 的来源组留出与阶段外推设计，不将恢复成功作为 Goal 完成。
+
+## 执行冻结
+
+[协议](rl/BFCL_BACKWARD_DIAGNOSTIC_PROTOCOL_20261011.json) SHA256：`4a29fbddd5c99414a53c468bdf815bc839fad71ac97ae689d3c33b4bf194dd79`。四个顺序案例 default_1/default_2/deterministic_1/deterministic_2，各自新进程；使用存档第三组，固定轨迹顺序 0/1/2/3 和诊断 RNG seed 2026101137。默认配置清除 CUBLAS_WORKSPACE_CONFIG，确定性配置在 CUDA 初始化前设为 :4096:8，并开启 strict deterministic algorithms 和 cudnn deterministic；两者均关闭 cudnn benchmark、保持 SDPA 自动选择，不支持就失败，不临场改后端。
+
+每例 GPU 硬上限 450 秒，整批 GPU 上限 1,800 秒（含终止宽限），后续 CPU 张量审计另限 120 秒。一例失败就保留并结束批次；不会重试或替换参考。源码及全部输入哈希已冻结，运行根目录已加入事件观察器。三项 CPU 测试验证真实存档 token/优势、padding/反馈排除及腐坏拒绝、差异数值计算；runner 已在禁用 CUDA 环境完成导入检查。
+
+实现沿用官方 trainer 的 AMP、GRPO loss、反向传播和梯度裁剪；仅跳过生成与打乱，输入直接来自存档。第八步重建只声称参数和 AdamW 路径，allocator/history 未用于固定输入诊断，也不把它叫完整第八步分叉。保存 inputs、起点/终点参数、四次累积梯度和前后优化器张量到本地 learning_state.pt，Git 发布元数据哈希和审计；原始张量遵循现有检查点忽略规则。
