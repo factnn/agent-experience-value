@@ -1,3 +1,5 @@
+**2026-10-11 非零阶段分叉准备：** 监控消息已真实触发自动继续；已实现旧 step 6 → 7–9 的新 trainer 重放验收，保留非零 AdamW 与历史，CPU 检查通过、GPU 验收待当前冻结批次结束后运行。见 [32](32_nonzero_stage_fork_acceptance.md)。
+
 **2026-10-11 自主研究循环：** 已启用原生 Goal；完成/失败事件自动登记为 [E001…](experiments/README.md)，监控向当前会话投递事件，由 agent 审阅后调整下一实验并 push。已冻结批次继续。机制与边界见 [RESEARCH_LOOP](experiments/RESEARCH_LOOP.md)，下一决策见 [NEXT](experiments/NEXT.md)。
 
 # Agent Experience Value

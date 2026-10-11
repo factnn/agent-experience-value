@@ -1,0 +1,46 @@
+{
+  "purpose": "nonzero AdamW state BFCL boundary-fork replay acceptance; engineering only",
+  "source_checkpoint": "rl/bfcl_intervention_dose_20261010/train/doses/step_006",
+  "source_step": 6,
+  "source_payload_sha256": "b64bbbe2b95d1fcb350eb3707d4b3224ed7239c139f18d6c04c013fb754c7d61",
+  "source_protocol": {
+    "path": "rl/BFCL_DOSE_PROTOCOL_20261010.json",
+    "sha256": "8da466f9147fe233e897a738c5e9965d2e975c389d4e5e23333c3796318391e8"
+  },
+  "reference_training": "rl/bfcl_intervention_dose_20261010/train",
+  "reference_sha256": {
+    "allocation.jsonl": "5ece01fd2d8f05336db0b6c4ae4be1a52eeb31f67cbfae7f7da19cfcec298699",
+    "groups.jsonl": "6fdc1fe9cdb800638f0f0df5375067b55a5ea0a8cb24e827e9a1a1859ea985d6",
+    "generation_calls.jsonl": "d87ab50b43b03e69861b3db28dc7a8462d1d395bdf4a9d756783646ca72eb654",
+    "rollouts.jsonl": "8db5bbd931f1962b2ef668ff1bb7fe6530e9c345ec408f4412e412548f384000",
+    "updates.jsonl": "91f15909576aa47478dabdfac37e026658dd9ac9d64679bdfb9078eedaef18bc",
+    "metrics.jsonl": "be936d62a16c2ff3d33f23630a71f71034c2db3d3cc247d3eab26abd9114c5e6"
+  },
+  "replay_updates": 3,
+  "new_token_ceiling": 98304,
+  "soft_seconds": 2700,
+  "hard_seconds": 3600,
+  "output": "rl/bfcl_stage_fork_acceptance_20261011/replay",
+  "allowed_gpus": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "max_concurrent_gpu_jobs_project": 4,
+  "launch_condition": "Only after current dose repeats scheduler has exited; inspect final audit, Goal state, and genuinely idle GPU before launch. Never preempt current jobs.",
+  "selection_basis": "Old discovery step 6 has nonzero Adam state; next recorded updates include two zero-fresh-gradient momentum updates and one nonzero-fresh-gradient update. No held-out or repeat-panel score selection.",
+  "success_criteria": [
+    "exact restored component values in a new trainer",
+    "next three allocator choices, probabilities, signals, raw tokens, masks, rewards, advantages and gradient norms match frozen recorded trajectory",
+    "all three before/after parameter fingerprints and endpoint match",
+    "inherited cost retained, all newly sampled tokens charged",
+    "completed accumulation boundaries and fresh generation groups verified"
+  ],
+  "on_failure": "Preserve mismatches and partial evidence; investigate before any scientific stage forks. No silent retry.",
+  "limits": [
+    "Engineering replay of already observed training data, not a new scientific repeat.",
+    "Local HF counters with explicit cumulative mapping; not arbitrary HF dataloader resume.",
+    "Initial acceptance only for original dose snapshots; nested forks rejected."
+  ]
+}
