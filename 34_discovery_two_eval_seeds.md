@@ -2,6 +2,10 @@
 
 2026-10-11。旧发现轨迹、repeat 1/2 的三个检查点及共享起点，在两个评测 seed 下的全部面板已审计通过。核对协议、政策指纹、任务顺序、采样 seed、原始 token/mask 与成本。repeat 3 尚未齐，不提前给跨训练重复的稳定性结论。
 
+![已审计完整轨迹的剂量曲线；第三条新重复待齐](figures/bfcl_completed_dose_curves_20261011.png)
+
+图只使用完整且已审计的双 seed 曲线；横轴是实际新生成训练 token，纵轴是相对同 seed 起点的净成功题数。连线仅连接检查点，不代表连续效应估计；未完成的 repeat 3 不画部分曲线。[PDF](figures/bfcl_completed_dose_curves_20261011.pdf) 与 [来源/绘图数值](figures/bfcl_completed_dose_curves_20261011.sources.json) 可单独导出，图表核对已通过。
+
 ## 旧发现轨迹
 
 | 实际训练 token | 起点 0 | 32K 标签 40,641 | 64K 标签 75,677 | 128K 标签 139,839 |
@@ -65,4 +69,5 @@ repeat 2 所有已测检查点均未高于同 seed 起点；这不支持这条�
 python pipeline/report_bfcl_discovery_repeats.py
 python pipeline/report_bfcl_training_repeat.py --protocol rl/BFCL_DOSE_REPEATS_PROTOCOL_20261011.json --repeat repeat_1 --output rl/bfcl_repeat_1_two_eval_seeds_20261011.json
 python pipeline/report_bfcl_training_repeat.py --protocol rl/BFCL_DOSE_REPEATS_PROTOCOL_20261011.json --repeat repeat_2 --output rl/bfcl_repeat_2_two_eval_seeds_20261011.json
+python pipeline/plot_bfcl_completed_dose_curves.py
 ```
