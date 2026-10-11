@@ -53,5 +53,5 @@
 | [E046](E046.md) | complete | `rl/bfcl_normalization_gpu_20261011/single_2/summary.json` | 已分析 |
 | [E047](E047.md) | audit_status | `rl/bfcl_task_probe_statistics_20261011/audit_status.json` | 已分析 |
 | [E048](E048.md) | complete | `rl/bfcl_deterministic_pair_20261011/continuous/summary.json` | 已分析 |
-| [E049](E049.md) | audit_status | `rl/bfcl_deterministic_pair_20261011/audit_status.json` | 待分析 |
-| [E050](E050.md) | complete | `rl/bfcl_deterministic_pair_20261011/restored/summary.json` | 待分析 |
+| [E049](E049.md) | audit_status | `rl/bfcl_deterministic_pair_20261011/audit_status.json` | 已分析 |
+| [E050](E050.md) | complete | `rl/bfcl_deterministic_pair_20261011/restored/summary.json` | 已分析 |
