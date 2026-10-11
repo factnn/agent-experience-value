@@ -1,3 +1,5 @@
+**2026-10-11:** 单轨迹 32K/64K/128K 诊断已完整审计，见 [结果与边界](../30_dose_complete_result.md)。四卡已释放；新的非零步 trainer 分叉尚待实现验收。
+
 **2026-10-10:** 全池两次条件重复已完整审计，见 [结果](../28_full_pool_followup_complete_result.md)。单轨迹开发集剂量诊断代码和协议已冻结，见 [执行设计](../29_dose_execution_protocol.md) 与 [实时状态](STATUS.json)。下方保留历史 smoke 记录。
 
 **2026-10-09 最新：** 第一批六分支与七个完整评测已结束并审计通过，GPU 已释放；完整 G/V 与限制见 [23](../23_bfcl_intervention_complete_result.md)，下一批冻结设计见 [24](../24_bfcl_followup_design.md)。以下带日期记录保留为历史。
