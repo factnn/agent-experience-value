@@ -7,6 +7,7 @@ from statistics import mean
 from pathlib import Path
 from report_bfcl_intervention import ROOT, read, lines, audit_sampling, unchanged_policy_consistency
 from watch_bfcl_intervention import write
+from bfcl_repeat_variability import describe_variability
 
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
@@ -147,6 +148,9 @@ def main():
         'inherited_probe_tokens':master['inherited_probe_tokens'],'new_probe_tokens':0,
         'gpus_used':sorted({r['gpu'] for r in launches}),'limitations':master['limitations'],
         'scope':'Conditional development diagnosis; no best dose, test transfer claim, fitted predictor or significance assertion.'}
+    result['supplementary_variability'] = describe_variability(
+        rows, baseline, [r['name'] for r in master['training_repeats']],
+        [e['name'] for e in master['evaluation_repeats']], master['dose_thresholds'])
     write(root/'comparison.json',result)
     print(json.dumps({'status':result['status'],'new_training_repeats':3,
         'new_eval_panels':len(new_evals),'unchanged_policy_control_flagged':result['unchanged_policy_control_flagged']}))
