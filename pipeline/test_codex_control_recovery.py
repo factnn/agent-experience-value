@@ -1,8 +1,14 @@
 import unittest
-from recover_codex_goal_when_idle import action
+from recover_codex_goal_when_idle import action, incident_paths
 
 
 class IdleRecoveryTests(unittest.TestCase):
+    def test_distinct_incidents_preserve_old_records(self):
+        self.assertEqual(incident_paths(None), ('control_recovery.json', 'experiments/control_recovery_receipt.json'))
+        self.assertNotEqual(incident_paths(None), incident_paths('20261011_1626'))
+        for invalid in ['../old', '', 'space name']:
+            with self.assertRaises(ValueError):incident_paths(invalid)
+
     def test_never_interrupt_active_or_unknown_sessions(self):
         for s in [{'sqlite_522': True, 'all_idle': False},
                   {'sqlite_522': False, 'all_idle': True},

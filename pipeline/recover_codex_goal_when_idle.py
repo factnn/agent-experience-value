@@ -3,7 +3,9 @@
 No Goal mutations, database writes, new model sessions, or GPU process signals.
 Run detached so the current conversation can finish before an eligible restart.
 """
+import argparse
 import asyncio
+import re
 from datetime import datetime, timezone
 import fcntl
 import json
@@ -76,8 +78,14 @@ def detached_workers():
     return True
 
 
-def persist_receipt(record):
-    path = 'experiments/control_recovery_receipt.json'
+def incident_paths(incident):
+    if incident is not None and not re.fullmatch(r'[a-z0-9_]+', incident):
+        raise ValueError('Incident ID must be a safe explicit name')
+    suffix = '_'+incident if incident else ''
+    return 'control_recovery'+suffix+'.json', 'experiments/control_recovery'+suffix+'_receipt.json'
+
+
+def persist_receipt(record, path):
     write(ROOT / path, record)
     commands = [['git', 'add', '--', path],
                 ['git', 'commit', '--only', '-m', 'Record bounded idle-only Goal control recovery', '--', path],
@@ -90,14 +98,18 @@ def persist_receipt(record):
 
 
 def main():
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--incident', help='Explicit distinct incident; never resets prior attempt records')
+    args=parser.parse_args()
+    state_name, receipt_path = incident_paths(args.incident)
     home = Path(os.environ['CODEX_HOME'])
     thread = os.environ['CODEX_THREAD_ID']
     runtime = ROOT / 'experiments/.runtime'
     with (runtime / 'control_recovery.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        state_path = runtime / 'control_recovery.json'
+        state_path = runtime / state_name
         record = json.loads(state_path.read_text()) if state_path.exists() else {
-            'started_at_epoch': time.time(), 'attempted_restart': False}
+            'started_at_epoch': time.time(), 'attempted_restart': False, 'incident':args.incident}
         idle = 0
         while time.time() - record['started_at_epoch'] < 21600:
             try:
@@ -109,11 +121,11 @@ def main():
                 write(state_path, record)
                 if decision == 'healthy':
                     record['status'] = 'service_goal_query_recovered'
-                    record['publication_ok'] = persist_receipt(record)
+                    record['publication_ok'] = persist_receipt(record, receipt_path)
                     # No resume/set operation: notify only an already active Goal.
                     if goal_status(home, thread) == 'active':
                         message = ('【自动控制恢复通知，非用户新指令】Goal 服务查询已恢复；'
-                                   '先 get_goal，非 active 不推进。读取 experiments/control_recovery_receipt.json '
+                                   f'先 get_goal，非 active 不推进。读取 {receipt_path} '
                                    '并补审阅已有完整事件，检查四卡队列。恢复器没有修改 Goal 或数据库。')
                         result = subprocess.run(['codex', 'queue', '--thread', thread, '--message', message],
                                                 capture_output=True, timeout=30)
@@ -140,7 +152,7 @@ def main():
             time.sleep(30)
         record['status'] = 'bounded_wait_expired_no_further_restart'
         write(state_path, record)
-        persist_receipt(record)
+        persist_receipt(record, receipt_path)
 
 
 if __name__ == '__main__':
