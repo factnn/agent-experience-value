@@ -68,3 +68,4 @@
 | [E061](E061.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_14/summary.json` | 待分析 |
 | [E062](E062.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_06/summary.json` | 待分析 |
 | [E063](E063.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_00/summary.json` | 待分析 |
+| [E064](E064.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_04/summary.json` | 待分析 |
