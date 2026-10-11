@@ -78,7 +78,9 @@ def check_evaluation(path,p,spec,policy):
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument('--protocol',type=Path,required=True);args=ap.parse_args()
+    ap=argparse.ArgumentParser();ap.add_argument('--protocol',type=Path,required=True)
+    ap.add_argument('--output',type=Path,help='Optional versioned report; retain archived reports referenced by frozen protocols')
+    args=ap.parse_args()
     master=read(args.protocol);root=ROOT/master['output'];old=ROOT/master['previous_wave']['path']
     assert digest(old/'comparison.json')==master['previous_wave']['comparison_sha256']
     assert not read(root/'failures.json')
@@ -111,7 +113,8 @@ def main():
                     'evaluation':evaluated['path'],'policy_fingerprint':label['policy_fingerprint'],
                     'successes':evaluated['successes'],'tasks':22,
                     'G':(evaluated['successes']-base['successes'])/22,'paired_outcomes':pairs,
-                    'fresh_nonzero_gradient_steps':training['fresh_nonzero_gradient_steps']}
+                    'fresh_nonzero_gradient_steps':[s for s in training['fresh_nonzero_gradient_steps'] if s<=step],
+                    'full_run_fresh_nonzero_gradient_steps':training['fresh_nonzero_gradient_steps']}
                 rows.append(item)
                 # Require exact parameter identity before using unchanged inference control.
                 manifest=read(policy/'components/manifest.json')
@@ -151,7 +154,9 @@ def main():
     result['supplementary_variability'] = describe_variability(
         rows, baseline, [r['name'] for r in master['training_repeats']],
         [e['name'] for e in master['evaluation_repeats']], master['dose_thresholds'])
-    write(root/'comparison.json',result)
+    output=args.output if args.output else root/'comparison.json'
+    output.parent.mkdir(parents=True,exist_ok=True)
+    write(output,result)
     print(json.dumps({'status':result['status'],'new_training_repeats':3,
         'new_eval_panels':len(new_evals),'unchanged_policy_control_flagged':result['unchanged_policy_control_flagged']}))
 
