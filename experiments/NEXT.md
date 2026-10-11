@@ -26,3 +26,7 @@
 - 更大 scope 见 15、25。已检查本地目录没有完整 8B/另一家族快照；具体模型/revision 和运行验收另行确定，目前未下载。主证据之后再按最需澄清的轴推进规模、家族、环境，不把两模型比较叫 scaling law。
 
 控制面恢复记录见 control_recovery_receipt.json 和 CONTROL_INCIDENT_20261011.md；观察器使用 daemon Goal API，不侧读 SQLite。每个实质进展显式 commit/push，所有新实验先冻结协议并登记输出根目录。批次结束不是 Goal 完成。
+
+## 并行归一化 GPU 验证
+
+[41](../41_qwen_lora_normalization_gpu.md) 在独立空闲 GPU 5 上安排三例固定轨迹检查：历史缩放一次、单次归一化两次。先冻结并 push 再启动；新生成预算 0，逐微批梯度按四倍精确相等和候选自身重复精确相等判定。当前 39 的历史缩放分叉保持不变。该验证不是完整 GPU Trainer.train 或完整状态分叉；通过也不直接宣称阶段科学实验已验收。

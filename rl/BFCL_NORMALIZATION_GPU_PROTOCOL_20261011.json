@@ -1,0 +1,134 @@
+{
+  "kind": "qwen_lora_fixed_input_single_normalization",
+  "registered_at": "2026-10-11T15:49:47.946765+00:00",
+  "purpose": "Validate candidate normalization on real Qwen/LoRA GPU backward with frozen archived data, not a scientific stage fork.",
+  "source_protocol": "rl/BFCL_DOSE_PROTOCOL_20261010.json",
+  "reference_training": "rl/bfcl_intervention_dose_20261010/train",
+  "source_checkpoint": "rl/bfcl_intervention_dose_20261010/train/doses/step_006",
+  "source_fingerprint": "8357ab450588390e92986304c07bf256b62faf571f37c9943dca8146f6306b7f",
+  "zero_gradient_reconstruction": [
+    {
+      "step": 7,
+      "fingerprint": "87b0846ff856011bf2205570ebeb92380426cd388684b62c7b202b997580c85a"
+    },
+    {
+      "step": 8,
+      "fingerprint": "d5d992542af6d8aabbb2f80441cc2bb3496988033f8471fe29c08b79b737a089"
+    }
+  ],
+  "output_root": "rl/bfcl_normalization_gpu_20261011",
+  "cases": [
+    {
+      "name": "legacy",
+      "deterministic": true,
+      "single_normalization": false
+    },
+    {
+      "name": "single_1",
+      "deterministic": true,
+      "single_normalization": true
+    },
+    {
+      "name": "single_2",
+      "deterministic": true,
+      "single_normalization": true
+    }
+  ],
+  "rollout_order": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "fixed_backward_seed": 2026101137,
+  "archived_policy_step": 8,
+  "new_sampled_tokens": 0,
+  "fresh_updates_per_case": 1,
+  "hard_seconds_per_case": 450,
+  "hard_seconds_total": 1350,
+  "cpu_audit_seconds_after_gpu_batch": 120,
+  "termination_grace_seconds": 30,
+  "allowed_gpus": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "max_simultaneous_gpus": 1,
+  "automatic_retry": false,
+  "deterministic_configuration": {
+    "torch.use_deterministic_algorithms": true,
+    "warn_only": false,
+    "cudnn.deterministic": true,
+    "cudnn.benchmark": false,
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8",
+    "attention_backend": "sdpa automatic selection; unsupported deterministic operators fail without fallback"
+  },
+  "cost_accounting": "No generate/environment calls; archived tokens not recharged. Track GPU wall time and input positions, excluding recompute multiplicity. Original replay 31078 tokens retained separately.",
+  "limitations": [
+    "Fixed microbatch order and RNG do not claim historical order/RNG reconstruction.",
+    "Reconstructed source8 weights/AdamW are not a reconstructed complete source8 allocator/RNG state.",
+    "Small scalar differences alone do not establish harmlessness.",
+    "Deterministic diagnostic agreement requires a later newly frozen continuous-versus-restored pair before scientific stage forks."
+  ],
+  "required_review_events": [
+    "E030",
+    "E039",
+    "E040",
+    "E041"
+  ],
+  "goal_read_contract": {
+    "unknown_attempts": 3,
+    "unknown_retry_interval_seconds": 5,
+    "explicit_nonactive": "stop immediately without retry or changing Goal",
+    "active_required_for_each_gpu_child": true
+  },
+  "comparisons": [
+    [
+      "single_1",
+      "single_2"
+    ],
+    [
+      "legacy",
+      "single_1"
+    ]
+  ],
+  "acceptance": {
+    "gradient_scaling": "Every accumulated microbatch candidate gradient equals exactly 4 times same-GPU legacy gradient; no tolerance relaxation.",
+    "repeat": "Two independent candidate processes have exact inputs, initial parameters/AdamW, microbatch losses/gradients, final parameters and AdamW; nonzero finite gradient.",
+    "failure": "Retain mismatch or failure without retry or changing criterion.",
+    "limits": "Official training_step plus manual optimizer, not full GPU Trainer.train or sampling/state-fork acceptance. Historical moments remain unchanged; not corrected retraining history."
+  },
+  "decisions": {
+    "pass": "Combine CPU full-loop and this GPU interface evidence; next require corrected-config full-state sampling fork before science matrix.",
+    "mismatch": "Review tensor distances and metadata without modifying frozen historical or current pair.",
+    "failure": "Preserve evidence and stop without automatic retry."
+  },
+  "input_sha256": {
+    "pipeline/bfcl_fixed_rollout_inputs.py": "9ade9ff399c0830f96586696059a2adb46fca2a613865e01ef831a3cd717e18b",
+    "pipeline/supervise_bfcl_stage_fork.py": "5674eef2d6269b77a3e013cde77735dcd04ae7493a6240ade678e0a141273a9d",
+    "pipeline/codex_goal_status.py": "1e422d257744c0743630973a3ac5c698d243c05f971c555520fda79ba98b0e07",
+    "pipeline/run_bfcl_intervention.py": "6bf328c12cba807dea19e3eb22397c8410613f323753004fbaf7504fd30ec051",
+    "pipeline/rl_learning_state.py": "b7d21872a410885651444644163f72d84e9d36226634a7ceb0544e19b426ddfe",
+    "pipeline/accept_bfcl_grpo.py": "32a6c4682dfe866d1979feeb6c3decb04d2faac6b348af25e14ff2c2a68e8aca",
+    "pipeline/bfcl_dose_checkpoint.py": "1d75e5a333172ea31099d22f9c5769c688a4485dfbdc9711b26a5db50e62c2b8",
+    "pipeline/train_rl_smoke.py": "d246893289fc539128e20e12edae308a8cd37dcc7c061636dffd0cab29a346b9",
+    "rl/BFCL_DOSE_PROTOCOL_20261010.json": "8da466f9147fe233e897a738c5e9965d2e975c389d4e5e23333c3796318391e8",
+    "rl/bfcl_intervention_dose_20261010/train/rollouts.jsonl": "8db5bbd931f1962b2ef668ff1bb7fe6530e9c345ec408f4412e412548f384000",
+    "rl/bfcl_intervention_dose_20261010/train/groups.jsonl": "6fdc1fe9cdb800638f0f0df5375067b55a5ea0a8cb24e827e9a1a1859ea985d6",
+    "rl/bfcl_intervention_dose_20261010/train/updates.jsonl": "91f15909576aa47478dabdfac37e026658dd9ac9d64679bdfb9078eedaef18bc",
+    "rl/bfcl_intervention_dose_20261010/train/doses/step_006/components/manifest.json": "b2836bd8262f6b3888c0fc2d972d8a66416f5c4b72740301072e435349b51227",
+    "rl/bfcl_intervention_dose_20261010/train/doses/step_006/components/learning_state.pt": "b64bbbe2b95d1fcb350eb3707d4b3224ed7239c139f18d6c04c013fb754c7d61",
+    ".venv-rl/lib/python3.10/site-packages/trl/trainer/grpo_trainer.py": "7a112604cd51186c73817b4d00ac9e2d752d674b8e013581395b27732d9321c7",
+    ".venv-rl/lib/python3.10/site-packages/trl/trainer/utils.py": "e1a6acd42c169f731056bb02b14f0096008c6def977822f325c1a7bf1f645d1f",
+    ".venv-rl/lib/python3.10/site-packages/transformers/trainer.py": "fa7764933aaff94ae272cf3a545ed78e85c54c0b62ab1e309e3af6321095a095",
+    ".venv-train/lib/python3.10/site-packages/accelerate/accelerator.py": "b16097a6b8fc372e580eeb35bd94f1e88c6d9dc80ab340f3d05c1daf3e64e14e",
+    "pipeline/test_bfcl_accumulation_contract.py": "815ef33009f566db83ceed5621aef4022e32782590dc7871f1d1d4b340dbeeb7",
+    "pipeline/bfcl_diagnostic_preflight.py": "8811de28cee6f8bd2e8405ee9bd9e707c8b72430488d29087175893e3ad1154a",
+    "pipeline/test_bfcl_diagnostic_preflight.py": "5bd1c606e38c4177ce9937cc6293bd27a79d655ce83ec92edc1e0313d2aceea3",
+    "pipeline/diagnose_bfcl_normalization_gpu.py": "393a0223e1e75491e2c3da74b86dea36be1f1d43f3936dafe2b4ba415bc7ce04",
+    "pipeline/report_bfcl_normalization_gpu.py": "f704b5a21f2fa4660bf3863b207e985f9dfe2286030a783bb5edcba138c97a79",
+    "pipeline/supervise_bfcl_normalization_gpu.py": "ff88407e00f8f8633d452d351759088b37e439967592ad2bf3cf35d3630769ba",
+    "pipeline/bfcl_loss_scaling_contract.py": "65eca413a5dc8eb1a4d1adc45a9995500305457f23a6ce4d95dab72c9a1de702"
+  }
+}
