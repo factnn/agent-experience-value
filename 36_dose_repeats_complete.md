@@ -59,3 +59,7 @@
 本批不支持据单峰选择最佳剂量，也不支持放弃经验价值大目标。它给出的现实约束是：收益测量噪声足以改变局部方向，而较大剂量在这些条件重复里未带来净改善。下一步仍直接检验采样前信号能否预测迁移 G/V 及阶段依赖，再按证据推进规模、家族和环境外推。资源场景及其未计入成本见 [33](33_group_prediction_design_inventory.md)，尚未选定大矩阵。
 
 批次完成不等于 Goal 完成。
+
+## 2026-10-11 报告字段更正（E044）
+
+[修订 comparison](rl/bfcl_dose_checkpoint_report_correction_20261011/comparison.json) 将每检查点 fresh 非零梯度步骤截断至该步，另保留全程字段。24 行中 16 行修正；[审计](rl/bfcl_dose_checkpoint_report_correction_20261011/audit_status.json) 确认所有 G、逐题结果、统计与成本精确不变。原 comparison 保留供冻结 SHA 引用；后续查看检查点梯度历史使用修订报告。不重跑 GPU。

@@ -36,3 +36,5 @@
 确认 `report_bfcl_dose_repeats.py` 给每个检查点填入了整条运行的 `fresh_nonzero_gradient_steps`。已改为截至该检查点（`s <= step`）的列表，另加 `full_run_fresh_nonzero_gradient_steps` 留全程。新增 `--output` 可生成独立修订报告，保留已冻结协议或审计引用的原报告及 SHA。
 
 修订输出：`rl/bfcl_dose_checkpoint_report_correction_20261011/comparison.json`。重新读取原始训练/评测证据执行原完整审计，再比较两版：仅上述字段发生变化；G、逐题结果、描述统计和 token 成本必须精确不变，不重跑训练/生成。初次 CPU 报告写入因新目录不存在退出，补充创建父目录后重新执行；没有 GPU 重跑或结果丢失。
+
+补记：41 的 GPU 检查在本次审阅期间完成，四微批四倍缩放精确一致、候选重复梯度/参数/AdamW 精确一致，0 新生成 token。见 E045；39 仍在运行。
