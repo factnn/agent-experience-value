@@ -12,3 +12,15 @@
 - 6 项观察器测试通过，覆盖服务端错误不通知、paused/limited 不通知、错误线程不采信、事件去重与保留人工审阅。
 
 当前边界：观察器的查询路径已修复，但服务端自身的 I/O 错误尚未确认恢复。自动研究决策应在原生 Goal 状态可确认后继续；当前冻结实验不受影响。该记录不是 Goal paused/blocked/complete 的状态变更。
+
+## 后续：仅在全部会话空闲时恢复服务
+
+再次排查确认同一 daemon 加载了三个会话，除了本研究线程，还有另一条活跃会话。因此不立即重启。已准备 `pipeline/recover_codex_goal_when_idle.py`：
+
+- 只对已确认的 SQLite 522 I/O 错误考虑重启；其他错误只等待。
+- 连续两次（间隔 30 秒）确认所有已加载会话 idle，包括本线程；分页不全、未知状态、读取失败或任何活跃会话都会阻止重启。执行前再检查一次。
+- 已核对本项目调度器及四个 GPU worker 各自有独立 session/process group。执行前再查，恢复器不向它们发信号。
+- 最多尝试一次 `codex app-server daemon restart`，先持久化尝试标记；超时也不重复重启。最多等待六小时，失败/超时保留记录。
+- 恢复后从服务端查询 Goal；仅当它本来就是 active 时通知当前线程，不执行 set/resume、不改 SQLite。若服务自行恢复，则跳过重启。
+
+恢复器的两个状态决策测试通过，真实 daemon 恢复尚待空闲窗口。状态保存在 `.runtime/control_recovery.json`，完成/到期会生成并尝试发布 `control_recovery_receipt.json`。这是已授权自动化的维护，不新增研究实验或模型会话。
