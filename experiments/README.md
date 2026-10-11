@@ -41,3 +41,4 @@
 | [E034](E034.md) | failures | `rl/bfcl_backward_diagnostic_v2_20261011/failures.json` | 已分析 |
 | [E035](E035.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_1/summary.json` | 待分析 |
 | [E036](E036.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_2/summary.json` | 待分析 |
+| [E037](E037.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_1/summary.json` | 待分析 |
