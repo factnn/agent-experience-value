@@ -28,6 +28,15 @@ def write(path, data):
     tmp.replace(path)
 
 
+def process_has_not_exited(pid, proc_root=Path('/proc')):
+    try:
+        state = (proc_root / str(pid) / 'stat').read_text().rsplit(')', 1)[1].split()[0]
+    except FileNotFoundError:
+        return False
+    # A zombie has exited but its parent has not reaped it. It cannot execute work.
+    return state not in {'Z', 'X'}
+
+
 def supervise(command, out, log, hard_seconds, env=None, grace_seconds=30):
     started = time.monotonic()
     timed_out = False
@@ -91,7 +100,7 @@ def preflight(gpu, acceptance):
     state = read(ROOT / 'rl/STATUS.json')['bfcl_intervention']
     if state['phase'] != 'audited_complete' or state['active'] or state['pending'] or state['failures']:
         raise RuntimeError('Dose repeats are not audited complete')
-    if Path('/proc', str(state['scheduler_pid'])).exists():
+    if process_has_not_exited(state['scheduler_pid']):
         raise RuntimeError('Dose scheduler must have exited')
     source = state['path'] + '/audit_status.json'
     if read(ROOT / source).get('status') != 'passed':

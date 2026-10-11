@@ -4,11 +4,20 @@ import sys
 import tempfile
 import unittest
 
-from supervise_bfcl_stage_fork import supervise
+from supervise_bfcl_stage_fork import supervise, process_has_not_exited
 from watch_research_events import discover
 
 
 class SupervisorTests(unittest.TestCase):
+    def test_exited_zombie_scheduler_is_not_running(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            self.assertFalse(process_has_not_exited(123, root))
+            (root / '123').mkdir()
+            for state in ['R', 'S', 'T', 'D', 'Z', 'X']:
+                (root / '123/stat').write_text(f'123 (scheduler (child)) {state} 1 0')
+                self.assertEqual(process_has_not_exited(123, root), state not in {'Z', 'X'})
+
     def run_child(self, body, hard=5):
         temp = tempfile.TemporaryDirectory()
         self.addCleanup(temp.cleanup)

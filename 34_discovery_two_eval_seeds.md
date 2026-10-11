@@ -1,10 +1,10 @@
 # 旧发现轨迹与新训练重复：已完成的剂量评测
 
-2026-10-11。旧发现轨迹、repeat 1/2 的三个检查点及共享起点，在两个评测 seed 下的全部面板已审计通过。核对协议、政策指纹、任务顺序、采样 seed、原始 token/mask 与成本。repeat 3 尚未齐，不提前给跨训练重复的稳定性结论。
+2026-10-11。旧发现轨迹、三条新训练重复的三个检查点及共享起点，在两个评测 seed 下的全部面板已审计通过。完整批次解释、成本与下一决策见 [36](36_dose_repeats_complete.md)。
 
-![已审计完整轨迹的剂量曲线；第三条新重复待齐](figures/bfcl_completed_dose_curves_20261011.png)
+![已审计完整轨迹的剂量曲线](figures/bfcl_completed_dose_curves_20261011.png)
 
-图只使用完整且已审计的双 seed 曲线；横轴是实际新生成训练 token，纵轴是相对同 seed 起点的净成功题数。连线仅连接检查点，不代表连续效应估计；未完成的 repeat 3 不画部分曲线。[PDF](figures/bfcl_completed_dose_curves_20261011.pdf) 与 [来源/绘图数值](figures/bfcl_completed_dose_curves_20261011.sources.json) 可单独导出，图表核对已通过。
+图只使用完整且已审计的双 seed 曲线；横轴是实际新生成训练 token，纵轴是相对同 seed 起点的净成功题数。连线仅连接检查点，不代表连续效应估计；四条完整曲线全部绘出。[PDF](figures/bfcl_completed_dose_curves_20261011.pdf) 与 [来源/绘图数值](figures/bfcl_completed_dose_curves_20261011.sources.json) 可单独导出，图表核对已通过。
 
 ## 旧发现轨迹
 
@@ -53,41 +53,36 @@
 
 终点两个 seed 均为 **11/22**，但有 6 题成败不同，相对同 seed 起点净 −1/0。e0 改善 134、128，损失 26、166、123；e1 改善 128、71，损失 23、123。终点较中间为 **+1/0**，与旧轨迹 −3/−2 及 repeat 1 −2/0 不同；旧轨迹的末段下降没有成为已测重复的共同规律。
 
-repeat 2 所有已测检查点均未高于同 seed 起点；这不支持这条条件轨迹的训练增益，但不能用有限开发题和两个 eval seed 证明总体无效。两条新重复共享祖先和题目，第三条仍待齐，不将这些面板当独立科学样本或估计纯方差分量。
+repeat 2 所有已测检查点均未高于同 seed 起点；这不支持这条条件轨迹的训练增益，但不能用有限开发题和两个 eval seed 证明总体无效。两条新重复共享祖先和题目，第三条完整结果见下节；不将这些面板当独立科学样本或估计纯方差分量。
 
-## 新训练重复 3：已完成面板
+## 新训练重复 3
 
-[E022](experiments/E022.md)：32K 标签第 4 步实际训练 **38,398 token**，e0 **12/22**，与起点持平；改善 134、186，损失 129、117。新增评测 **67,542 token**，完整面板审计通过。三条新轨迹早期 e0 为 15/12/12，第一条的单 seed +3 未在另外两条重现；各自实际剂量/步数不同且共享祖先，不能据此选赢家或给出稳定总体效应。此处 e0 的观察由下述 e1 完成结果补充，后续剂量仍待齐。
+| 实际训练 token | 起点 0 | 32K 标签 38,398 | 64K 标签 68,514 | 128K 标签 131,152 |
+|---|---:|---:|---:|---:|
+| optimizer step | 0 | 4 | 6 | 10 |
+| e0 成功题数 /22 | 12 | 12 | 15 | 9 |
+| e1 成功题数 /22 | 11 | 13 | 12 | 10 |
+| e0 相对同 seed 起点 G（题数） | 0 | 0 | +3 | −3 |
+| e1 相对同 seed 起点 G（题数） | 0 | +2 | +1 | −1 |
 
-[E023](experiments/E023.md)：同一早期政策 e1 **13/22**，相对同 seed 起点净 **+2**；改善 98、128、153、94，损失 129、123。新增评测 **61,183 token**，两套早期面板及两个共享起点均审计通过。e0/e1 七题成败不同，净变化 0/+2。
+六个检查点及共享起点均通过审计，见 [E022](experiments/E022.md)–[E027](experiments/E027.md)。六个检查点评测累计 **381,624 新生成 token**，共享起点不在小计重复入账。
 
-| 早期检查点 | repeat 1 | repeat 2 | repeat 3 |
-|---|---:|---:|---:|
-| 实际训练 token | 41,078 | 37,386 | 38,398 |
-| e0 净成功题数 | +3 | 0 | 0 |
-| e1 净成功题数 | −2 | −1 | +2 |
+早期 e0/e1 七题成败不同，净 0/+2。中间净 +3/+1，是新重复中唯一双 seed 均高于起点的检查点；但两个 seed 改善的具体题目不重合，前两条训练重复也未重现双正增益。早期→中间变化为 +3/−1，方向依赖 eval seed。
 
-没有一条早期政策在两个已测 eval seed 都严格高于起点；单 seed 正点存在，但位置依赖训练轨迹和 eval seed。此表只汇总已齐的早期面板，不是整批剂量或总体效应结论；不据此挑选 seed、早停点或最佳阶段。
+终点 e0/e1 为 9/10，净 −3/−1，终点较中间 −6/−2；中间的正向观察未保持到终点。e1 改善 task 153，损失 123、189；该面板新增 63,117 token。两个终点政策输出仅一题成败不同，但相对各自起点的变化仍须分别计算，不能把跨 seed 政策分数差当作 G 的差。
 
-[E024](experiments/E024.md)：中间第 6 步实际训练 **68,514 token**，e0 **15/22**，相对起点净 **+3**，较早期多三题；改善 134、128、186、94，损失 26。新增评测 **60,306 token**，原始审计通过。三个新重复的中间 e0 为 11/10/15，净 −1/−2/+3；第三条出现正点，不能把前两条的非正结果推广成共同无效，也不能反过来按单点选中间剂量。同政策 e1 已完成，见 E025；终点仍待齐。
-
-[E025](experiments/E025.md)：同一中间政策 e1 **12/22**，相对起点净 **+1**；改善 26、98，损失 123。新增评测 **62,547 token**，两套中间面板及共享起点的原始审计通过。中间 e0/e1 为 15/12，净 **+3/+1**，七题成败不同；两个 seed 改善的具体题目不重合。
-
-这是三条新重复中首个两个已测 eval seed 均高于起点的检查点，保留这个正向观察。但其他训练重复的中间净变化为 −1/0、−2/0，不能声称跨训练重复一致增益。repeat 3 早期→中间为 **+3/−1**；与 repeat 1 的 −4/+2、repeat 2 的 −2/+1 一起说明三条已测轨迹该局部剂量比较的方向均依赖 eval seed。这不是总体显著性、最佳阶段或未曝光迁移题上的结论，终点仍须完成。
-
-[E026](experiments/E026.md)：终点第 10 步实际训练 **131,152 token**，e0 **9/22**，相对起点净 **−3**；改善 186，损失 26、123、153、189。新增评测 **66,929 token**，完整 e0 曲线和起点均审计通过。曲线为 **12→12→15→9**，终点较中间 **−6**。中间正点没有保持到该 seed 的终点，但另一 seed 尚未完成，不据此挑中间峰值或制定早停。
-
-三个新重复的终点 e0 为 9/11/9，均低于起点 12；已完成的 repeat 1/2 终点 e1 则均与起点持平。这些有限开发面板不证明总体退化或无效，最后一个 e1 面板仍须保留并完成。
+三条新轨迹的终点六个面板都没有净正收益；不过 repeat 2 的末段变化 +1/0 与其他两条不同，不能声称共同末段退化或根据峰值选早停。总体效应和经验价值预测仍需独立新设计。
 
 ## 决策与复现
 
-维持 31 的全部冻结对照，完成 repeat 3，再分开描述训练随机性、评测随机性与剂量趋势。32 的恢复验收仍依据非零 AdamW/梯度结构选源，不因分数改点；33 的任务组预测设计保持待冻结。当前批次仅开发集，未新增使用 21 道保留迁移题。
+31 的完整冻结对照已全部完成并通过 E028 审计，见 [36](36_dose_repeats_complete.md)。32 的恢复验收按原非零 AdamW/梯度结构选源，不因分数改点；33 的任务组预测设计继续等待恢复验收后冻结。当前批次仅开发集，未新增使用 21 道保留迁移题。
 
-机器证据：[旧轨迹双 seed](rl/bfcl_discovery_two_eval_seeds_20261011.json)、[repeat 1 双 seed](rl/bfcl_repeat_1_two_eval_seeds_20261011.json)、[repeat 2 双 seed](rl/bfcl_repeat_2_two_eval_seeds_20261011.json)。复现不新增模型调用：
+机器证据：[旧轨迹双 seed](rl/bfcl_discovery_two_eval_seeds_20261011.json)、[repeat 1 双 seed](rl/bfcl_repeat_1_two_eval_seeds_20261011.json)、[repeat 2 双 seed](rl/bfcl_repeat_2_two_eval_seeds_20261011.json)、[repeat 3 双 seed](rl/bfcl_repeat_3_two_eval_seeds_20261011.json)。复现不新增模型调用：
 
 ```bash
 python pipeline/report_bfcl_discovery_repeats.py
 python pipeline/report_bfcl_training_repeat.py --protocol rl/BFCL_DOSE_REPEATS_PROTOCOL_20261011.json --repeat repeat_1 --output rl/bfcl_repeat_1_two_eval_seeds_20261011.json
 python pipeline/report_bfcl_training_repeat.py --protocol rl/BFCL_DOSE_REPEATS_PROTOCOL_20261011.json --repeat repeat_2 --output rl/bfcl_repeat_2_two_eval_seeds_20261011.json
+python pipeline/report_bfcl_training_repeat.py --protocol rl/BFCL_DOSE_REPEATS_PROTOCOL_20261011.json --repeat repeat_3 --output rl/bfcl_repeat_3_two_eval_seeds_20261011.json
 python pipeline/plot_bfcl_completed_dose_curves.py
 ```
