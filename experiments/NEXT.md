@@ -11,7 +11,7 @@
 
 [32 非零学习状态分叉验收](../32_nonzero_stage_fork_acceptance.md) 已冻结：旧第六步完整状态 → 原第 7–9 步（动量更新 + 新梯度更新），不清空 AdamW/history，不按 repeat 3 的正点重新选源。正式入口 `/usr/bin/python -u pipeline/supervise_bfcl_stage_fork.py --gpu N`，继承本线程 CODEX_HOME/CODEX_THREAD_ID，以 detached 进程运行。
 
-监督器核对整批通过且已审阅、原调度器已退出、Goal active 和实际空卡；硬超时/incomplete/异常退出都保留事件，部分 token 仅报可核实下界，不自动重试。调度器的 Z zombie 项已属于退出，不错误当活跃进程；七项分叉/监督器 CPU 测试通过。真实重放已于 12:57 UTC 在 GPU 4 启动，监督器 PID 1802115、runner PID 1802120；restored.json 已确认新 trainer 全组件恢复和继承成本 165,799 token，三步重放仍运行。完成仍需独立精确 replay audit，不能把起点恢复或 runner 结束当验收通过。
+监督器核对整批通过且已审阅、原调度器已退出、Goal active 和实际空卡；硬超时/incomplete/异常退出都保留事件，部分 token 仅报可核实下界，不自动重试。调度器的 Z zombie 项已属于退出，不错误当活跃进程；七项分叉/监督器 CPU 测试通过。真实重放已于 12:57 UTC 在 GPU 4 启动，监督器 PID 1802115、runner PID 1802120；restored.json 已确认新 trainer 全组件恢复和继承成本 165,799 token，第一步已逐项精确匹配冻结参考（24 次生成、4 轨迹、10,276 token、fresh 梯度为零而参数改变）；后两步仍运行。完成仍需独立精确 replay audit，不能把起点恢复或 runner 结束当验收通过。
 
 ## 随后科学设计
 

@@ -39,3 +39,5 @@ CPU 验收：边界契约拒绝未完成微批、复用 buffer、多次迭代及
 启动证据：[supervisor_launch.json](rl/bfcl_stage_fork_acceptance_20261011/supervisor_launch.json)、[进程记录](rl/bfcl_stage_fork_acceptance_20261011/replay.console.process.json)、[runner 版本与源码哈希](rl/bfcl_stage_fork_acceptance_20261011/replay/run.json)。监督器 PID 1802115，runner PID 1802120；原始日志在同目录。GPU 4 启动前显存 3 MiB、无计算进程；未动 GPU 0–3 的他人作业。
 
 [restored.json](rl/bfcl_stage_fork_acceptance_20261011/replay/restored.json) 确认在新 trainer 中精确恢复参数、raw AdamW 非零动量、scheduler、allocator、buffers、训练模式和 RNG；来源第 6 步、TRL micro step 24，allocator 未重置，继承成本 165,799 token。GPU 已开始新生成。此文件只证明起点恢复，三步逐项重放和终点哈希仍待独立审计。
+
+13:03 UTC 第一完整更新的阶段性检查通过，见 [progress_audit_step_001.json](rl/bfcl_stage_fork_acceptance_20261011/replay/progress_audit_step_001.json)：24 次原始生成调用、4 条轨迹、选题/概率/信号、奖励/优势、token/mask、梯度范数和前后参数哈希均与原第 7 步一致；新增成本 10,276 token。fresh 梯度为零但参数确实改变，复现了冻结参考的动量更新。该记录只覆盖第一步，后两步和完整验收仍待完成。
