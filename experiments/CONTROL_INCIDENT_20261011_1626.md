@@ -11,3 +11,5 @@
 官方 App Server 文档支持用 `thread/goal/get` 读取 Goal、`thread/loaded/list` 与 `thread/read` 读取运行会话状态。[OpenAI App Server 文档](https://learn.chatgpt.com/docs/app-server)。这里的SQLite522判断和一次性空闲重启策略依据本机证据与此前恢复实践，不是官方文档保证的522修复方案。
 
 本次失败证据：`rl/bfcl_task_probe_stage0_20261011/failures.json` 与 `preflight_failure.log`。恢复收据预定为 `experiments/control_recovery_20261011_1626_receipt.json`，运行状态在 `experiments/.runtime/control_recovery_20261011_1626.json`。不是 Goal paused/blocked/complete 的状态变更。
+
+恢复器已以独立session启动，PID1871355；首个真实snapshot仍为两个会话、一个active、零unknown，decision=wait，尚未尝试重启。
