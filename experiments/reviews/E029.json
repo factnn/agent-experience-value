@@ -1,0 +1,60 @@
+{
+  "status": "reviewed",
+  "reviewed_at": "2026-10-11T13:15:54.967415+00:00",
+  "audit": "mismatch_requires_review under unchanged exact criterion",
+  "evidence": {
+    "summary": "rl/bfcl_stage_fork_acceptance_20261011/replay/summary.json",
+    "audit": "rl/bfcl_stage_fork_acceptance_20261011/replay/replay_audit.json",
+    "diagnosis": "rl/bfcl_stage_fork_acceptance_20261011/replay/mismatch_diagnosis.json",
+    "supervisor": "rl/bfcl_stage_fork_acceptance_20261011/replay/supervisor.json"
+  },
+  "audit_facts": {
+    "status": "mismatch_requires_review",
+    "source_step": 6,
+    "replayed_updates": 3,
+    "inherited_acquisition_tokens": 165799,
+    "new_cost": {
+      "new_model_tokens": 31078,
+      "input_token_positions_excluding_padding": 426561,
+      "external_tokens": 2846,
+      "rollouts": 12,
+      "token_lineage_and_mask": "passed"
+    },
+    "fresh_gradient_local_steps": [
+      3
+    ],
+    "exact_replay": false,
+    "differences": [
+      {
+        "section": "updates",
+        "row": 2,
+        "fields": [
+          "after_sha256"
+        ]
+      },
+      {
+        "section": "endpoint",
+        "fields": [
+          "final_fingerprint"
+        ]
+      },
+      {
+        "section": "gradient_norm",
+        "row": 2,
+        "fields": [
+          "grad_norm"
+        ]
+      }
+    ],
+    "final_fingerprint": "44edc7dc09ea0e0a6e32b2c16e8535dfb20965c7beea9e3b15f34073527cd0ae",
+    "scope": "Fresh trainer boundary fork with nonzero Adam state; no nested fork, arbitrary dataloader resume, or efficacy claim."
+  },
+  "conclusion": "三步重放正常结束，但原定逐位精确验收未通过。79 次生成、12 条轨迹、选题/概率/信号、原始 token/mask、奖励/优势与冻结参考一致；前两次零 fresh 梯度的动量更新及第三次更新起点哈希一致。第三步梯度范数为 0.04645901545882225，参考为 0.04645976424217224，相对差约 0.001612%；第三步更新后参数哈希不同。小范数差不能证明无害，也不能单凭哈希推断参数距离。",
+  "next_action": "保存原失败和成本，不重跑原实验、不放宽精确标准。先做代码/状态审计，再事前冻结使用存档轨迹的反向传播诊断，区分数值非确定性与遗漏训练状态；科学阶段分叉仍待验收。",
+  "limits": [
+    "Engineering replay is not an independent efficacy sample.",
+    "Cause unresolved; numerical nondeterminism and missing training-side state are hypotheses.",
+    "Final parameter tensors were not retained by this runner; no numerical parameter-distance claim."
+  ],
+  "goal_complete": false
+}
