@@ -35,3 +35,6 @@
 | [E028](E028.md) | audit_status | `rl/bfcl_intervention_dose_repeats_20261011/audit_status.json` | 已分析 |
 | [E029](E029.md) | complete | `rl/bfcl_stage_fork_acceptance_20261011/replay/summary.json` | 已分析 |
 | [E030](E030.md) | audit_status | `rl/bfcl_stage_fork_acceptance_20261011/audit_status.json` | 已分析 |
+| [E031](E031.md) | failure | `rl/bfcl_backward_diagnostic_20261011/default_1/failure.json` | 待分析 |
+| [E032](E032.md) | scheduler_failure | `rl/bfcl_backward_diagnostic_20261011/default_1/scheduler_failure.json` | 待分析 |
+| [E033](E033.md) | failures | `rl/bfcl_backward_diagnostic_20261011/failures.json` | 待分析 |
