@@ -61,3 +61,4 @@
 | [E054](E054.md) | audit_status | `rl/bfcl_source_group_runner_cpu_20261011/audit_status.json` | 已分析 |
 | [E055](E055.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_11/summary.json` | 待分析 |
 | [E056](E056.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_13/summary.json` | 待分析 |
+| [E057](E057.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_15/summary.json` | 待分析 |
