@@ -6,7 +6,8 @@ import os
 from pathlib import Path
 import subprocess
 import time
-from supervise_bfcl_stage_fork import ROOT, read, write, preflight, supervise
+from supervise_bfcl_stage_fork import ROOT, read, write, supervise
+from bfcl_diagnostic_preflight import preflight
 
 
 def main():
@@ -22,14 +23,15 @@ def main():
     for eid in plan.get('required_review_events',['E030']):
         assert read(ROOT/'experiments/reviews'/(eid+'.json'))['status']=='reviewed'
     assert read(ROOT/'rl/bfcl_stage_fork_acceptance_20261011/replay/replay_audit.json')['status']=='mismatch_requires_review'
-    preflight(args.gpu,plan)
+    initial_preflight=preflight(args.gpu,plan)
     root=ROOT/plan['output_root'];root.mkdir(parents=True,exist_ok=False)
     started=time.monotonic()
     write(root/'launch.json',{'supervisor_pid':os.getpid(),'gpu':args.gpu,'started_unix':time.time(),
-        'protocol_sha256':args.protocol_sha256,'hard_seconds_total':plan['hard_seconds_total']})
+        'protocol_sha256':args.protocol_sha256,'hard_seconds_total':plan['hard_seconds_total'],'preflight':initial_preflight})
     try:
         for case in plan['cases']:
-            preflight(args.gpu,plan)
+            checked=preflight(args.gpu,plan)
+            write(root/(case['name']+'.preflight.json'),checked)
             remaining=plan['hard_seconds_total']-(time.monotonic()-started)
             if remaining <= 30:
                 raise TimeoutError('Diagnostic total deadline reached')

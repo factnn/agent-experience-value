@@ -45,3 +45,11 @@
 当前安装的 GRPO 对微批 loss 除以 4，Transformers 又向 Accelerate 配置累积步数 4，Accelerate.backward 再除以 4。诊断保留这条历史路径，不在定位数值差异时同时改算法；CPU 微型模型的解析 loss 检查用于确认实际组合行为。它提示后续算法解释须显式说明实际梯度缩放，不能直接把旧配置称为一般标准 GRPO，也不能把当前训练效果归因于此；原第九步与重放第三步共有这一路径，因此它本身不是两者差异的解释。
 
 [v2 协议](rl/BFCL_BACKWARD_DIAGNOSTIC_V2_PROTOCOL_20261011.json) SHA256：`c5a6424c200fddac86739473ccb7351fbf5c047733f979d6ea9fdafc7f8cc6eb`；独立输出目录 `rl/bfcl_backward_diagnostic_v2_20261011`。CPU 解析缩放测试已通过；实际四例顺序、每例/总上限、输入/微批顺序及诊断判据不变，仅修正兼容性断言并记录实际归一化。v1 失败已写 E031–E033，全部保留，v2 是有明确修复依据的新尝试。
+
+## v2 控制检查停止；v3 只改有界读取
+
+v2 启动前首次 Goal/资源检查通过，但逐案例的第二次检查未确认 active，监督器在 0.011 秒后停止；未创建 GPU 子进程、未装载模型、未采样/更新。旧 helper 把读取异常转换为 unknown，报错又没有记录具体状态，因此不能从原日志确定当时究竟是哪种非 active 返回。随后原生 get_goal 与观察器都确认 active。
+
+v3 保留 v2 失败，仅增强诊断启动检查的可观察性：unknown 查询最多重查三次，间隔五秒；paused/blocked/complete/限额等明确状态立即停止，绝不自动恢复 Goal。获得 active 才启动；同一诊断案例不自动重试。三项 CPU 控制测试通过，独立输出/新协议保留全部执行史。
+
+[v3 协议](rl/BFCL_BACKWARD_DIAGNOSTIC_V3_PROTOCOL_20261011.json) SHA256：`ee9c1f777a2fde4fcf6bac1e113a1732093e668788201227cdcc021de912c220`。数值条件、顺序、模型、输入、预算和判据与 v2 一致；只增强启动检查及审计。
