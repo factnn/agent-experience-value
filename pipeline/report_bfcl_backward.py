@@ -34,6 +34,7 @@ def audit(plan, protocol_sha):
         assert s['micro_steps'] == 36 and s['fresh_gradient_updates'] == 1
         assert run['protocol_sha256'] == protocol_sha and run['case'] == case
         assert run['fixed_order'] == plan['rollout_order'] and run['generation_forbidden']
+        assert run['accelerator_gradient_accumulation_steps'] == run['grpo_loss_normalizer'] == 4
         reconstruction = read(folder/'reconstruction.json')
         assert len(reconstruction) == 2 and all(x['matches_reference'] for x in reconstruction)
         assert [x['fingerprint'] for x in reconstruction] == [x['fingerprint'] for x in plan['zero_gradient_reconstruction']]

@@ -19,7 +19,8 @@ def main():
     plan=read(args.protocol)
     for path,expected in plan['input_sha256'].items():
         assert hashlib.sha256((ROOT/path).read_bytes()).hexdigest()==expected,path
-    assert read(ROOT/'experiments/reviews/E030.json')['status']=='reviewed'
+    for eid in plan.get('required_review_events',['E030']):
+        assert read(ROOT/'experiments/reviews'/(eid+'.json'))['status']=='reviewed'
     assert read(ROOT/'rl/bfcl_stage_fork_acceptance_20261011/replay/replay_audit.json')['status']=='mismatch_requires_review'
     preflight(args.gpu,plan)
     root=ROOT/plan['output_root'];root.mkdir(parents=True,exist_ok=False)

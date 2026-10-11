@@ -71,7 +71,9 @@ def main():
             peft_config=r.LoraConfig(r=algorithm['lora_r'], lora_alpha=algorithm['lora_alpha'],
               lora_dropout=algorithm['lora_dropout'], target_modules=algorithm['lora_targets'],task_type='CAUSAL_LM'))
         assert trainer.accelerator.num_processes == 1 and not trainer.is_fsdp_enabled
-        assert not trainer.is_deepspeed_enabled and trainer.accelerator.gradient_accumulation_steps == 1
+        assert not trainer.is_deepspeed_enabled
+        assert trainer.accelerator.gradient_accumulation_steps == config.gradient_accumulation_steps == 4, (
+            trainer.accelerator.gradient_accumulation_steps, config.gradient_accumulation_steps)
         trainer.create_optimizer()
         trainer.model.gradient_checkpointing_enable(gradient_checkpointing_kwargs=config.gradient_checkpointing_kwargs)
         trainer.model.train()
@@ -128,6 +130,9 @@ def main():
             'pid':os.getpid(),'gpu':os.environ['CUDA_VISIBLE_DEVICES'], 'fixed_order':plan['rollout_order'],
             'new_sampled_tokens':0,'generation_forbidden':True,'torch':r.torch.__version__,
             'deterministic_algorithms':r.torch.are_deterministic_algorithms_enabled(),
+            'accelerator_gradient_accumulation_steps':trainer.accelerator.gradient_accumulation_steps,
+            'grpo_loss_normalizer':trainer.current_gradient_accumulation_steps,
+            'historical_loss_scaling_preserved':True,
             'cublas_workspace_config':os.environ.get('CUBLAS_WORKSPACE_CONFIG'),
             'sdpa':{'flash':r.torch.backends.cuda.flash_sdp_enabled(),
                     'memory_efficient':r.torch.backends.cuda.mem_efficient_sdp_enabled(),
