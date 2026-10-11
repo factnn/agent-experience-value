@@ -1,6 +1,5 @@
 import json
 from pathlib import Path
-import sqlite3
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -52,13 +51,27 @@ class ResearchEventsTest(unittest.TestCase):
             w.record(self.root, ['batch'])
         self.assertEqual(index.read_text(), '[')
 
-    def test_readonly_goal_and_fail_closed(self):
-        self.assertEqual(w.goal_status(self.root, 'own'), 'unknown')
-        with sqlite3.connect(self.root / 'goals_1.sqlite') as db:
-            db.execute('CREATE TABLE thread_goals(thread_id TEXT, status TEXT)')
-            db.execute('INSERT INTO thread_goals VALUES (?, ?)', ('own', 'paused'))
-        self.assertEqual(w.goal_status(self.root, 'own'), 'paused')
-        self.assertEqual(w.goal_status(self.root, 'other'), 'missing')
+    def test_api_goal_status_and_fail_closed(self):
+        import codex_goal_status as client
+        self.assertEqual(client.goal_status(self.root, 'own'), 'unknown')
+        class FakeSocket:
+            def __init__(self, response):
+                self.messages = iter([{'id': 1, 'result': {}}, {'id': 2, **response}])
+                self.sent = []
+            async def __aenter__(self): return self
+            async def __aexit__(self, *args): pass
+            async def send(self, value): self.sent.append(json.loads(value))
+            async def recv(self): return json.dumps(next(self.messages))
+        cases = [({'result': {'goal': {'threadId': 'own', 'status': 'active'}}}, 'active'),
+                 ({'result': {'goal': {'threadId': 'own', 'status': 'paused'}}}, 'paused'),
+                 ({'result': {'goal': {'threadId': 'other', 'status': 'active'}}}, 'unknown'),
+                 ({'error': {'code': -32603, 'message': 'disk I/O error'}}, 'unknown')]
+        for response, expected in cases:
+            socket = FakeSocket(response)
+            with patch('websockets.unix_connect', return_value=socket):
+                self.assertEqual(client.goal_status(self.root, 'own'), expected)
+                self.assertEqual(socket.sent[-1]['params']['threadId'], 'own')
+        self.assertFalse((self.root / 'goals_1.sqlite').exists())
 
     def test_inactive_loop_never_records_or_notifies(self):
         for status in ('paused', 'complete', 'blocked', 'budget_limited', 'usage_limited', 'unknown', 'missing'):

@@ -20,7 +20,7 @@
 
 ## 运行与停止
 
-在继承本会话 CODEX_HOME/CODEX_THREAD_ID 的环境启动 `python pipeline/watch_research_events.py`，用 detached 进程和 `.runtime/watch.log` 保存输出。重启通过已有 index 去重，不重复编号或重跑实验。单实例 flock。Goal 状态只读本地 goals 数据库，数据库不可用则不投递。Goal 暂停/限额/结束时停止自动研究通知；已启动的独立 GPU 作业不会因此自动杀掉，用户说停作业时另行处理。
+在继承本会话 CODEX_HOME/CODEX_THREAD_ID 的环境启动 `python pipeline/watch_research_events.py`，用 detached 进程和 `.runtime/watch.log` 保存输出。重启通过已有 index 去重，不重复编号或重跑实验。单实例 flock。Goal 状态通过同一 Codex daemon 的 `thread/goal/get` 查询，不直接打开 SQLite；接口不可用或返回其他线程时不投递，并每 30 秒重试。Goal 暂停/限额/结束时停止自动研究通知；已启动的独立 GPU 作业不会因此自动杀掉，用户说停作业时另行处理。
 
 机器、Codex daemon 和账户额度必须可用；这不是不受约束的永动机。只最多四张实际空闲 GPU，不碰他人进程，不新增付费 API。原生 Goal 在暂停/额度/生命周期边界下可能停止；观察器也不能跨机器断电运行。需要暂停可用 `/goal pause`，恢复 `/goal resume`。
 
@@ -31,3 +31,5 @@
 原生 Goal 已 active；实际 `codex queue` 向当前线程提交 E001–E005，08:38:08 UTC 返回成功。此处确认入队，自动新回合的处理需由后续事件记录证明。E001–E005 已在当前设置回合实际审阅并写入 reviews。观察器不会将通知成功冒充科学审阅。
 
 08:40 UTC 后真实监控消息已触发下一回合；agent 首先确认 Goal active，核对 E001–E005 已审阅，随后开始非零学习状态分叉验收实现。这验证了入队 → 新回合 → 读记录 → 推进下一工作的路径。
+
+09:02 UTC 左右 Goal 接口出现 SQLite code 522 I/O 错误；侧读数据库能返回更旧的 active，不能替代服务端状态。已移除观察器直接读库路径，改用本机生成协议确认并实测的 daemon WebSocket `thread/goal/get`。故障及恢复跟踪见 [CONTROL_INCIDENT_20261011](CONTROL_INCIDENT_20261011.md)。

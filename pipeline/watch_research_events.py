@@ -1,7 +1,8 @@
 """Record terminal research events and wake the owning Codex Goal; stdlib only.
 
 This observer never launches experiments or changes their frozen protocols.
-The Goal database is read-only; lifecycle changes belong to Codex/user controls.
+Goal status comes from the owning app-server API, never a SQLite side reader.
+Lifecycle changes belong to Codex/user controls.
 """
 import argparse
 from datetime import datetime, timezone
@@ -10,9 +11,9 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import sqlite3
 import subprocess
 import time
+from codex_goal_status import goal_status
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -36,15 +37,6 @@ def write(path, data):
     tmp = path.with_name(path.name + '.tmp')
     tmp.write_text(value)
     tmp.replace(path)
-
-
-def goal_status(home, thread):
-    try:
-        with sqlite3.connect(f'file:{home}/goals_1.sqlite?mode=ro', uri=True, timeout=2) as db:
-            row = db.execute('SELECT status FROM thread_goals WHERE thread_id=?', (thread,)).fetchone()
-            return row[0] if row else 'missing'
-    except sqlite3.Error:
-        return 'unknown'
 
 
 def discover(root, batches):
