@@ -24,6 +24,10 @@
 
 GPU runner：`pipeline/accept_bfcl_stage_fork.py --protocol rl/BFCL_STAGE_FORK_ACCEPTANCE_PROTOCOL_20261011.json`，使用 `.venv-rl/bin/python` 和一张可用 GPU。当前四卡队列完全退出后，先审阅其结果与资源，确认 Goal active，再启动；不抢占任何已运行任务。软时限 2,700 秒、外部硬时限 3,600 秒。
 
+正式执行入口改为 `/usr/bin/python -u pipeline/supervise_bfcl_stage_fork.py --gpu N`（以 detached 进程启动，继承本线程 CODEX_HOME/CODEX_THREAD_ID）。监督器校验冻结协议 SHA、active Goal、原调度器退出、整批审计通过且审阅已登记，以及所选允许 GPU 无计算进程且显存不超过 64 MiB；独占创建启动记录，拒绝覆盖已有尝试。它调用上述原 runner，不改变训练或重放判据。硬时限到达时终止其自建进程组，最多再给 30 秒退出宽限；非零退出、缺少完成 summary 或软时限 incomplete 均写 `scheduler_failure.json`，由现有观察器登记事件。保留原始失败/部分记录；中断成本只报告已持久化生成 token 下界，明确可能存在未写入的在途生成，不伪装成精确总量。runner 完成仍需独立 replay audit，监督器不会宣布科学或恢复验收通过。
+
+监督器新增四个 CPU 子进程测试：硬超时保留部分日志及成本下界、零退出但 incomplete 进入事件收件箱、非零退出进入收件箱、正常完成仍标为待重放审计；与已有两项分叉测试合计六项通过。首次超时测试因测试子进程字符串换行转义错误而提前退出，修正测试字符串后重跑通过；真实 GPU 尚未启动，冻结协议未修改。
+
 完成后运行 `pipeline/report_bfcl_stage_fork.py --protocol ...`。只有新实例恢复检查和冻结参考精确重放都通过，才允许据此准备科学阶段分叉。若不一致，保存差异与消耗，先定位随机性、进度/微批或优化器恢复原因；不静默重跑、不放宽标准冒充通过。
 
 CPU 验收：边界契约拒绝未完成微批、复用 buffer、多次迭代及进度混淆；真实旧轨迹记录构成的模拟重放文件通过报告器，人为改一个采样 seed 会报告 mismatch。该夹具仅测试报告器，绝不算 GPU 复现。runner 已在禁用 CUDA 的进程完成导入检查。
