@@ -59,3 +59,4 @@
 | [E052](E052.md) | complete | `rl/bfcl_normalization_gpu_loop_20261011/loop/summary.json` | 已分析 |
 | [E053](E053.md) | failures | `rl/bfcl_task_probe_stage0_20261011/failures.json` | 已分析 |
 | [E054](E054.md) | audit_status | `rl/bfcl_source_group_runner_cpu_20261011/audit_status.json` | 已分析 |
+| [E055](E055.md) | complete | `rl/bfcl_task_probe_stage0_v2_20261011/group_11/summary.json` | 待分析 |
