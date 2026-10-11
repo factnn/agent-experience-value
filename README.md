@@ -3,6 +3,8 @@
 > **当前主线（2026-10-11）：测量哪些经验价值信号预测在线 RL 后的迁移收益。保留大 scope，按证据收窄结论。**
 > 先读 [PROJECT_STATE.md](PROJECT_STATE.md)、[研究目标与证据层级](15_scope_and_evidence_ladder.md)、[基准/分叉设计](16_benchmark_and_fork_design.md)；工程 pilot 已完成，见 [结果与识别局限](17_allocation_pilot_result.md)。当前 RL 运行状态见 [rl/STATUS.json](rl/STATUS.json)，实验记录见 [rl/README.md](rl/README.md)。以下保留早期 SFT 阶段的研究叙述和实验记录；其中 SFT 优先级、标签瓶颈、投资闸门与后续建议已被当前主线取代。SFT 负结果不构成对 RL 或经验分配研究的否定。
 
+**2026-10-11 接续：** 三个新训练重复及两个开发评测 seed 已冻结，四卡自动队列，见 [设计与执行](31_dose_repeats_design.md)。
+
 **2026-10-11:** 单轨迹剂量诊断完成并审计通过，开发成功为起点 12/22、32K 12/22、64K 13/22、128K 10/22；单轨迹不据此选最佳阶段。四卡并行约 1.90 小时完成、已释放，详见 [完整剂量结果](30_dose_complete_result.md)。
 
 **2026-10-10:** 全池六分支和七个完整评测审计通过，见 [完整条件重复结果](28_full_pool_followup_complete_result.md)。下一步是一条 Uniform 连续轨迹的开发集剂量诊断，见 [冻结执行设计](29_dose_execution_protocol.md)；研究仍向阶段、预测验证和规模/家族外推推进。
