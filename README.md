@@ -1,4 +1,4 @@
-**2026-10-11 新完整评测：** 旧发现轨迹两套 eval seed 的终点均比各自起点少两题；新 repeat 1 的早期 e0 为 15/22，比起点多三题，但完整重复仍未齐。八个旧轨迹面板审计通过，当前四卡队列继续。见 [34](34_discovery_two_eval_seeds.md) 与 [E007–E008](experiments/README.md)。
+**2026-10-11 双 seed 方向翻转：** 新 repeat 1 早期同一政策的 e0/e1 为 15/22、9/22，相对起点净 +3/−2，均通过审计；旧轨迹终点两 seed 均净 −2。四卡继续固定对照，Goal 服务已恢复。见 [34](34_discovery_two_eval_seeds.md)、[35 离线局部信号诊断](35_local_signal_retrospective_audit.md)。
 
 **2026-10-11 非零阶段分叉准备：** 监控消息已真实触发自动继续；已实现旧 step 6 → 7–9 的新 trainer 重放验收，保留非零 AdamW 与历史，CPU 检查通过、GPU 验收待当前冻结批次结束后运行。见 [32](32_nonzero_stage_fork_acceptance.md)。
 

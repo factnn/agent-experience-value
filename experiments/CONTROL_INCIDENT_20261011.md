@@ -1,5 +1,9 @@
 # Goal 控制接口 I/O 故障
 
+**已恢复：** 09:21:25 UTC 恢复器确认三个加载会话均 idle 后执行唯一一次重启（returncode 0）；09:21:57 RPC 恢复，随后原生 get_goal 返回 active。调度器和四个 GPU worker 保持原 PID、未中断。见 [恢复回执](control_recovery_receipt.json)。下文保留故障排查过程。
+
+Goal 的使用计数恢复为 61,761 token，早于故障前接口曾返回的 183,841；不据此声称整个会话只消耗了较小数值。未手工改数据库或计数。研究成本以 Git 中的采样／GPU 账本为准，原始实验与审阅未丢失。
+
 2026-10-11 09:02 UTC 左右，在处理已经审阅的 E007 自动通知时，原生 `get_goal` 连续返回 `SQLite code 522: disk I/O error`。同一 daemon 的 `thread/goal/get` WebSocket RPC 也实测返回相同错误。没有证据表明 GPU 实验失败；原四个进程和队列仍存活。
 
 只读检查显示磁盘空间充足，本地 SQLite quick_check 为 ok，但侧读得到的 Goal 记录更新时间约 08:38、tokens_used 61,761，明显早于原生接口此前报告的状态。因此不能根据这个较旧视图断言当前状态或绕过暂停。故障根因尚未确认；不将其归因于硬件或观察器，也不把数据库完整性检查当作服务端连接正常的证明。
