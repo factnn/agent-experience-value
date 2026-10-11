@@ -51,4 +51,4 @@
 | [E044](E044.md) | audit_status | `rl/bfcl_dose_checkpoint_report_correction_20261011/audit_status.json` | 已分析 |
 | [E045](E045.md) | audit_status | `rl/bfcl_normalization_gpu_20261011/audit_status.json` | 已分析 |
 | [E046](E046.md) | complete | `rl/bfcl_normalization_gpu_20261011/single_2/summary.json` | 已分析 |
-| [E047](E047.md) | audit_status | `rl/bfcl_task_probe_statistics_20261011/audit_status.json` | 待分析 |
+| [E047](E047.md) | audit_status | `rl/bfcl_task_probe_statistics_20261011/audit_status.json` | 已分析 |
