@@ -47,3 +47,4 @@
 | [E040](E040.md) | audit_status | `rl/bfcl_loss_normalization_cpu_20261011/audit_status.json` | 已分析 |
 | [E041](E041.md) | complete | `rl/bfcl_loss_normalization_cpu_20261011/full_loop/summary.json` | 已分析 |
 | [E042](E042.md) | complete | `rl/bfcl_normalization_gpu_20261011/legacy/summary.json` | 待分析 |
+| [E043](E043.md) | complete | `rl/bfcl_normalization_gpu_20261011/single_1/summary.json` | 待分析 |
