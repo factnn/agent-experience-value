@@ -1,3 +1,5 @@
+**2026-10-11 自主研究循环：** 已启用原生 Goal；完成/失败事件自动登记为 [E001…](experiments/README.md)，监控向当前会话投递事件，由 agent 审阅后调整下一实验并 push。已冻结批次继续。机制与边界见 [RESEARCH_LOOP](experiments/RESEARCH_LOOP.md)，下一决策见 [NEXT](experiments/NEXT.md)。
+
 # Agent Experience Value
 
 > **当前主线（2026-10-11）：测量哪些经验价值信号预测在线 RL 后的迁移收益。保留大 scope，按证据收窄结论。**
