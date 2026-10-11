@@ -25,4 +25,5 @@
 | [E018](E018.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_2_step_006_e0/summary.json` | 已分析 |
 | [E019](E019.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_2_step_006_e1/summary.json` | 已分析 |
 | [E020](E020.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_2_step_013_e1/summary.json` | 已分析 |
-| [E021](E021.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_2_step_013_e0/summary.json` | 待分析 |
+| [E021](E021.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_2_step_013_e0/summary.json` | 已分析 |
+| [E022](E022.md) | complete | `rl/bfcl_intervention_dose_repeats_20261011/eval_repeat_3_step_004_e0/summary.json` | 待分析 |
