@@ -42,3 +42,5 @@
 | [E035](E035.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_1/summary.json` | 待分析 |
 | [E036](E036.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_2/summary.json` | 待分析 |
 | [E037](E037.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_1/summary.json` | 待分析 |
+| [E038](E038.md) | audit_status | `rl/bfcl_backward_diagnostic_v3_20261011/audit_status.json` | 待分析 |
+| [E039](E039.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_2/summary.json` | 待分析 |
