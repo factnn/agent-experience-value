@@ -45,3 +45,4 @@
 | [E038](E038.md) | audit_status | `rl/bfcl_backward_diagnostic_v3_20261011/audit_status.json` | 已分析 |
 | [E039](E039.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_2/summary.json` | 已分析 |
 | [E040](E040.md) | audit_status | `rl/bfcl_loss_normalization_cpu_20261011/audit_status.json` | 待分析 |
+| [E041](E041.md) | complete | `rl/bfcl_loss_normalization_cpu_20261011/full_loop/summary.json` | 待分析 |
