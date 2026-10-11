@@ -1,6 +1,6 @@
 # 非零 learner 状态分叉：实现与待运行验收
 
-2026-10-11。当前状态：独立 runner 与审计实现完成，CPU 边界检查和历史数据审计夹具通过；真实 GPU 重放尚未运行。四卡仍执行 31 的冻结剂量重复，保持原队列。
+2026-10-11。当前状态：31 的冻结剂量重复已全部完成并通过 E028 审阅；12:57 UTC 在实际空闲 GPU 4 启动一次真实重放。新 trainer 完整状态恢复检查已通过，三步生成/更新重放仍运行，尚不能宣布验收通过。
 
 ## 为什么现在做
 
@@ -35,3 +35,7 @@ CPU 验收：边界契约拒绝未完成微批、复用 buffer、多次迭代及
 通过这一工程门槛后，下一科学设计仍需根据完整重复结果确定可识别的阶段/任务组预测检验；不能把阶段恢复成功解释为经验价值假说成立。
 
 2026-10-11 12:50 UTC 后：剂量重复整批审计已通过（E028）。原调度器留下 `/proc` zombie 状态 Z；该状态表示进程已退出、父进程未回收，并非仍在执行。监督器启动检查已修正为明确区分运行/停止进程与 Z/X/已消失进程，不杀进程或改协议；新增回归测试覆盖 R/S/T/D 阻止启动、Z/X/缺失视为已退出，合计七项分叉相关测试通过。真实 GPU 重放仍待下述启动记录与验收结果。
+
+启动证据：[supervisor_launch.json](rl/bfcl_stage_fork_acceptance_20261011/supervisor_launch.json)、[进程记录](rl/bfcl_stage_fork_acceptance_20261011/replay.console.process.json)、[runner 版本与源码哈希](rl/bfcl_stage_fork_acceptance_20261011/replay/run.json)。监督器 PID 1802115，runner PID 1802120；原始日志在同目录。GPU 4 启动前显存 3 MiB、无计算进程；未动 GPU 0–3 的他人作业。
+
+[restored.json](rl/bfcl_stage_fork_acceptance_20261011/replay/restored.json) 确认在新 trainer 中精确恢复参数、raw AdamW 非零动量、scheduler、allocator、buffers、训练模式和 RNG；来源第 6 步、TRL micro step 24，allocator 未重置，继承成本 165,799 token。GPU 已开始新生成。此文件只证明起点恢复，三步逐项重放和终点哈希仍待独立审计。
