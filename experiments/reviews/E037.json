@@ -1,0 +1,21 @@
+{
+  "status": "reviewed",
+  "reviewed_at": "2026-10-11T13:40:11.756019+00:00",
+  "event_source": "rl/bfcl_backward_diagnostic_v3_20261011/deterministic_1/summary.json",
+  "event_sha256": "986203abfebdf73b5173aa38708aba5bf03110960396be0b2ed165e10b271507",
+  "evidence": {
+    "batch_audit": "rl/bfcl_backward_diagnostic_v3_20261011/audit_status.json",
+    "tensor_detail": "rl/bfcl_backward_diagnostic_v3_20261011/tensor_detail_audit.json",
+    "protocol": "rl/BFCL_BACKWARD_DIAGNOSTIC_V3_PROTOCOL_20261011.json"
+  },
+  "conclusion": "四例固定输入诊断及张量审计完成。所有案例的起点参数、AdamW 状态、打包输入及微批次序完全一致，两次零梯度重建均匹配旧第七/八步。默认配置两次 fresh 梯度向量相对 L2 差异 1.0217%，最终参数 L2 差异 8.6323e-5，相当于本次更新量的约 1.4985%；确定性配置两次逐微批累积梯度、终点参数、AdamW 状态逐位相同。",
+  "limits": "这证明当前固定输入诊断条件下默认数值路径不能逐位重复，并支持数值非确定性是原重放失配的一种解释；没有隔离到具体算子，也未排除原运行未记录微批次序的影响。只有两次重复和一个组，不能推断普遍确定性或下游效果无影响。确定性设置是新配置，原 E029/E030 严格验收仍未通过。",
+  "next_action": "依据冻结分支判据，准备同一确定性配置下新的连续训练—完整状态恢复分叉成对验收：从原第六步出发，连续三组，第二组边界保存完整状态，另一个新 trainer 从该状态重放第三组。冻结新参考、成本/超时与逐位审计后执行，不放宽原失败标准，不用旧默认配置终点要求新配置匹配。通过后返回来源组留出/阶段预测主实验。",
+  "cost": {
+    "batch_new_sampled_tokens": 0,
+    "batch_fresh_updates": 4,
+    "input_token_positions_excluding_padding": 97416,
+    "scope": "Shared batch totals, never sum this number across event reviews."
+  },
+  "goal_complete": false
+}
