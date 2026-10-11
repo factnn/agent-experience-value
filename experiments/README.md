@@ -39,8 +39,8 @@
 | [E032](E032.md) | scheduler_failure | `rl/bfcl_backward_diagnostic_20261011/default_1/scheduler_failure.json` | 已分析 |
 | [E033](E033.md) | failures | `rl/bfcl_backward_diagnostic_20261011/failures.json` | 已分析 |
 | [E034](E034.md) | failures | `rl/bfcl_backward_diagnostic_v2_20261011/failures.json` | 已分析 |
-| [E035](E035.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_1/summary.json` | 待分析 |
-| [E036](E036.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_2/summary.json` | 待分析 |
-| [E037](E037.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_1/summary.json` | 待分析 |
-| [E038](E038.md) | audit_status | `rl/bfcl_backward_diagnostic_v3_20261011/audit_status.json` | 待分析 |
-| [E039](E039.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_2/summary.json` | 待分析 |
+| [E035](E035.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_1/summary.json` | 已分析 |
+| [E036](E036.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/default_2/summary.json` | 已分析 |
+| [E037](E037.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_1/summary.json` | 已分析 |
+| [E038](E038.md) | audit_status | `rl/bfcl_backward_diagnostic_v3_20261011/audit_status.json` | 已分析 |
+| [E039](E039.md) | complete | `rl/bfcl_backward_diagnostic_v3_20261011/deterministic_2/summary.json` | 已分析 |
