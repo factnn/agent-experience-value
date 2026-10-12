@@ -81,4 +81,5 @@
 | [E074](E074.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_00_r0/summary.json` | 已分析 |
 | [E075](E075.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_02_r0/summary.json` | 已分析 |
 | [E076](E076.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_uniform_r0/summary.json` | 已分析 |
-| [E077](E077.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_01_r0/summary.json` | 待分析 |
+| [E077](E077.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_01_r0/summary.json` | 已分析 |
+| [E078](E078.md) | audit_status | `rl/bfcl_late_stage_history_inventory_20261012/audit_status.json` | 待分析 |
