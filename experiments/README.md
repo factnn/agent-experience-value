@@ -85,3 +85,4 @@
 | [E078](E078.md) | audit_status | `rl/bfcl_late_stage_history_inventory_20261012/audit_status.json` | 已分析 |
 | [E079](E079.md) | audit_status | `rl/bfcl_stage1_probe_cpu_20261012/audit_status.json` | 已分析 |
 | [E080](E080.md) | audit_status | `rl/bfcl_stage1_supervisor_cpu_20261012/audit_status.json` | 已分析 |
+| [E081](E081.md) | audit_status | `rl/bfcl_forward_prediction_cpu_20261012/audit_status.json` | 待分析 |
