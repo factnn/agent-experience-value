@@ -80,3 +80,4 @@
 | [E073](E073.md) | audit_status | `rl/bfcl_transfer_report_cpu_20261012/audit_status.json` | 已分析 |
 | [E074](E074.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_00_r0/summary.json` | 已分析 |
 | [E075](E075.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_02_r0/summary.json` | 待分析 |
+| [E076](E076.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_uniform_r0/summary.json` | 待分析 |
