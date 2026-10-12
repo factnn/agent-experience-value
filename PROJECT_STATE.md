@@ -1,3 +1,7 @@
+**2026-10-12 最新入口：** 当前51个来源组/Uniform训练分支已冻结，GPU4–7运行首批；任务级探测已完成，但新迁移G/V与留出预测结果尚未产生。科学执行见 [49](49_source_group_stage0_execution.md)，后续评测实现见 [52](52_transfer_labels_and_execution.md)，实时决策见 [NEXT](experiments/NEXT.md)。以下旧状态段落保留为历史，不能作为当前GPU/队列状态。
+
+**gpt12方向回顾：** 核心仍是经验如何产生训练后的迁移收益；当前候选已实质集中到可学习性，不是原始多机制比较全部完成。见 [53审阅](53_gpt12_scope_review.md) 与 [scope对照台账](experiments/SCOPE_REVIEW.md)。每批科学实验审阅及范围调整前回顾原目标、证据和缺口，有限结论不替代长期Goal。
+
 **2026-10-11 双 seed 方向翻转：** 新 repeat 1 早期同一政策的 e0/e1 为 15/22、9/22，相对起点净 +3/−2，均通过审计；旧轨迹终点两 seed 均净 −2。四卡继续固定对照，Goal 服务已恢复。见 [34](34_discovery_two_eval_seeds.md)、[35 离线局部信号诊断](35_local_signal_retrospective_audit.md)。
 
 **2026-10-11 非零阶段分叉准备：** 监控消息已真实触发自动继续；已实现旧 step 6 → 7–9 的新 trainer 重放验收，保留非零 AdamW 与历史，CPU 检查通过、GPU 验收待当前冻结批次结束后运行。见 [32](32_nonzero_stage_fork_acceptance.md)。

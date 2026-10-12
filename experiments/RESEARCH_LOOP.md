@@ -18,6 +18,14 @@
 
 每个实质进展显式 commit/push；不用 git add -A、不覆盖别人未提交文件、不删除 Git lock、不强推。后台观察器只发布自己生成的记录；agent 自己发布审阅与代码。观察器通知成功代表入队，实际阅读以 reviews 确认。失败会保留并重试；异常与心跳在本机 `.runtime/state.json`。
 
+## 定期回顾原始scope
+
+用户于2026-10-12要求定期回忆与收束。每批科学实验完成审阅、每次新科学协议/范围调整之前，以及距上次回顾发生三次实质研究决策时，读取 [SCOPE_REVIEW](SCOPE_REVIEW.md)、[01](../01_scope.md) 与 [15](../15_scope_and_evidence_ladder.md)，更新原目标—证据—缺口—下一决策。用户提供方向审阅文件也触发回顾。记录有依据的结论收窄，不能只重复“方向不变”。
+
+当前候选主要集中于可学习性，尚非机制不同假说的全面比较；任务级Beta、组合级Beta、Frontier不能冒充三种独立价值机制，Coverage计数不等于结构多样性。局部混合奖励预测、代码验收和单个ridge结果不能替代真实迁移收益结论。阶段/规模/家族/环境及比较广度的未覆盖部分必须持续可见。
+
+回顾是agent决策步骤，不新增后台定时器，不阻断已冻结实验，也不修改Goal。第一篇可形成有限结论，但不能因此自动把长期Goal标完成。最新完整回顾见 [53](../53_gpt12_scope_review.md)。
+
 ## 运行与停止
 
 在继承本会话 CODEX_HOME/CODEX_THREAD_ID 的环境启动 `python pipeline/watch_research_events.py`，用 detached 进程和 `.runtime/watch.log` 保存输出。重启通过已有 index 去重，不重复编号或重跑实验。单实例 flock。Goal 状态通过同一 Codex daemon 的 `thread/goal/get` 查询，不直接打开 SQLite；接口不可用或返回其他线程时不投递，并每 30 秒重试。Goal 暂停/限额/结束时停止自动研究通知；已启动的独立 GPU 作业不会因此自动杀掉，用户说停作业时另行处理。
