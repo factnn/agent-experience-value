@@ -103,8 +103,8 @@
 | [E096](E096.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_13_r0/summary.json` | 已分析 |
 | [E097](E097.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_uniform_r1/summary.json` | 已分析 |
 | [E098](E098.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_01_r1/summary.json` | 已分析 |
-| [E099](E099.md) | failures | `rl/bfcl_source_stage0_train_20261012/failures.json` | 待分析 |
-| [E100](E100.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_02_r1/summary.json` | 待分析 |
-| [E101](E101.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_03_r1/summary.json` | 待分析 |
-| [E102](E102.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_06_r1/summary.json` | 待分析 |
-| [E103](E103.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_07_r1/summary.json` | 待分析 |
+| [E099](E099.md) | failures | `rl/bfcl_source_stage0_train_20261012/failures.json` | 已分析 |
+| [E100](E100.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_02_r1/summary.json` | 已分析 |
+| [E101](E101.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_03_r1/summary.json` | 已分析 |
+| [E102](E102.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_06_r1/summary.json` | 已分析 |
+| [E103](E103.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_07_r1/summary.json` | 已分析 |
