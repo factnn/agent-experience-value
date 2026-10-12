@@ -4,7 +4,7 @@ import math
 from pathlib import Path
 from bfcl_source_eval_contract import digest, pinned, verify_seal
 from bfcl_transfer_labels import source_registry, aggregate_labels
-from bfcl_transfer_predictor import score_heldout
+from bfcl_transfer_predictor import SIGNALS, predict_models, score_heldout
 from seal_bfcl_transfer_predictions import fit_artifacts
 from report_bfcl_source_eval import audit_job as audit_evaluation
 from supervise_bfcl_source_evaluation import validate_manifest
@@ -45,6 +45,47 @@ def prediction_results(labels, predictions, analysis):
             'primary_contrast_negative_training_repeats': sum(r['primary_difference'] < 0 for r in repeats),
             'gains_separate_from_prediction_accuracy': signs,
             'inference': 'Finite heldout-source comparison; repeated scores share ancestors and targets. No population CI, automatic generality claim, or winning-model selection.'}
+
+
+def coefficient_rows(fitted):
+    """Describe the signed, sealed fit; accuracy does not set the slope's sign."""
+    models = fitted['models']
+    if set(models) != {'fit_mean', *SIGNALS}:
+        raise ValueError('Require all fixed models for coefficient presentation')
+    rows = []
+    for name in ['fit_mean', *SIGNALS]:
+        model = models[name]
+        values = [model['intercept']]
+        if name != 'fit_mean':
+            values += [model[k] for k in ['slope', 'fit_mean', 'fit_population_std', 'lambda']]
+        if any(not isinstance(v, (int, float)) or not math.isfinite(v) for v in values):
+            raise ValueError('Nonfinite sealed coefficient')
+        if name == 'fit_mean':
+            rows.append({'model': name, 'intercept': model['intercept'], 'slope': None,
+                         'direction': 'constant', 'fit_mean': None, 'fit_population_std': None})
+            continue
+        scale, slope = model['fit_population_std'], model['slope']
+        if scale < 0 or model['lambda'] != 1 or (scale == 0 and slope != 0):
+            raise ValueError('Invalid frozen standardization or ridge coefficient')
+        rows.append({'model': name, 'intercept': model['intercept'], 'slope': slope,
+                     'direction': 'positive' if slope > 0 else 'negative' if slope < 0 else 'zero',
+                     'fit_mean': model['fit_mean'], 'fit_population_std': scale})
+    return rows
+
+
+def source_prediction_rows(labels, fitted, features, analysis, sealed_predictions):
+    """Display every source using the original fit, and bind heldout rows to its seal."""
+    coefficient_rows(fitted)
+    predictions = predict_models(fitted, features, analysis)
+    heldout = analysis['source_split']['heldout']
+    if {g: predictions[g] for g in heldout} != sealed_predictions:
+        raise ValueError('Displayed heldout predictions differ from the original seal')
+    if set(labels['groups']) != set(predictions):
+        raise ValueError('Require every registered source in the prediction display')
+    return [{'source_group': g, 'split': 'heldout' if g in heldout else 'fit',
+             'observed_G': labels['groups'][g]['G'], 'predictions': predictions[g],
+             'squared_errors': {m: (p-labels['groups'][g]['G'])**2 for m, p in predictions[g].items()}}
+            for g in analysis['source_split']['all_groups']]
 
 
 def cost_accounting(master, training_rows, panels):
@@ -146,7 +187,11 @@ def build_report(root, fit_ref, heldout_ref, seal_ref):
     training_rows, training_evidence = replay_training(root, master)
     costs = cost_accounting(master, training_rows, panels)
     return {'status': 'passed', 'stage': 0, 'labels': labels, 'prediction_results': result,
-            'sealed_predictions': prediction_artifact, 'costs': costs,
+            'sealed_predictions': prediction_artifact, 'sealed_models': models,
+            'coefficient_directions': coefficient_rows(models),
+            'source_predictions': source_prediction_rows(labels, models, features, analysis,
+                                                         prediction_artifact['point_predictions']),
+            'costs': costs,
             'evidence': {'execution_protocol': fit_plan['execution_protocol'], 'fit_manifest': fit_ref,
                          'heldout_manifest': heldout_ref, 'prediction_seal': seal_ref,
                          'evaluation': evidence, 'training': training_evidence},
@@ -168,6 +213,23 @@ def markdown(report):
                '| 训练重复 | 同一封存预测的主误差差 |', '|---|---:|']
     for row in scores['same_sealed_predictions_by_training_repeat']:
         result.append(f"| {row['training_repeat']} | {row['primary_difference']:.8f} |")
+    result += ['', '## 封存系数与拟合方向', '',
+               '| 预设模型 | 截距 | 每个fit标准差的斜率 | 方向 | fit特征均值 | fit总体标准差 |',
+               '|---|---:|---:|---|---:|---:|']
+    direction = {'constant': '常数基线', 'positive': '正斜率', 'negative': '负斜率', 'zero': '零斜率'}
+    def number(value):
+        return '—' if value is None else f'{value:.10g}'
+    for row in report['coefficient_directions']:
+        result.append(f"| {row['model']} | {number(row['intercept'])} | {number(row['slope'])} | "
+                      f"{direction[row['direction']]} | {number(row['fit_mean'])} | {number(row['fit_population_std'])} |")
+    result += ['', '系数与标准化来自评测前封存的12个fit来源；斜率没有正号约束。MSE改善与斜率方向分别解释：负斜率模型即使预测更准，也不支持高分来源更值得学习。正斜率也只是有限fit条件中的关系，仍需留出/重复/阶段证据。', '',
+               '## 固定预测与各来源实测', '',
+               'fit行是拟合内描述，heldout行才是预设来源留出检验；全部使用同一原封存模型，未重新拟合或标准化。', '',
+               '| 来源 | 预测划分 | 实测平均G | ' + ' | '.join(['fit_mean', *SIGNALS]) + ' |',
+               '|---|---|---:|' + '---:|'*5]
+    for row in report['source_predictions']:
+        values = ' | '.join(f"{row['predictions'][m]:.8f}" for m in ['fit_mean', *SIGNALS])
+        result.append(f"| {row['source_group']} | {row['split']} | {row['observed_G']:.8f} | {values} |")
     result += ['', '## 来源收益及重复差异', '', '| 来源 | 预测划分 | 平均G | 平均V | 三训练重复G |', '|---|---|---:|---:|---|']
     heldout = set(report['sealed_predictions']['heldout_groups'])
     for group, row in labels['groups'].items():
