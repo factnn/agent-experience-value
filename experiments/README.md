@@ -108,3 +108,4 @@
 | [E101](E101.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_03_r1/summary.json` | 已分析 |
 | [E102](E102.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_06_r1/summary.json` | 已分析 |
 | [E103](E103.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_07_r1/summary.json` | 已分析 |
+| [E104](E104.md) | audit_status | `rl/bfcl_source_stage0_continuation_registration_20261012_0844/audit_status.json` | 待分析 |
