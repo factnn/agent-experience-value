@@ -37,3 +37,7 @@
 2026-10-12T09:35:51.480623+00:00：首次CPU监督器2406157以RL虚拟环境运行，初始Goal查询unknown三次后退出，0 GPU子作业/0新token；旧根与失败保留，E105已复审。实际异常为该解释器缺websockets，系统Python同时间可读active，未证明SQLite故障。
 
 v2协议：[BFCL_SOURCE_STAGE0_CONTINUATION_V2_20261012.json](rl/BFCL_SOURCE_STAGE0_CONTINUATION_V2_20261012.json)，SHA `be849ae8ab8d4878cd574f6d96a7fe51d6102272e401e4e59955a79abd0fa26b`，独立控制根`rl/bfcl_source_stage0_resume_v2_20261012`。仅CPU监督器改用系统Python（路径/版本/依赖SHA已记录），其代码和全部27job不变；训练与CPU原始审计仍由原.venv-rl子进程执行。发布后实际启动并核对四卡，不把Popen成功冒充训练已经启动。
+
+## 实际v2启动核验
+
+2026-10-12T09:48:27.082628+00:00：发布commit81f777e核验后启动系统Python监督器2421606；GPU4/5/6/7实际PID分别2421701/2421699/2421700/2421698，对应group09/10/11/12 r1。四个子进程使用原RL虚拟环境、共同step0政策与90122历史，完整状态恢复verified。见[startup_verified](rl/bfcl_source_stage0_resume_v2_20261012/startup_verified.json)和发布收据。当前24全局完成/4活动/23待运行；旧控制失败保留。运行状态以v2 queue和实际PID为准，原queue已是历史终态。

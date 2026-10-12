@@ -1,8 +1,8 @@
-**当前研究入口（2026-10-12 06:43 UTC核对）：** 16/51训练完成、4条实际运行、31条排队、0失败，最多GPU4–7四卡。本轮训练来自16个完整来源组×3重复及3条Uniform；当前还没有修正配方的迁移G/V或留出预测结果。训练与实际评测必须接上，局部混合奖励预测改善只是前置测量发现。
+**当前研究入口（2026-10-12 09:48 UTC核对）：** 24/51训练完成、4条实际运行、23条排队；GPU4–7按[59接续](59_stage0_execution_continuation.md)运行group09/10/11/12 r1，旧控制准入失败保留。尚无本轮迁移G/V或留出预测结果。
 
 当前决策与依赖见 [NEXT](experiments/NEXT.md)，已完成事件与审阅见 [实验索引](experiments/README.md)，冻结训练设计见 [49](49_source_group_stage0_execution.md)，评测/封存顺序见 [52](52_transfer_labels_and_execution.md)。Scope原点见 [01](01_scope.md)，现有覆盖与未完成项见 [scope台账](experiments/SCOPE_REVIEW.md)：当前候选集中在可学习性，多假说比较、阶段、规模、家族/环境外推仍有缺口。
 
-以上数量是核对时快照。运行机器上以 `rl/bfcl_source_stage0_train_20261012/queue.json`、各作业进程收据与实际PID为准；`rl/STATUS.json`保留的是旧工程pilot，不是当前队列。Git发布的是完整已完成证据与审阅；各分支manifest记录的checkpoint二进制仍保存在本机，克隆仓库暂不包含它们。
+以上数量是核对时快照。运行机器上以 `rl/bfcl_source_stage0_resume_v2_20261012/queue.json`加原24终点、各作业进程收据与实际PID为准；`rl/STATUS.json`保留的是旧工程pilot，不是当前队列。Git发布的是完整已完成证据与审阅；各分支manifest记录的checkpoint二进制仍保存在本机，克隆仓库暂不包含它们。
 
 **2026-10-11 双 seed 方向翻转：** 新 repeat 1 早期同一政策的 e0/e1 为 15/22、9/22，相对起点净 +3/−2，均通过审计；旧轨迹终点两 seed 均净 −2。四卡继续固定对照，Goal 服务已恢复。见 [34](34_discovery_two_eval_seeds.md)、[35 离线局部信号诊断](35_local_signal_retrospective_audit.md)。
 
