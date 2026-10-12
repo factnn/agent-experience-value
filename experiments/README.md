@@ -112,6 +112,6 @@
 | [E105](E105.md) | failures | `rl/bfcl_source_stage0_resume_20261012_0844/failures.json` | 已分析 |
 | [E106](E106.md) | audit_status | `rl/bfcl_transfer_direction_cpu_20261012/audit_status.json` | 已分析 |
 | [E107](E107.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_12_r1/summary.json` | 已分析 |
-| [E108](E108.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_11_r1/summary.json` | 待分析 |
-| [E109](E109.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_09_r1/summary.json` | 待分析 |
+| [E108](E108.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_11_r1/summary.json` | 已分析 |
+| [E109](E109.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_09_r1/summary.json` | 已分析 |
 | [E110](E110.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_10_r1/summary.json` | 待分析 |
