@@ -115,3 +115,4 @@
 | [E108](E108.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_11_r1/summary.json` | 已分析 |
 | [E109](E109.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_09_r1/summary.json` | 已分析 |
 | [E110](E110.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_10_r1/summary.json` | 已分析 |
+| [E111](E111.md) | audit_status | `rl/bfcl_source_matrix_cpu_20261012/audit_status.json` | 待分析 |
