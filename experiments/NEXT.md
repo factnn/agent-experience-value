@@ -54,3 +54,5 @@
 晚阶段依赖只读核对（2026-10-12）：`run_bfcl_task_probe.py`的run/特征行与`report_bfcl_task_probe.py`检查均写死stage0；52的标签/评测注册也明确只接收stage0。不能仅替换policy_path复用为晚阶段证据。待预指定Uniform r0终点实际完成并审计后，另行绑定stage1、完整payload/AdamW/历史与新采样seed；更新后的历史信号必须来自该祖先。47的早期预测器/标准化保持不变，晚特征形成后先封存早→晚预测，再打开任何晚阶段迁移标签。此核对不改变当前冻结代码、不新增实验。
 
 首条科学训练已完成并复审：E074，GorillaFileSystem group00 r0，69,618新token/8更新/5新非零梯度组，完整原始轨迹与学习状态重放一致。GPU5自动接续group06 r0（PID2249699）；截至此次审阅1完成/4运行/46排队/0失败。无新迁移标签，不改冻结对照。
+
+E075/E076复审完成：group02 r0为70,944 token/8更新；Uniform r0为70,540 token/7更新，两者原始完整重放均通过。预指定晚祖先已绑定到真实payload `e6b4659450c2612201aca51c3a4d10eac6da3d180106faed9507cca06e3b5e93`、policy `b1f3f06f77ccc4ff6840f4904315f5c495760a6cedc00358bae1fc5ffae089b9`，见 `rl/bfcl_late_stage_parent_binding_20261012.json`；累计7优化器步/28微步、继承总获取160,662，父训练成本不重复计费。尚未证明能力更强，也未启动晚阶段作业。GPU7/4分别接续group09/03。
