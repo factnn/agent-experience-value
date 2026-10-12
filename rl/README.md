@@ -1,3 +1,11 @@
+**当前研究入口（2026-10-12 06:43 UTC核对）：** 16/51训练完成、4条实际运行、31条排队、0失败，最多GPU4–7四卡。本轮训练来自16个完整来源组×3重复及3条Uniform；当前还没有修正配方的迁移G/V或留出预测结果。训练与实际评测必须接上，局部混合奖励预测改善只是前置测量发现。
+
+当前决策与依赖见 [NEXT](../experiments/NEXT.md)，已完成事件与审阅见 [实验索引](../experiments/README.md)，冻结训练设计见 [49](../49_source_group_stage0_execution.md)，评测/封存顺序见 [52](../52_transfer_labels_and_execution.md)。Scope原点见 [01](../01_scope.md)，现有覆盖与未完成项见 [scope台账](../experiments/SCOPE_REVIEW.md)：当前候选集中在可学习性，多假说比较、阶段、规模、家族/环境外推仍有缺口。
+
+以上数量是核对时快照。运行机器上以 `rl/bfcl_source_stage0_train_20261012/queue.json`、各作业进程收据与实际PID为准；`rl/STATUS.json`保留的是旧工程pilot，不是当前队列。Git发布的是完整已完成证据与审阅；各分支manifest记录的checkpoint二进制仍保存在本机，克隆仓库暂不包含它们。
+
+以下保留旧工程运行、配方与验收记录；其“最新”及GPU已释放等表述对应各自历史日期。
+
 **2026-10-11:** 单轨迹 32K/64K/128K 诊断已完整审计，见 [结果与边界](../30_dose_complete_result.md)。四卡已释放；新的非零步 trainer 分叉尚待实现验收。
 
 **2026-10-10:** 全池两次条件重复已完整审计，见 [结果](../28_full_pool_followup_complete_result.md)。单轨迹开发集剂量诊断代码和协议已冻结，见 [执行设计](../29_dose_execution_protocol.md) 与 [实时状态](STATUS.json)。下方保留历史 smoke 记录。

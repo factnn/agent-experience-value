@@ -1,4 +1,4 @@
-**2026-10-12 最新入口：** 当前51个来源组/Uniform训练分支已冻结，GPU4–7运行首批；任务级探测已完成，但新迁移G/V与留出预测结果尚未产生。科学执行见 [49](49_source_group_stage0_execution.md)，后续评测实现见 [52](52_transfer_labels_and_execution.md)，实时决策见 [NEXT](experiments/NEXT.md)。以下旧状态段落保留为历史，不能作为当前GPU/队列状态。
+**2026-10-12 最新入口（06:43 UTC核对）：** 16/51训练完成、4条实际运行、31条排队、0失败，实际GPU4–7运行。任务级探测已完成，但新迁移G/V与留出预测结果尚未产生。科学执行见 [49](49_source_group_stage0_execution.md)，后续评测与发布门槛见 [52](52_transfer_labels_and_execution.md)，当前决策和逐事件进展见 [NEXT](experiments/NEXT.md) 与 [实验索引](experiments/README.md)。本行是时间快照，实际运行以当前queue及PID核对为准；`rl/STATUS.json`和以下旧状态段落均保留历史。
 
 **gpt12方向回顾：** 核心仍是经验如何产生训练后的迁移收益；当前候选已实质集中到可学习性，不是原始多机制比较全部完成。见 [53审阅](53_gpt12_scope_review.md) 与 [scope对照台账](experiments/SCOPE_REVIEW.md)。每批科学实验审阅及范围调整前回顾原目标、证据和缺口，有限结论不替代长期Goal。
 

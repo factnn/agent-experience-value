@@ -1,3 +1,9 @@
+**当前研究入口（2026-10-12 06:43 UTC核对）：** 16/51训练完成、4条实际运行、31条排队、0失败，最多GPU4–7四卡。本轮训练来自16个完整来源组×3重复及3条Uniform；当前还没有修正配方的迁移G/V或留出预测结果。训练与实际评测必须接上，局部混合奖励预测改善只是前置测量发现。
+
+当前决策与依赖见 [NEXT](experiments/NEXT.md)，已完成事件与审阅见 [实验索引](experiments/README.md)，冻结训练设计见 [49](49_source_group_stage0_execution.md)，评测/封存顺序见 [52](52_transfer_labels_and_execution.md)。Scope原点见 [01](01_scope.md)，现有覆盖与未完成项见 [scope台账](experiments/SCOPE_REVIEW.md)：当前候选集中在可学习性，多假说比较、阶段、规模、家族/环境外推仍有缺口。
+
+以上数量是核对时快照。运行机器上以 `rl/bfcl_source_stage0_train_20261012/queue.json`、各作业进程收据与实际PID为准；`rl/STATUS.json`保留的是旧工程pilot，不是当前队列。Git发布的是完整已完成证据与审阅；各分支manifest记录的checkpoint二进制仍保存在本机，克隆仓库暂不包含它们。
+
 **2026-10-11 双 seed 方向翻转：** 新 repeat 1 早期同一政策的 e0/e1 为 15/22、9/22，相对起点净 +3/−2，均通过审计；旧轨迹终点两 seed 均净 −2。四卡继续固定对照，Goal 服务已恢复。见 [34](34_discovery_two_eval_seeds.md)、[35 离线局部信号诊断](35_local_signal_retrospective_audit.md)。
 
 **2026-10-11 非零阶段分叉准备：** 监控消息已真实触发自动继续；已实现旧 step 6 → 7–9 的新 trainer 重放验收，保留非零 AdamW 与历史，CPU 检查通过、GPU 验收待当前冻结批次结束后运行。见 [32](32_nonzero_stage_fork_acceptance.md)。
@@ -6,8 +12,8 @@
 
 # Agent Experience Value
 
-> **当前主线（2026-10-11）：测量哪些经验价值信号预测在线 RL 后的迁移收益。保留大 scope，按证据收窄结论。**
-> 先读 [PROJECT_STATE.md](PROJECT_STATE.md)、[研究目标与证据层级](15_scope_and_evidence_ladder.md)、[基准/分叉设计](16_benchmark_and_fork_design.md)；工程 pilot 已完成，见 [结果与识别局限](17_allocation_pilot_result.md)。当前 RL 运行状态见 [rl/STATUS.json](rl/STATUS.json)，实验记录见 [rl/README.md](rl/README.md)。以下保留早期 SFT 阶段的研究叙述和实验记录；其中 SFT 优先级、标签瓶颈、投资闸门与后续建议已被当前主线取代。SFT 负结果不构成对 RL 或经验分配研究的否定。
+> **当前主线（2026-10-12）：测量哪些经验价值信号预测在线 RL 后的迁移收益。保留大 scope，按证据收窄结论。**
+> 先读 [PROJECT_STATE.md](PROJECT_STATE.md)、[研究目标与证据层级](15_scope_and_evidence_ladder.md)、[基准/分叉设计](16_benchmark_and_fork_design.md)；工程 pilot 已完成，见 [结果与识别局限](17_allocation_pilot_result.md)。当前 RL 决策与事件见 [NEXT](experiments/NEXT.md) 和 [实验索引](experiments/README.md)，冻结协议见 [49](49_source_group_stage0_execution.md)。以下保留早期 SFT 阶段的研究叙述和实验记录；其中 SFT 优先级、标签瓶颈、投资闸门与后续建议已被当前主线取代。SFT 负结果不构成对 RL 或经验分配研究的否定。
 
 **2026-10-11 接续：** 三个新训练重复及两个开发评测 seed 已冻结，四卡自动队列，见 [设计与执行](31_dose_repeats_design.md)。
 
