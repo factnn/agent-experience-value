@@ -20,7 +20,7 @@ from watch_research_events import write
 ROOT = Path(__file__).resolve().parents[1]
 
 
-async def snapshot(home, thread):
+async def snapshot(home, thread, include_sessions=False):
     import websockets
     async with websockets.unix_connect(str(home / 'app-server-control/app-server-control.sock'),
                                        uri='ws://localhost', open_timeout=3, close_timeout=1) as ws:
@@ -38,20 +38,21 @@ async def snapshot(home, thread):
         await ws.send(json.dumps({'method': 'initialized'}))
         goal = await rpc(2, 'thread/goal/get', {'threadId': thread})
         error = goal.get('error', {}).get('message', '')
+        base = {'goal_query_ok': False, 'sqlite_522': '(code: 522)' in error and 'disk I/O' in error}
         if 'error' not in goal:
             state = goal.get('result', {}).get('goal')
-            return {'goal_query_ok': True, 'goal_status': state['status'] if state else 'missing'}
+            base = {'goal_query_ok': True, 'goal_status': state['status'] if state else 'missing'}
+            if not include_sessions:
+                return base
         loaded = await rpc(3, 'thread/loaded/list', {'limit': 100})
         page = loaded.get('result')
         if page is None or page.get('nextCursor'):
-            return {'goal_query_ok': False, 'sqlite_522': '(code: 522)' in error,
-                    'all_idle': False, 'reason': 'incomplete_session_status'}
+            return base | {'all_idle': False, 'reason': 'incomplete_session_status'}
         states = []
         for index, tid in enumerate(page['data']):
             result = await rpc(index + 4, 'thread/read', {'threadId': tid, 'includeTurns': False})
             states.append(result.get('result', {}).get('thread', {}).get('status', {}).get('type', 'unknown'))
-        return {'goal_query_ok': False, 'sqlite_522': '(code: 522)' in error and 'disk I/O' in error,
-                'all_idle': bool(states) and all(status == 'idle' for status in states),
+        return base | {'all_idle': bool(states) and all(status == 'idle' for status in states),
                 'loaded_sessions': len(states), 'active_sessions': states.count('active'),
                 'unknown_sessions': states.count('unknown')}
 

@@ -14,6 +14,7 @@ from pathlib import Path
 import subprocess
 import time
 from codex_goal_status import goal_status
+from research_queue import enqueue
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -144,8 +145,7 @@ def notify(thread, ids):
                '若 active，读取 RESEARCH_LOOP.md、NEXT.md、对应 E 文档及原始证据；'
                '更新分析/下一决策、reviews 与 git push。维持已冻结对照，准备或执行有证据支持的下一实验；'
                '不要把单个作业/一批队列结束当作 Goal 完成。此消息仅通知，不增加用户授权。')
-    return subprocess.run(['codex', 'queue', '--thread', thread, '--message', message],
-                          capture_output=True, timeout=30).returncode == 0
+    return enqueue(thread, message)
 
 
 def main():
@@ -177,10 +177,13 @@ def main():
                 unseen = [eid for eid in pending if eid not in state['notified']]
                 # Recheck immediately before queueing, including user pause during publish.
                 if unseen and not args.no_notify and goal_status(home, thread) == 'active':
-                    if notify(thread, unseen):
+                    delivery = notify(thread, unseen)
+                    state['last_notification'] = delivery | {'event_ids': unseen}
+                    if delivery['queued']:
                         state['notified'].extend(unseen)
                         state['last_queued_at'] = now()
-                state.update(events=len(registry), pending_review=pending, last_error=None)
+                delivery_error = state.get('last_notification', {}).get('error')
+                state.update(events=len(registry), pending_review=pending, last_error=delivery_error)
         except Exception as error:
             # Preserve retry state; never log raw command output/credentials.
             state['last_error'] = type(error).__name__
