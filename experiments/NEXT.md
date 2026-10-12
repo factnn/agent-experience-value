@@ -1,6 +1,6 @@
 # 下一决策与依赖
 
-更新：2026-10-12 02:32 UTC。原目标不变：采样前经验价值信号能否预测真实在线RL的可重复迁移收益，关系是否随learner阶段改变；规模、家族、环境外推仍保留。负结果可以形成证据链，单个作业/批次完成不是Goal完成。
+更新：2026-10-12 02:54 UTC。原目标不变：采样前经验价值信号能否预测真实在线RL的可重复迁移收益，关系是否随learner阶段改变；规模、家族、环境外推仍保留。负结果可以形成证据链，单个作业/批次完成不是Goal完成。
 
 ## 当前状态
 
@@ -16,7 +16,7 @@
 - [38](../38_fixed_rollout_backward_result.md)、[39](../39_deterministic_full_state_pair.md)：默认分叉失配保留；确定性连续—恢复第三组的生成/梯度/参数/AdamW/历史/RNG逐位一致。39新生成35,819，已收尾。E029–E039、E048–E050。
 - [40](../40_grpo_loss_normalization_contract.md)、[41](../41_qwen_lora_normalization_gpu.md)、[44](../44_corrected_gpu_trainer_loop.md)：历史两层/4已定位，修正为GRPO除4、Accelerator除1；实际Qwen/LoRA完整Trainer.train四微批/一次更新与冻结手动路径一致。0新生成；不再扩同类工程验收。
 - [42 gpt10审阅](../42_gpt10_review_and_next_design.md)、[43](../43_task_level_probe_statistics.md)：区分任务内机会与任务间难度混合；先测局部代理是否准确，再检验迁移。报告检查点字段已独立修订，G/成本不变。E044/E047。
-- [46 来源组RL入口](../46_source_group_rl_runner.md)：4项CPU检查通过，真实恢复覆盖step0/step1；E054已审阅。尚未执行新runner的GPU科学作业，也没有冻结来源组RL矩阵。
+- [46 来源组RL入口](../46_source_group_rl_runner.md)：4项CPU检查通过，真实恢复覆盖step0/step1；E054已审阅。该条为46完成时状态；现在49已经冻结并运行来源组RL矩阵。
 
 ## 紧接着做什么
 
@@ -44,3 +44,5 @@
 [50 gpt11审阅](../50_gpt11_review.md)已完成：补充的三档Beta预测和0.5常数Brier参照已复算，作为事后解释保留，不改主对照或重采探测；其“尚未开始RL”已被49实际启动更新。下一步仍是迁移G/V。
 
 [51 评测实现](../51_transfer_evaluation_implementation.md)新增政策/面板绑定、实际点预测Git发布门槛、完整评测runner与原始轨迹审计。3项新增CPU检查和2项预测器检查通过；没有GPU评测启动、没有实际点预测封存。接着实现评测job注册/调度、完整拟合标签汇总和发布命令，不能把CPU门槛测试当端到端完成。
+
+[52 标签与评测调度](../52_transfer_labels_and_execution.md)已补齐严格配对G/V、80面板fit封存、实际Git发布核验以及80/24面板注册/四卡监督器，9项CPU检查通过。真实评测尚未注册/启动；当前51分支训练结束并全量审阅后才能绑定终点政策。下一步核对实际训练事件、登记并发布fit评测job与输出根目录、执行后审计封存；完整留出误差报告与晚阶段协议仍待完成。
