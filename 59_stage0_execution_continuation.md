@@ -31,3 +31,9 @@
 监督器不会执行目标评测。完整51条审阅与scope回顾之后才按52登记80个fit面板、拟合并发布真实四留出预测，再执行24个heldout面板。当前没有新G/V、点预测或阶段收益，仍不能推出跨规模/家族/环境结论。
 
 此项为控制恢复，没有新增科学候选、调整预算、选seed或删臂；scope的实质设计计数仍是55/58两项。
+
+## 首次准入失败与v2控制修订
+
+2026-10-12T09:35:51.480623+00:00：首次CPU监督器2406157以RL虚拟环境运行，初始Goal查询unknown三次后退出，0 GPU子作业/0新token；旧根与失败保留，E105已复审。实际异常为该解释器缺websockets，系统Python同时间可读active，未证明SQLite故障。
+
+v2协议：[BFCL_SOURCE_STAGE0_CONTINUATION_V2_20261012.json](rl/BFCL_SOURCE_STAGE0_CONTINUATION_V2_20261012.json)，SHA `be849ae8ab8d4878cd574f6d96a7fe51d6102272e401e4e59955a79abd0fa26b`，独立控制根`rl/bfcl_source_stage0_resume_v2_20261012`。仅CPU监督器改用系统Python（路径/版本/依赖SHA已记录），其代码和全部27job不变；训练与CPU原始审计仍由原.venv-rl子进程执行。发布后实际启动并核对四卡，不把Popen成功冒充训练已经启动。
