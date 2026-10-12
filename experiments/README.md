@@ -98,4 +98,4 @@
 | [E091](E091.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_05_r0/summary.json` | 已分析 |
 | [E092](E092.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_04_r0/summary.json` | 已分析 |
 | [E093](E093.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_15_r0/summary.json` | 已分析 |
-| [E094](E094.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_08_r0/summary.json` | 待分析 |
+| [E094](E094.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_08_r0/summary.json` | 已分析 |
