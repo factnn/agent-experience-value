@@ -95,3 +95,4 @@
 | [E088](E088.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_10_r0/summary.json` | 已分析 |
 | [E089](E089.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_14_r0/summary.json` | 已分析 |
 | [E090](E090.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_11_r0/summary.json` | 已分析 |
+| [E091](E091.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_05_r0/summary.json` | 待分析 |
