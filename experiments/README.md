@@ -125,4 +125,6 @@
 | [E118](E118.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_13_r1/summary.json` | 已分析 |
 | [E119](E119.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_uniform_r2/summary.json` | 已分析 |
 | [E120](E120.md) | failures | `rl/bfcl_source_stage0_resume_v2_20261012/failures.json` | 已分析 |
-| [E121](E121.md) | audit_status | `rl/bfcl_source_stage0_continuation_v3_registration_20261012/audit_status.json` | 待分析 |
+| [E121](E121.md) | audit_status | `rl/bfcl_source_stage0_continuation_v3_registration_20261012/audit_status.json` | 已分析 |
+| [E122](E122.md) | audit_status | `rl/bfcl_source_stage0_ssh_startup_20261013/audit_status.json` | 已分析 |
+| [E123](E123.md) | audit_status | `rl/bfcl_source_matrix_v3_cpu_20261013/audit_status.json` | 已分析 |

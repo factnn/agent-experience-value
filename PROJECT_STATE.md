@@ -1,3 +1,5 @@
+**2026-10-13 SSH接手（2026-10-13T06:01:31.014540+00:00）：** 原36/51终点保留，GPU4–7实际运行V3首四条，11排队、0失败；共同起点恢复verified。控制归属与三段合并见[63](63_ssh_takeover_continuation.md)，当前队列见 `rl/bfcl_source_stage0_resume_v3_20261012/queue.json`。本轮仍无迁移G/V。
+
 **2026-10-12 最新入口（09:48 UTC核对）：** 24/51训练完成、4条实际运行、23条排队。控制blocked及一次CPU解释器依赖失败均保留，按[59](59_stage0_execution_continuation.md)独立v2控制执行恢复四卡；gpt13见[60](60_gpt13_review.md)。当前仍无本轮迁移G/V，评测与封存门槛见[52](52_transfer_labels_and_execution.md)，实际进展见[NEXT](experiments/NEXT.md)与[实验索引](experiments/README.md)。当前v2 queue加原24完整终点才是全局状态，旧`rl/STATUS.json`及原queue均保留历史。
 
 **gpt12方向回顾：** 核心仍是经验如何产生训练后的迁移收益；当前候选已实质集中到可学习性，不是原始多机制比较全部完成。见 [53审阅](53_gpt12_scope_review.md) 与 [scope对照台账](experiments/SCOPE_REVIEW.md)。每批科学实验审阅及范围调整前回顾原目标、证据和缺口，有限结论不替代长期Goal。

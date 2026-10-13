@@ -62,6 +62,9 @@ def audit_source(root, job, expected_sha):
 
 def build_report(root, master_ref, continuation_ref):
     master, continuation = pinned(root, master_ref), pinned(root, continuation_ref)
+    if continuation['execution_continuation'].get('previous_control_segments'):
+        from bfcl_source_matrix_v3 import build_report_v3
+        return build_report_v3(root, master_ref, continuation_ref, audit_source)
     original_root, resumed_root = root/master['output_root'], root/continuation['output_root']
     failed = continuation['execution_continuation']['failed_initial_admission']
     failed_plan = pinned(root, failed['protocol'])

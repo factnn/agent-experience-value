@@ -1,3 +1,5 @@
+**2026-10-13 SSH接手（2026-10-13T06:01:31.014540+00:00）：** 原36/51终点保留，GPU4–7实际运行V3首四条，11排队、0失败；共同起点恢复verified。控制归属与三段合并见[63](63_ssh_takeover_continuation.md)，当前队列见 `rl/bfcl_source_stage0_resume_v3_20261012/queue.json`。本轮仍无迁移G/V。
+
 **当前研究入口（2026-10-12 09:48 UTC核对）：** 24/51训练完成、4条实际运行、23条排队；GPU4–7按[59接续](59_stage0_execution_continuation.md)运行group09/10/11/12 r1，旧控制准入失败保留。尚无本轮迁移G/V或留出预测结果。
 
 当前决策与依赖见 [NEXT](experiments/NEXT.md)，已完成事件与审阅见 [实验索引](experiments/README.md)，冻结训练设计见 [49](49_source_group_stage0_execution.md)，评测/封存顺序见 [52](52_transfer_labels_and_execution.md)。Scope原点见 [01](01_scope.md)，现有覆盖与未完成项见 [scope台账](experiments/SCOPE_REVIEW.md)：当前候选集中在可学习性，多假说比较、阶段、规模、家族/环境外推仍有缺口。
