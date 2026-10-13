@@ -161,3 +161,5 @@
 | [E154](E154.md) | complete raw fit panel common_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/common_e1/summary.json` | 已分析 |
 | [E155](E155.md) | complete raw fit panel s0_group_03_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_03_r0_e1/summary.json` | 已分析 |
 | [E156](E156.md) | complete raw fit panel s0_group_01_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_01_r0_e0/summary.json` | 已分析 |
+| [E157](E157.md) | complete raw fit panel s0_group_02_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_02_r0_e1/summary.json` | 已分析 |
+| [E158](E158.md) | complete raw fit panel s0_group_03_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_03_r0_e0/summary.json` | 已分析 |
