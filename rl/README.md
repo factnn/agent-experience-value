@@ -4,7 +4,7 @@
 
 当前决策与依赖见 [NEXT](../experiments/NEXT.md)，已完成事件与审阅见 [实验索引](../experiments/README.md)，冻结训练设计见 [49](../49_source_group_stage0_execution.md)，评测/封存顺序见 [52](../52_transfer_labels_and_execution.md)。Scope原点见 [01](../01_scope.md)，现有覆盖与未完成项见 [scope台账](../experiments/SCOPE_REVIEW.md)：当前候选集中在可学习性，多假说比较、阶段、规模、家族/环境外推仍有缺口。
 
-以上数量是核对时快照。运行机器上以 `rl/bfcl_source_stage0_resume_v2_20261012/queue.json`加原24终点、各作业进程收据与实际PID为准；`rl/STATUS.json`保留的是旧工程pilot，不是当前队列。Git发布的是完整已完成证据与审阅；各分支manifest记录的checkpoint二进制仍保存在本机，克隆仓库暂不包含它们。
+以上数量是各日期的历史核对快照。当前运行以服务器 `rl/bfcl_source_stage0_fit_eval_20261013/queue.json`、对应作业进程收据与实际PID为准；原训练各执行段和 `rl/STATUS.json` 保存历史证据。Git发布完成的原始文本证据、配置、审计与审阅；检查点二进制保留在授权服务器，克隆仓库后按[取得说明](../68_stage0_artifact_retrieval.md)复制并校验。
 
 以下保留旧工程运行、配方与验收记录；其“最新”及GPU已释放等表述对应各自历史日期。
 
