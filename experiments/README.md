@@ -146,3 +146,4 @@
 | [E139](E139.md) | complete source endpoint s0_group_14_r2 | `rl/bfcl_source_stage0_train_20261012/s0_group_14_r2/summary.json` | 已分析 |
 | [E140](E140.md) | prepared | `rl/model_downloads_20261013/preparation_audit_status.json` | 已分析 |
 | [E141](E141.md) | implemented | `rl/six_gpu_source_evaluation_implementation_20261013/audit_status.json` | 已分析 |
+| [E142](E142.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_05_r2/summary.json` | 已分析 |
