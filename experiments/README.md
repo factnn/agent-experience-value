@@ -134,3 +134,4 @@
 | [E127](E127.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_06_r2/summary.json` | 已分析 |
 | [E128](E128.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_03_r2/summary.json` | 已分析 |
 | [E129](E129.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_07_r2/summary.json` | 已分析 |
+| [E130](E130.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_11_r2/summary.json` | 已分析 |
