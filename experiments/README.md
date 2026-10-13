@@ -128,3 +128,4 @@
 | [E121](E121.md) | audit_status | `rl/bfcl_source_stage0_continuation_v3_registration_20261012/audit_status.json` | 已分析 |
 | [E122](E122.md) | audit_status | `rl/bfcl_source_stage0_ssh_startup_20261013/audit_status.json` | 已分析 |
 | [E123](E123.md) | audit_status | `rl/bfcl_source_matrix_v3_cpu_20261013/audit_status.json` | 已分析 |
+| [E124](E124.md) | audit_status | `rl/bfcl_ssh_evaluation_control_cpu_20261013/audit_status.json` | 已分析 |

@@ -8,7 +8,8 @@ from supervise_bfcl_stage_fork import ROOT, read, write
 
 EVAL_CODE = ['bfcl_source_eval_contract.py', 'eval_bfcl_source_transfer.py', 'report_bfcl_source_eval.py',
              'bfcl_transfer_labels.py', 'bfcl_transfer_predictor.py', 'seal_bfcl_transfer_predictions.py',
-             'prepare_bfcl_source_evaluation.py', 'supervise_bfcl_source_evaluation.py']
+             'prepare_bfcl_source_evaluation.py', 'supervise_bfcl_source_evaluation.py',
+             'bfcl_ssh_evaluation_control.py', 'bfcl_ssh_control.py']
 
 
 def phase_cases(registry, phase):

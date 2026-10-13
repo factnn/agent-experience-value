@@ -1,0 +1,17 @@
+# 当前SSH Goal下的分阶段评测归属
+
+2026-10-13。用户已明确授权当前会话连续完成原51训练/104评测主证据链，原生Goal归属和科学约束已发布于 `experiments/SSH_RESEARCH_GOAL_20261013.json`。本修复只适配后续评测的控制归属，不新增科学对照、预算或确认性规则，不提前开放留出标签。
+
+`supervise_bfcl_source_evaluation.py`保留原validate_manifest、完整运行依赖SHA、发布字节/远端祖先核验、先前研究审阅、输出登记、空卡检查、单次运行/时间界、原job加载、逐面板原始审计和留出封存检查。仅把旧线程Goal准入替换为逐阶段的当前SSH控制绑定。注册器将两个SSH控制模块加入未来评测依赖SHA；当前在运行的442训练依赖逐一复核未变。
+
+每阶段必须在完整训练证书及整批执行agent审阅之后形成对应manifest，再登记独立的控制JSON；不能用15条训练接续授权代替评测授权。新增必需CLI参数为 `--control-authority PATH --control-authority-sha256 SHA`。
+
+阶段授权包含：mode=human_authorized_ssh_takeover、scope=source_stage0_evaluation、status=authorized、phase=fit或heldout、evaluation_manifest的精确path/SHA、execution_protocol、owner_goal（当前thread_id及已发布Goal record的path/SHA）、current_goal_status_at_registration=active、complete_training_audit和complete_training_review的path/SHA、control_input_sha256、stop_file和global_stop_file。登记时执行agent先调用当前原生get_goal核对active；不能把历史记录的active当实时状态。控制哈希覆盖监督器、两个SSH控制模块和注册器；完整训练证书与review必须与事件索引中的同一批次对应。
+
+当前Goal线程为01a133bd-9422-7ec2-bb64-e6a85c7d9047，历史线程Goal保持原状。fit必须恰好80面板、heldout必须恰好24面板；权限不能在两个阶段间替换。完整51证书、对应整批review、控制JSON及其依赖/Goal记录均须在实际运行所验证的远端main提交中，不能仅存在本地。heldout的原点预测封存/远端发布/先封存后标签时序仍由原load_job及verify_seal检查，当前修复未改变它们。
+
+建议阶段停止标记为 `experiments/.runtime/ssh_stage0_eval_stop_20261013`，全局停止标记沿用 `experiments/.runtime/ssh_stop_20261013`。任一标记存在均停止后续评测准入；不会自行终止已运行科学子进程。用户要求终止作业时只操作本项目拥有的PID。当前Goal暂停/取消或系统限制时agent不得登记新阶段，按用户要求分别停止后续准入和已有作业。
+
+20项CPU集成检查通过（控制、标签、封存、预测器与完整报告检查），包括旧Goal不查询、错误owner/阶段/manifest拒绝、停止标记/控制代码变更拒绝、完整训练/对应review缺失拒绝、资源检查仍调用、授权和依赖未发布拒绝。Git发布测试仅用临时本地bare远端；不能认定实际GPU评测或真实预测检验已完成。当前真实矩阵未齐时注册器拒绝缺失51证书，未创建注册或评测目录；0新增GPU评测/0访问留出目标标签。收据见 `rl/bfcl_ssh_evaluation_control_cpu_20261013/audit_status.json`。
+
+训练仍按V3原job和原四卡lane继续。全部终点复核与完整51审计后执行52的固定顺序：80 fit → 原预测器实际封存/push/远端确认 → 24 heldout → 完整G/V、方向、重复、成本与scope回顾。每面板实际远端封存核验仍需可用GitHub连接；网络中断记录为控制/发布故障，不当科学负结果，不取消该检查或因此重跑已经完成的面板。

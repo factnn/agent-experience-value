@@ -12,7 +12,7 @@ from bfcl_transfer_labels import source_registry
 from prepare_bfcl_source_evaluation import phase_cases
 from supervise_bfcl_source_training import digest
 from supervise_bfcl_stage_fork import ROOT, read, write, supervise
-from bfcl_diagnostic_preflight import preflight
+from bfcl_ssh_evaluation_control import preflight as owner_preflight, check_control
 
 
 def validate_manifest(root, plan):
@@ -50,10 +50,16 @@ def validate_manifest(root, plan):
     return master
 
 
-def verify_publication(root, path, expected_sha, plan, commit):
+def verify_publication(root, path, expected_sha, plan, commit, control_authority_ref=None):
     files = {str(path.relative_to(root)): expected_sha}
     files.update({entry['path']: entry['sha256'] for entry in plan['jobs']})
     files.update({name: sha for name, sha in plan['input_sha256'].items() if name.startswith('pipeline/')})
+    if control_authority_ref is not None:
+        authority = pinned(root, control_authority_ref)
+        files[control_authority_ref['path']] = control_authority_ref['sha256']
+        files.update(authority['control_input_sha256'])
+        for reference in [authority['owner_goal']['record'], authority['complete_training_audit'], authority['complete_training_review']]:
+            files[reference['path']] = reference['sha256']
     for name, sha in files.items():
         result = subprocess.run(['git', 'show', commit+':'+name], cwd=root, capture_output=True)
         if result.returncode or hashlib.sha256(result.stdout).hexdigest() != sha:
@@ -72,16 +78,26 @@ def main():
     parser.add_argument('--manifest', type=Path, required=True)
     parser.add_argument('--manifest-sha256', required=True)
     parser.add_argument('--publication-commit', required=True)
+    parser.add_argument('--control-authority', type=Path, required=True)
+    parser.add_argument('--control-authority-sha256', required=True)
     args = parser.parse_args()
     path = args.manifest.resolve()
     if digest(path) != args.manifest_sha256:
         raise ValueError('Evaluation manifest changed')
     plan = read(path)
+    authority_ref = {'path': str(args.control_authority.resolve().relative_to(ROOT)), 'sha256': args.control_authority_sha256}
+    authority = pinned(ROOT, authority_ref)
+    if authority['evaluation_manifest'] != {'path': str(path.relative_to(ROOT)), 'sha256': args.manifest_sha256}:
+        raise ValueError('Evaluation authority is not bound to this phase manifest')
+    check_control(ROOT, plan, authority)
+    def preflight(gpu, plan):
+        return owner_preflight(gpu, plan, authority)
+
     root = ROOT/plan['output_root']
     root.mkdir(parents=True, exist_ok=False)
     try:
         validate_manifest(ROOT, plan)
-        publication = verify_publication(ROOT, path, args.manifest_sha256, plan, args.publication_commit)
+        publication = verify_publication(ROOT, path, args.manifest_sha256, plan, args.publication_commit, authority_ref)
         for name, sha in plan['input_sha256'].items():
             if digest(ROOT/name) != sha:
                 raise ValueError('Evaluation dependency changed: '+name)
@@ -95,6 +111,7 @@ def main():
         write(root/'failures.json', [{'phase': 'preflight', 'type': type(error).__name__, 'message': str(error), 'gpu_children_launched': 0}])
         raise
     write(root/'launch.json', {'supervisor_pid': os.getpid(), 'started_unix': time.time(), 'publication': publication,
+                              'control_authority': authority_ref, 'owner_goal_thread': authority['owner_goal']['thread_id'],
                               'preflights': initial, 'phase': plan['phase'], 'max_simultaneous_gpus': 4})
     lock, stop = threading.Lock(), threading.Event()
     state = {'active': {}, 'complete': [], 'pending': [e['name'] for e in plan['jobs']], 'failures': []}
