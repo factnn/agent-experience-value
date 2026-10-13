@@ -151,3 +151,11 @@
 | [E144](E144.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_13_r2/summary.json` | 已分析 |
 | [E145](E145.md) | complete | `rl/bfcl_source_stage0_train_20261012/audit_status.json` | 已分析 |
 | [E146](E146.md) | registered | `rl/bfcl_source_stage0_fit_registration_20261013/audit_status.json` | 已分析 |
+| [E147](E147.md) | verified six-GPU fit evaluation startup | `rl/bfcl_source_stage0_fit_startup_20261013/audit_status.json` | 已分析 |
+| [E148](E148.md) | ModelScope requested model completion and preserved download recovery | `rl/model_downloads_20261013/completed_models_audit.json` | 已分析 |
+| [E149](E149.md) | complete raw fit panel s0_group_00_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_00_r0_e1/summary.json` | 已分析 |
+| [E150](E150.md) | complete raw fit panel common_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/common_e0/summary.json` | 已分析 |
+| [E151](E151.md) | complete raw fit panel s0_uniform_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_uniform_r0_e0/summary.json` | 已分析 |
+| [E152](E152.md) | complete raw fit panel s0_uniform_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_uniform_r0_e1/summary.json` | 已分析 |
+| [E153](E153.md) | complete raw fit panel s0_group_00_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_00_r0_e0/summary.json` | 已分析 |
+| [E154](E154.md) | complete raw fit panel common_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/common_e1/summary.json` | 已分析 |
