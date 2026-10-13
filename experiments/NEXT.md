@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前SSH控制快照（2026-10-13T10:18:21.248546+00:00）：原51训练全部终点及逐条raw审计/执行agent审阅已齐，原24+V2的12+V3的12+V4的3互斥对应原job各一次；0active/0全局pending/0当前科学失败。V3历史pending3及准入停止保留为行政移交，不能重跑或删历史。GPU0/1/4/5/6/7均3MiB空闲；完整四根整批证书及scope/cost回顾即刻执行，通过后登记当前六卡fit80。尚无当前G/V、预测封存或heldout24标签。Qwen3-8B完整下载已verified，Llama清单排序故障另attempt恢复，CPU准备不增加科学GPU/token。
+当前SSH证据（2026-10-13T10:31:22.906179+00:00）：原51真实训练及逐条raw审阅、四根全量实际审计和E145整批scope/cost审阅通过；新训练3,708,360 token、351更新，完整组超额和历史控制失败均保留。0active/0未启动训练；不重跑/补采。下一步立即按当前六卡授权登记80 fit面板及当前owner/phase stop，80完成后封存并发布实际点预测才进入24 heldout，21题继续关闭。尚无本轮迁移G/V，训练审计通过不等于整个Goal完成。模型CPU下载独立进行。
 
 [48 Stage0结果](../48_stage0_task_probe_results.md)：45 v2全部16来源组/87题/696轨迹于00:05:46 UTC完成，0失败。02:17检查GPU4–7已空闲，监督器退出；不能重复启动同一探测。02:20后重新读取并审计全部原始采样/mask/奖励/预测收据，E055–E071已补审。
 
@@ -195,3 +195,5 @@ Uniform全池 r2完整原始复核一致：78,332新token/7步，新非零梯度
 2026-10-13T10:02:17.177373+00:00 E142：MathAPI+TravelAPI r2：72,357新token/11更新/44轨迹全部completed，新非零梯度步骤[4,6,8,9,11]、参数变化4–11；2题157/161组暴露5/6，末组前65,080、末组7,277，完整组超额6,821（10.41%）。完整原始审计器复算等于保存audit，原task/seed/预算/恢复未改，无科学重试。r0/r1/r2实际token71,736/65,856/72,357、更新11/10/11、新梯度组1/4/5、暴露157/161分别7/4、7/3、5/6；仅r2的任务161出现混合奖励fresh组。零新梯度下的动量参数变化不算新信号。三重复的实际剂量、暴露及更新机会不同，共享起点与同组任务并非独立来源条件，不能宣称严格等计算量或推出G/V；继承90,122成本不逐分支重计。执行agent及子代理审阅不是独立人类复核，未重算GPU梯度。留出来源训练完成不表示开放留出目标标签。 Finish only remaining original V4 group08/13, complete51 four-root raw audit plus batch/scope review, then publish current six-card fit80 authority/panels; seal and publish actual predictions before heldout24.
 
 2026-10-13T10:18:21.248546+00:00 E143,E144 最后两个原训练终点raw复算与保存audit完全一致，累计51逐条齐全。训练完成不等于51/104主链或整个Goal完成；先运行V4_FINAL四根真实完整审计，再整批review和fit80。
+
+2026-10-13T10:31:22.906179+00:00 E145全51原始合并审计通过且整批review完成，sha a3559bb7d3cc49d02fc77fda23260cba9180e6ff6dd0a59ea514f8f60ac7eaf9；成本ledger3,708,360为既有51的汇总，不能重复加账。Immediately register exact original fit80 panels on six genuinely free GPUs with current SSH phase authority and separate stop marker; finish/review fit80, fit frozen47 predictors and publish sealed actual point predictions before opening heldout24. No positive-result gate and no21 reserved-target access.
