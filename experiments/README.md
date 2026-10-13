@@ -131,3 +131,5 @@
 | [E124](E124.md) | audit_status | `rl/bfcl_ssh_evaluation_control_cpu_20261013/audit_status.json` | 已分析 |
 | [E125](E125.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_02_r2/summary.json` | 已分析 |
 | [E126](E126.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_01_r2/summary.json` | 已分析 |
+| [E127](E127.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_06_r2/summary.json` | 已分析 |
+| [E128](E128.md) | complete | `rl/bfcl_source_stage0_train_20261012/s0_group_03_r2/summary.json` | 已分析 |
