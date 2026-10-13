@@ -62,6 +62,9 @@ def audit_source(root, job, expected_sha):
 
 def build_report(root, master_ref, continuation_ref):
     master, continuation = pinned(root, master_ref), pinned(root, continuation_ref)
+    if len(continuation['execution_continuation'].get('previous_control_segments', [])) == 3:
+        from bfcl_source_matrix_v4 import build_report_v4
+        return build_report_v4(root, master_ref, continuation_ref, audit_source)
     if continuation['execution_continuation'].get('previous_control_segments'):
         from bfcl_source_matrix_v3 import build_report_v3
         return build_report_v3(root, master_ref, continuation_ref, audit_source)
