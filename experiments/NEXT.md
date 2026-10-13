@@ -4,7 +4,7 @@
 
 ## 当前状态
 
-当前SSH证据（2026-10-13T10:31:22.906179+00:00）：原51真实训练及逐条raw审阅、四根全量实际审计和E145整批scope/cost审阅通过；新训练3,708,360 token、351更新，完整组超额和历史控制失败均保留。0active/0未启动训练；不重跑/补采。下一步立即按当前六卡授权登记80 fit面板及当前owner/phase stop，80完成后封存并发布实际点预测才进入24 heldout，21题继续关闭。尚无本轮迁移G/V，训练审计通过不等于整个Goal完成。模型CPU下载独立进行。
+当前SSH证据（2026-10-13T10:39:31.223485+00:00）：51真实训练完整raw/四根证书/E145整批scope审阅通过；80 fit已按E146注册，40政策×2原seed/32原目标题；当前六卡0/1/4/5/6/7空卡检查通过，待本次确切manifest/authority发布核验后启动。fit上界20,971,520、每面板77,400秒，全部104上界27,262,976不变。当前还没有本轮G/V或封存点预测，heldout24尚未登记，21题关闭。训练无需再启动；模型CPU下载独立。
 
 [48 Stage0结果](../48_stage0_task_probe_results.md)：45 v2全部16来源组/87题/696轨迹于00:05:46 UTC完成，0失败。02:17检查GPU4–7已空闲，监督器退出；不能重复启动同一探测。02:20后重新读取并审计全部原始采样/mask/奖励/预测收据，E055–E071已补审。
 
@@ -197,3 +197,5 @@ Uniform全池 r2完整原始复核一致：78,332新token/7步，新非零梯度
 2026-10-13T10:18:21.248546+00:00 E143,E144 最后两个原训练终点raw复算与保存audit完全一致，累计51逐条齐全。训练完成不等于51/104主链或整个Goal完成；先运行V4_FINAL四根真实完整审计，再整批review和fit80。
 
 2026-10-13T10:31:22.906179+00:00 E145全51原始合并审计通过且整批review完成，sha a3559bb7d3cc49d02fc77fda23260cba9180e6ff6dd0a59ea514f8f60ac7eaf9；成本ledger3,708,360为既有51的汇总，不能重复加账。Immediately register exact original fit80 panels on six genuinely free GPUs with current SSH phase authority and separate stop marker; finish/review fit80, fit frozen47 predictors and publish sealed actual point predictions before opening heldout24. No positive-result gate and no21 reserved-target access.
+
+2026-10-13T10:39:31.223485+00:00 E146：完整51训练整批审阅后，按原47/49注册40政策×2 seed=80 fit迁移面板，32目标题与每题seed逐项等于冻结master；原任务/预算/停止/比较规则不改。当前SSH owner与完整51证书/E145审阅精确绑定；最新six-card capV2允许0/1/4/5/6/7，各空卡准入检查通过。最大20,971,520新模型token、每面板77,400秒，合计104原上界27,262,976不变；无自动重试。该登记时未启动或读取本轮迁移标签（source_labels_opened字段特指本轮迁移标签，训练局部reward已记录）；未注册heldout24，21保留题关闭。 下一步立即发布核验并启动fit80。
