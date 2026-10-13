@@ -4,6 +4,7 @@ from pathlib import Path
 import time
 from bfcl_source_eval_contract import digest, pinned, load_job, verify_seal
 from bfcl_transfer_labels import source_registry
+from bfcl_ssh_evaluation_control import resource_allocation
 from supervise_bfcl_stage_fork import ROOT, read, write
 
 EVAL_CODE = ['bfcl_source_eval_contract.py', 'eval_bfcl_source_transfer.py', 'report_bfcl_source_eval.py',
@@ -18,8 +19,9 @@ def phase_cases(registry, phase):
     return [case for case, row in registry.items() if (row['role'] == 'heldout') == (phase == 'heldout')]
 
 
-def prepare(root, master_ref, registration, output, phase, prediction_seal=None):
+def prepare(root, master_ref, registration, output, phase, prediction_seal=None, resource_authorization=None):
     master = pinned(root, master_ref)
+    gpus, maximum = (master['allowed_gpus'], 4) if resource_authorization is None else resource_allocation(root, resource_authorization)
     batch = read(root/master['output_root']/'audit_status.json')
     if batch['status'] != 'passed' or batch['complete_jobs'] != 51:
         raise ValueError('Complete training audit is required before binding endpoint policies')
@@ -83,15 +85,16 @@ def prepare(root, master_ref, registration, output, phase, prediction_seal=None)
             entry = {'name': name, 'path': str(path.relative_to(root)), 'sha256': digest(path)}
             load_job(root, path, entry['sha256'], check_remote=False)
             entries.append(entry)
-        gpus = master['allowed_gpus']
         manifest = {'kind': 'source_stage0_evaluation_execution', 'phase': phase, 'registered_unix': time.time(),
             'execution_protocol': master_ref, 'output_root': str(output.relative_to(root)), 'jobs': entries,
-            'allowed_gpus': gpus, 'max_simultaneous_gpus': 4, 'automatic_retry': False,
+            'allowed_gpus': gpus, 'max_simultaneous_gpus': maximum, 'automatic_retry': False,
             'gpu_lanes': {str(g): [e['name'] for i, e in enumerate(entries) if i % len(gpus) == n] for n, g in enumerate(gpus)},
             'hard_seconds_per_panel': master['evaluation']['hard_seconds_per_panel'],
             'prediction_seal': prediction_seal, 'required_review_events': required_reviews,
             'input_sha256': master['input_sha256'] | input_sha,
             'scope': 'Registered panels only. Fit phase precedes actual prediction publication; 21 reserved targets stay closed.'}
+        if resource_authorization is not None:
+            manifest['resource_authorization'] = resource_authorization
         write(registration/'manifest.json', manifest)
         return manifest
     except Exception as error:
@@ -109,12 +112,17 @@ def main():
     parser.add_argument('--phase', choices=['fit', 'heldout'], required=True)
     parser.add_argument('--prediction-receipt', type=Path)
     parser.add_argument('--prediction-receipt-sha256')
+    parser.add_argument('--resource-authorization', type=Path)
+    parser.add_argument('--resource-authorization-sha256')
     args = parser.parse_args()
     ref = {'path': str(args.protocol.resolve().relative_to(ROOT)), 'sha256': args.protocol_sha256}
     prediction_seal = None
     if args.prediction_receipt:
         prediction_seal = {'path': str(args.prediction_receipt.resolve().relative_to(ROOT)), 'sha256': args.prediction_receipt_sha256}
-    result = prepare(ROOT, ref, args.registration.resolve(), args.output.resolve(), args.phase, prediction_seal)
+    resource_ref = None
+    if args.resource_authorization:
+        resource_ref = {'path': str(args.resource_authorization.resolve().relative_to(ROOT)), 'sha256': args.resource_authorization_sha256}
+    result = prepare(ROOT, ref, args.registration.resolve(), args.output.resolve(), args.phase, prediction_seal, resource_ref)
     print(__import__('json').dumps({'phase': result['phase'], 'panels': len(result['jobs']), 'gpu_jobs_launched': 0}))
 
 

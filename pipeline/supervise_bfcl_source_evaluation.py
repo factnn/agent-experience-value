@@ -1,4 +1,4 @@
-"""Four-card, fail-closed execution of one published fit/heldout evaluation phase."""
+"""Registered-resource, fail-closed execution of one published fit/heldout evaluation phase."""
 import argparse
 from concurrent.futures import ThreadPoolExecutor
 import hashlib
@@ -12,7 +12,7 @@ from bfcl_transfer_labels import source_registry
 from prepare_bfcl_source_evaluation import phase_cases
 from supervise_bfcl_source_training import digest
 from supervise_bfcl_stage_fork import ROOT, read, write, supervise
-from bfcl_ssh_evaluation_control import preflight as owner_preflight, check_control
+from bfcl_ssh_evaluation_control import preflight as owner_preflight, check_control, resource_allocation
 
 
 def validate_manifest(root, plan):
@@ -22,9 +22,10 @@ def validate_manifest(root, plan):
     selected = phase_cases(registry, plan['phase'])
     expected = {(c, e) for c in selected for e in range(2)}
     seen, names = set(), set()
-    if plan['automatic_retry'] is not False or plan['max_simultaneous_gpus'] != 4:
+    gpus, maximum = (master['allowed_gpus'], 4) if plan.get('resource_authorization') is None else resource_allocation(root, plan['resource_authorization'])
+    if plan['automatic_retry'] is not False or plan['max_simultaneous_gpus'] != maximum:
         raise ValueError('Retry or concurrency contract changed')
-    if plan['allowed_gpus'] != master['allowed_gpus'] or len(set(plan['allowed_gpus'])) != 4:
+    if plan['allowed_gpus'] != gpus or len(set(plan['allowed_gpus'])) != maximum:
         raise ValueError('GPU allocation changed')
     if plan['hard_seconds_per_panel'] != master['evaluation']['hard_seconds_per_panel']:
         raise ValueError('Panel runtime limit changed')
@@ -58,7 +59,10 @@ def verify_publication(root, path, expected_sha, plan, commit, control_authority
         authority = pinned(root, control_authority_ref)
         files[control_authority_ref['path']] = control_authority_ref['sha256']
         files.update(authority['control_input_sha256'])
-        for reference in [authority['owner_goal']['record'], authority['complete_training_audit'], authority['complete_training_review']]:
+        references = [authority['owner_goal']['record'], authority['complete_training_audit'], authority['complete_training_review']]
+        if authority.get('resource_authorization') is not None:
+            references.append(authority['resource_authorization'])
+        for reference in references:
             files[reference['path']] = reference['sha256']
     for name, sha in files.items():
         result = subprocess.run(['git', 'show', commit+':'+name], cwd=root, capture_output=True)
@@ -112,7 +116,7 @@ def main():
         raise
     write(root/'launch.json', {'supervisor_pid': os.getpid(), 'started_unix': time.time(), 'publication': publication,
                               'control_authority': authority_ref, 'owner_goal_thread': authority['owner_goal']['thread_id'],
-                              'preflights': initial, 'phase': plan['phase'], 'max_simultaneous_gpus': 4})
+                              'preflights': initial, 'phase': plan['phase'], 'max_simultaneous_gpus': plan['max_simultaneous_gpus']})
     lock, stop = threading.Lock(), threading.Event()
     state = {'active': {}, 'complete': [], 'pending': [e['name'] for e in plan['jobs']], 'failures': []}
     entries = {e['name']: e for e in plan['jobs']}
@@ -160,7 +164,7 @@ def main():
                     write(root/'failures.json', state['failures'])
                 return
     publish()
-    with ThreadPoolExecutor(max_workers=4) as pool:
+    with ThreadPoolExecutor(max_workers=plan['max_simultaneous_gpus']) as pool:
         list(pool.map(worker, plan['allowed_gpus']))
     complete = not state['failures'] and not state['pending']
     if complete:
