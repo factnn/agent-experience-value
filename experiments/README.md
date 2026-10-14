@@ -202,3 +202,5 @@
 | [E195](E195.md) | complete raw fit panel s0_group_07_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_07_r1_e0/summary.json` | 已分析 |
 | [E196](E196.md) | fresh eight-card evaluation adapter CPU checks | `rl/bfcl_source_fresh_eight_adapter_checks_20261014.json` | 已分析 |
 | [E197](E197.md) | complete raw fit panel s0_group_11_r1_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_11_r1_e1/summary.json` | 已分析 |
+| [E198](E198.md) | complete raw fit panel s0_group_09_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_09_r1_e0/summary.json` | 已分析 |
+| [E199](E199.md) | complete raw fit panel s0_group_10_r1_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_10_r1_e1/summary.json` | 已分析 |
