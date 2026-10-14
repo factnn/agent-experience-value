@@ -199,3 +199,4 @@
 | [E192](E192.md) | authorized GPU2/3 residual cleanup and eight-card cap | `rl/ssh_gpu_residual_cleanup_23_20261014/receipt.json` | 已分析 |
 | [E193](E193.md) | original fit80 eight-card control continuation | `rl/BFCL_SOURCE_STAGE0_FIT_EIGHT_EXECUTION_20261014.json` | 已分析 |
 | [E194](E194.md) | eight-card original fit80 startup verified | `rl/bfcl_source_stage0_fit_resume_eight_20261014/startup_verified.json` | 已分析 |
+| [E195](E195.md) | complete raw fit panel s0_group_07_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_07_r1_e0/summary.json` | 已分析 |
