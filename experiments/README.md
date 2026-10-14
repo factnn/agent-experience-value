@@ -228,3 +228,5 @@
 | [E221](E221.md) | complete raw fit panel s0_group_06_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_06_r2_e1/summary.json` | 已分析 |
 | [E222](E222.md) | complete raw fit panel s0_group_10_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_10_r2_e0/summary.json` | 已分析 |
 | [E223](E223.md) | complete raw fit panel s0_group_07_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_07_r2_e0/summary.json` | 已分析 |
+| [E224](E224.md) | complete raw fit panel s0_group_09_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_09_r2_e1/summary.json` | 已分析 |
+| [E225](E225.md) | complete raw fit panel s0_group_11_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_11_r2_e0/summary.json` | 已分析 |
