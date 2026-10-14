@@ -247,3 +247,7 @@ Uniform全池 r2完整原始复核一致：78,332新token/7步，新非零梯度
 2026-10-14T07:22:12.722308+00:00 E194：八卡实际运行已核验，原科学任务/预算未扩，既有carry没有重启；按当前control根等待/审计。
 
 2026-10-14T07:24:08.507879+00:00 E195：新增1个fit完整raw面板审阅，合计新增111356token（评测原成本一次计数，0GPU重跑）。研究未完成。
+
+2026-10-14T07:55:48.042766+00:00 E196：后续完整新评测阶段的独立八卡preparer/supervisor已实现，复用当前CAP V3与SSH归属守卫；运行中原six及eight-fit依赖字节保持冻结。4项CPU检查通过：24个合成留出面板在八lane各3个、与原注册器任务/seed/角色/封存引用/硬期限一致；缺失或被拒绝的预测封存不会创建注册或输出目录；无当前资源授权拒绝；重复lane任务拒绝。新增代码依赖纳入新manifest哈希；每个子作业继续实际远端封存验证、空卡和当前停止检查。新supervisor按准入/科学执行/审计操作记录失败类别。此项仅完成既定资源适配，未运行科学子进程、未封存真实预测或登记实际24面板。
+
+继续当前原80面板。完整审计后按47拟合固定5模型、封存20个实际点预测并核验远端发布，随后使用prepare_bfcl_source_evaluation_eight.py与supervise_bfcl_source_evaluation_fresh_eight.py登记/启动24面板；须单独创建heldout当前控制authority/stop文件并绑定新代码和CAP V3。当前fit接续入口supervise_bfcl_source_evaluation_eight.py仅用于现有80接续。

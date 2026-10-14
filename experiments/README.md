@@ -200,3 +200,4 @@
 | [E193](E193.md) | original fit80 eight-card control continuation | `rl/BFCL_SOURCE_STAGE0_FIT_EIGHT_EXECUTION_20261014.json` | 已分析 |
 | [E194](E194.md) | eight-card original fit80 startup verified | `rl/bfcl_source_stage0_fit_resume_eight_20261014/startup_verified.json` | 已分析 |
 | [E195](E195.md) | complete raw fit panel s0_group_07_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_07_r1_e0/summary.json` | 已分析 |
+| [E196](E196.md) | fresh eight-card evaluation adapter CPU checks | `rl/bfcl_source_fresh_eight_adapter_checks_20261014.json` | 已分析 |
