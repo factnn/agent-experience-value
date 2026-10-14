@@ -230,3 +230,4 @@
 | [E223](E223.md) | complete raw fit panel s0_group_07_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_07_r2_e0/summary.json` | 已分析 |
 | [E224](E224.md) | complete raw fit panel s0_group_09_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_09_r2_e1/summary.json` | 已分析 |
 | [E225](E225.md) | complete raw fit panel s0_group_11_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_11_r2_e0/summary.json` | 已分析 |
+| [E226](E226.md) | original fit80 tail allocation using existing eight-card adapter | `rl/BFCL_SOURCE_STAGE0_FIT_EIGHT_TAIL_EXECUTION_20261015.json` | 已分析 |
