@@ -178,3 +178,9 @@
 | [E171](E171.md) | complete raw fit panel s0_group_10_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_10_r0_e0/summary.json` | 已分析 |
 | [E172](E172.md) | complete raw fit panel s0_group_12_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_12_r0_e0/summary.json` | 已分析 |
 | [E173](E173.md) | complete raw fit panel s0_group_10_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_10_r0_e1/summary.json` | 已分析 |
+| [E174](E174.md) | complete raw fit panel s0_uniform_r1_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_uniform_r1_e1/summary.json` | 已分析 |
+| [E175](E175.md) | complete raw fit panel s0_group_15_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_15_r0_e1/summary.json` | 已分析 |
+| [E176](E176.md) | complete raw fit panel s0_uniform_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_uniform_r1_e0/summary.json` | 已分析 |
+| [E177](E177.md) | complete raw fit panel s0_group_14_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_14_r0_e0/summary.json` | 已分析 |
+| [E178](E178.md) | complete raw fit panel s0_group_14_r0_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_14_r0_e1/summary.json` | 已分析 |
+| [E179](E179.md) | complete raw fit panel s0_group_15_r0_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_15_r0_e0/summary.json` | 已分析 |
