@@ -195,3 +195,4 @@
 | [E188](E188.md) | complete raw fit panel s0_group_06_r1_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_06_r1_e1/summary.json` | 已分析 |
 | [E189](E189.md) | complete raw fit panel s0_group_03_r1_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_03_r1_e1/summary.json` | 已分析 |
 | [E190](E190.md) | complete raw fit panel s0_group_03_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_03_r1_e0/summary.json` | 已分析 |
+| [E191](E191.md) | complete raw fit panel s0_group_06_r1_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_06_r1_e0/summary.json` | 已分析 |
