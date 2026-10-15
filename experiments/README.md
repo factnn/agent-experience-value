@@ -260,3 +260,5 @@
 | [E253](E253.md) | full104 report compatibility with original fit and actual heldout resource manifests | `rl/bfcl_source_stage0_report_resource_compatibility_20261015/integration_review.json` | 已分析 |
 | [E254](E254.md) | complete raw heldout panel s0_group_13_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r0_e1/summary.json` | 已分析 |
 | [E255](E255.md) | complete raw heldout panel s0_group_08_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_08_r0_e1/summary.json` | 已分析 |
+| [E256](E256.md) | complete raw heldout panel s0_group_04_r1_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_04_r1_e1/summary.json` | 已分析 |
+| [E257](E257.md) | complete raw heldout panel s0_group_05_r1_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r1_e0/summary.json` | 已分析 |
