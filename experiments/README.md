@@ -242,3 +242,4 @@
 | [E235](E235.md) | complete raw fit panel s0_group_12_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_12_r2_e1/summary.json` | 已分析 |
 | [E236](E236.md) | complete raw fit panel s0_group_14_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_14_r2_e0/summary.json` | 已分析 |
 | [E237](E237.md) | complete original fit80 execution chain and raw evidence review | `rl/bfcl_source_stage0_fit_tail_eight_20261015/audit_status.json` | 已分析 |
+| [E238](E238.md) | fixed stage0 five-model actual prediction seal | `rl/bfcl_source_stage0_prediction_seal_20261015/receipt.json` | 已分析 |
