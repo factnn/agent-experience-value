@@ -284,3 +284,4 @@
 | [E277](E277.md) | fixed Uniform-r0 stage1 probe and separate H1 auxiliary registration | `rl/BFCL_STAGE1_PROBE_SSH_EIGHT_EXECUTION_20261015.json` | 已分析 |
 | [E278](E278.md) | 固定晚祖先八卡实际feature生成 | `rl/bfcl_stage1_probe_ssh_eight_20261015/startup_verified.json` | 已分析 |
 | [E279](E279.md) | H1来源成功率独立早期模型封存 | `rl/bfcl_h1_source_success_early_model_20261015/early_model.json` | 已分析 |
+| [E280](E280.md) | gpt19 review and matched-level scientific interpretation supplement | `docs/ref/gpt19.md` | 已分析 |
