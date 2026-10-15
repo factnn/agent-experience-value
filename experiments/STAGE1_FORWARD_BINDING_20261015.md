@@ -1,0 +1,19 @@
+# 固定晚阶段前向预测封存实现
+
+2026-10-15T15:15:16.273723+00:00，E283。这是E281执行所需的实现与输入绑定，不新增科学批次或采样预算。
+
+新增版本化forward封存实现及独立绑定，原五早模型字节/标准化与H1早模型保持；同一完整晚feature生成20＋4实际点预测，16raw审计/整批执行审阅未齐前不创建输出。发布使用原有限查询适配器并存实际远端收据；后续读缓存证明但逐次保留本地字节、正确stage/祖先/矩阵、预测恒等与时间顺序检查。所有晚目标role均无forward豁免。4项针对性CPU检查通过，含真实早模型/既有发布祖先、当前缺测拒绝、H1固定标准化和所有role/停止路由；正向完整late封存仍待原数据齐，不冒称已完成。原在跑pipeline SHA未变，新采样/GPU均0。
+
+绑定：rl/BFCL_STAGE1_FORWARD_BINDING_20261015.json。代码：pipeline/bfcl_stage1_forward_bundle.py。CPU检查：rl/bfcl_stage1_forward_binding_checks_20261015.json；纯路由和时序使用fixture，不被称作真实晚发布或完整目标准入的成功测试。
+
+测量完成后，由实际整批执行审阅生成不可变review（kind=complete_stage1_probe_raw_execution_review，status=reviewed，reviewed_at、probe_protocol、complete_audit和fresh_raw_audits_match_saved=true，绑定实际16组raw重放）。此时才可运行seal子命令：definition及其实际SHA，probe-review及其实际SHA，output为绑定中规定的rl/bfcl_source_stage1_forward_seal_20261015。原早模型只复制，不重拟合；所有JSON先构造验证再排他创建文件。部分写入失败保留证据另作元数据修复，不覆盖或重采。
+
+封存结果包含original_five/三文件及兼容的原五模型receipt，还有独立H1早模型、晚feature及4点预测；顶层receipt绑定实际完整probe审计/审阅。先将这些实际字节commit/push，再执行record-publication子命令（实际receipt路径/SHA和实际commit）。它复用E277的真实远端核验与有限重试，写排他实际publication收据。这个顺序不能用未来占位SHA代替。随后将发布收据作为完成证据提交/push；发布故障不引起科学重采。
+
+verify_forward_target_gate覆盖baseline/common、control/Uniform、fit和heldout，检查原五模型及独立H1的完整实际发布。它只是全目标的forward前置守卫；后续stage1目标入口还必须绑定完整51训练审计/审阅、正确policy/32任务/新seed、当前独立评测控制归属，heldout另需阶段内五模型实际发布。当前尚未宣称完整目标入口已接好，更未开放标签。
+
+全局停止仍为experiments/.runtime/ssh_stop_20261013；预留本阶段训练停止和评测停止分别为ssh_stage1_train_stop_20261015、ssh_stage1_eval_stop_20261015，后续各自authority必须绑定。停止新增准入与终止已拥有进程不同；这份实现不授予终止其他作业权限，也不查询旧Goal。
+
+继续现有16晚测量；接通复用原真实RL runner/auditor的当前51训练控制，再补stage1目标入口完整契约。测量齐后整批raw审阅、实际20＋4预测封存push和远端确认，绑定当前authority后接续原51job；没有理想局部校准门槛，也不改变E281预算。
+
+当前真实科学进展仍是固定Uniformr0晚测量，不是已完成晚RL/迁移结果；21题关闭，Goal未完成。原E281有限总预算不变。

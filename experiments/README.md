@@ -287,3 +287,4 @@
 | [E280](E280.md) | gpt19 review and matched-level scientific interpretation supplement | `docs/ref/gpt19.md` | 已分析 |
 | [E281](E281.md) | prospective fixed-parent stage1 realRL and transfer matrix registration | `rl/BFCL_SOURCE_STAGE1_EXECUTION_PROTOCOL_20261015.json` | 已分析 |
 | [E282](E282.md) | gpt20 finite posthoc proxy/value measurement and Coverage identity diagnostics | `docs/ref/gpt20.md` | 已分析 |
+| [E283](E283.md) | stage1 original-five plus separate H1 forward integration | `rl/BFCL_STAGE1_FORWARD_BINDING_20261015.json` | 已分析 |
