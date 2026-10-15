@@ -252,3 +252,4 @@
 | [E245](E245.md) | complete raw heldout panel s0_group_05_r0_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r0_e0/summary.json` | 已分析 |
 | [E246](E246.md) | complete raw heldout panel s0_group_04_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_04_r0_e1/summary.json` | 已分析 |
 | [E247](E247.md) | complete raw heldout panel s0_group_05_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r0_e1/summary.json` | 已分析 |
+| [E248](E248.md) | complete raw heldout panel s0_group_08_r0_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_08_r0_e0/summary.json` | 已分析 |
