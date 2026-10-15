@@ -249,3 +249,6 @@
 | [E242](E242.md) | gpt17 review and eight-card authorization prose clarification | `docs/ref/gpt17.md` | 已分析 |
 | [E243](E243.md) | complete fit-side G V repeat and dose description with sealed models preserved | `rl/bfcl_source_stage0_fit_description_20261015/data.json` | 已分析 |
 | [E244](E244.md) | complete fit certificate path binding for existing full104 report | `rl/bfcl_source_stage0_fit_completion_binding_20261015.json` | 已分析 |
+| [E245](E245.md) | complete raw heldout panel s0_group_05_r0_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r0_e0/summary.json` | 已分析 |
+| [E246](E246.md) | complete raw heldout panel s0_group_04_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_04_r0_e1/summary.json` | 已分析 |
+| [E247](E247.md) | complete raw heldout panel s0_group_05_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r0_e1/summary.json` | 已分析 |
