@@ -254,3 +254,4 @@
 | [E247](E247.md) | complete raw heldout panel s0_group_05_r0_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r0_e1/summary.json` | 已分析 |
 | [E248](E248.md) | complete raw heldout panel s0_group_08_r0_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_08_r0_e0/summary.json` | 已分析 |
 | [E249](E249.md) | original heldout24 continuation after zero-child dependency-query admission failure | `rl/BFCL_SOURCE_STAGE0_HELDOUT_EIGHT_RESUME_EXECUTION_20261015.json` | 已分析 |
+| [E250](E250.md) | original heldout24 continuation startup and unchanged carried lifetimes | `rl/bfcl_source_stage0_heldout_resume_eight_20261015/startup_verified.json` | 已分析 |
