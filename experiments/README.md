@@ -269,3 +269,4 @@
 | [E262](E262.md) | original heldout24 continuation after zero-child dependency-query admission failure | `rl/BFCL_SOURCE_STAGE0_HELDOUT_EIGHT_RESUME_V2_EXECUTION_20261015.json` | 已分析 |
 | [E263](E263.md) | complete raw heldout panel s0_group_13_r1_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r1_e0/summary.json` | 已分析 |
 | [E264](E264.md) | complete raw heldout panel s0_group_13_r1_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r1_e1/summary.json` | 已分析 |
+| [E265](E265.md) | original heldout24 continuation startup and unchanged carried lifetimes | `rl/bfcl_source_stage0_heldout_resume_v2_eight_20261015/startup_verified.json` | 已分析 |
