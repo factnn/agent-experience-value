@@ -244,3 +244,4 @@
 | [E237](E237.md) | complete original fit80 execution chain and raw evidence review | `rl/bfcl_source_stage0_fit_tail_eight_20261015/audit_status.json` | 已分析 |
 | [E238](E238.md) | fixed stage0 five-model actual prediction seal | `rl/bfcl_source_stage0_prediction_seal_20261015/receipt.json` | 已分析 |
 | [E239](E239.md) | actual stage0 prediction publication verified before heldout | `rl/bfcl_source_stage0_prediction_seal_20261015/publication.json` | 已分析 |
+| [E240](E240.md) | original24 heldout evaluation registered after actual prediction publication | `rl/bfcl_source_stage0_heldout_jobs_20261015/manifest.json` | 已分析 |
