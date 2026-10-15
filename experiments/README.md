@@ -282,3 +282,5 @@
 | [E275](E275.md) | complete original heldout24 execution-chain review | `rl/bfcl_source_stage0_heldout_eval_20261015/audit_status.json` | 已分析 |
 | [E276](E276.md) | complete stage0 realRL transfer and frozen forecast report | `rl/bfcl_source_stage0_transfer_prediction_20261015/audit_status.json` | 已分析 |
 | [E277](E277.md) | fixed Uniform-r0 stage1 probe and separate H1 auxiliary registration | `rl/BFCL_STAGE1_PROBE_SSH_EIGHT_EXECUTION_20261015.json` | 已分析 |
+| [E278](E278.md) | 固定晚祖先八卡实际feature生成 | `rl/bfcl_stage1_probe_ssh_eight_20261015/startup_verified.json` | 已分析 |
+| [E279](E279.md) | H1来源成功率独立早期模型封存 | `rl/bfcl_h1_source_success_early_model_20261015/early_model.json` | 已分析 |
