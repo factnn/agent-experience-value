@@ -232,3 +232,12 @@
 | [E225](E225.md) | complete raw fit panel s0_group_11_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_11_r2_e0/summary.json` | 已分析 |
 | [E226](E226.md) | original fit80 tail allocation using existing eight-card adapter | `rl/BFCL_SOURCE_STAGE0_FIT_EIGHT_TAIL_EXECUTION_20261015.json` | 已分析 |
 | [E227](E227.md) | original fit80 tail startup and carried lifetimes verified | `rl/bfcl_source_stage0_fit_tail_eight_20261015/startup_verified.json` | 已分析 |
+| [E228](E228.md) | complete raw fit panel s0_group_07_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_07_r2_e1/summary.json` | 已分析 |
+| [E229](E229.md) | complete raw fit panel s0_group_15_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_15_r2_e1/summary.json` | 已分析 |
+| [E230](E230.md) | complete raw fit panel s0_group_09_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_09_r2_e0/summary.json` | 已分析 |
+| [E231](E231.md) | complete raw fit panel s0_group_11_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_11_r2_e1/summary.json` | 已分析 |
+| [E232](E232.md) | complete raw fit panel s0_group_15_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_15_r2_e0/summary.json` | 已分析 |
+| [E233](E233.md) | complete raw fit panel s0_group_12_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_12_r2_e0/summary.json` | 已分析 |
+| [E234](E234.md) | complete raw fit panel s0_group_14_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_14_r2_e1/summary.json` | 已分析 |
+| [E235](E235.md) | complete raw fit panel s0_group_12_r2_e1 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_12_r2_e1/summary.json` | 已分析 |
+| [E236](E236.md) | complete raw fit panel s0_group_14_r2_e0 | `rl/bfcl_source_stage0_fit_eval_20261013/s0_group_14_r2_e0/summary.json` | 已分析 |
