@@ -257,3 +257,4 @@
 | [E250](E250.md) | original heldout24 continuation startup and unchanged carried lifetimes | `rl/bfcl_source_stage0_heldout_resume_eight_20261015/startup_verified.json` | 已分析 |
 | [E251](E251.md) | complete raw heldout panel s0_group_04_r0_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_04_r0_e0/summary.json` | 已分析 |
 | [E252](E252.md) | complete raw heldout panel s0_group_13_r0_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r0_e0/summary.json` | 已分析 |
+| [E253](E253.md) | full104 report compatibility with original fit and actual heldout resource manifests | `rl/bfcl_source_stage0_report_resource_compatibility_20261015/integration_review.json` | 已分析 |
