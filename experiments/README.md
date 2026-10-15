@@ -286,3 +286,4 @@
 | [E279](E279.md) | H1来源成功率独立早期模型封存 | `rl/bfcl_h1_source_success_early_model_20261015/early_model.json` | 已分析 |
 | [E280](E280.md) | gpt19 review and matched-level scientific interpretation supplement | `docs/ref/gpt19.md` | 已分析 |
 | [E281](E281.md) | prospective fixed-parent stage1 realRL and transfer matrix registration | `rl/BFCL_SOURCE_STAGE1_EXECUTION_PROTOCOL_20261015.json` | 已分析 |
+| [E282](E282.md) | gpt20 finite posthoc proxy/value measurement and Coverage identity diagnostics | `docs/ref/gpt20.md` | 已分析 |
