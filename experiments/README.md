@@ -280,3 +280,4 @@
 | [E273](E273.md) | complete raw heldout panel s0_group_13_r2_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r2_e1/summary.json` | 已分析 |
 | [E274](E274.md) | complete raw heldout panel s0_group_08_r2_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_08_r2_e1/summary.json` | 已分析 |
 | [E275](E275.md) | complete original heldout24 execution-chain review | `rl/bfcl_source_stage0_heldout_eval_20261015/audit_status.json` | 已分析 |
+| [E276](E276.md) | complete stage0 realRL transfer and frozen forecast report | `rl/bfcl_source_stage0_transfer_prediction_20261015/audit_status.json` | 已分析 |
