@@ -248,3 +248,4 @@
 | [E241](E241.md) | actual eight-card original heldout24 generation startup verified | `rl/bfcl_source_stage0_heldout_eval_20261015/startup_verified.json` | 已分析 |
 | [E242](E242.md) | gpt17 review and eight-card authorization prose clarification | `docs/ref/gpt17.md` | 已分析 |
 | [E243](E243.md) | complete fit-side G V repeat and dose description with sealed models preserved | `rl/bfcl_source_stage0_fit_description_20261015/data.json` | 已分析 |
+| [E244](E244.md) | complete fit certificate path binding for existing full104 report | `rl/bfcl_source_stage0_fit_completion_binding_20261015.json` | 已分析 |
