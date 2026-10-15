@@ -271,3 +271,11 @@
 | [E264](E264.md) | complete raw heldout panel s0_group_13_r1_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r1_e1/summary.json` | 已分析 |
 | [E265](E265.md) | original heldout24 continuation startup and unchanged carried lifetimes | `rl/bfcl_source_stage0_heldout_resume_v2_eight_20261015/startup_verified.json` | 已分析 |
 | [E266](E266.md) | gpt18 scientific route and bounded dependency-recovery review | `docs/ref/gpt18.md` | 已分析 |
+| [E267](E267.md) | complete raw heldout panel s0_group_05_r2_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r2_e0/summary.json` | 已分析 |
+| [E268](E268.md) | complete raw heldout panel s0_group_04_r2_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_04_r2_e1/summary.json` | 已分析 |
+| [E269](E269.md) | complete raw heldout panel s0_group_04_r2_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_04_r2_e0/summary.json` | 已分析 |
+| [E270](E270.md) | complete raw heldout panel s0_group_05_r2_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_05_r2_e1/summary.json` | 已分析 |
+| [E271](E271.md) | complete raw heldout panel s0_group_13_r2_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r2_e0/summary.json` | 已分析 |
+| [E272](E272.md) | complete raw heldout panel s0_group_08_r2_e0 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_08_r2_e0/summary.json` | 已分析 |
+| [E273](E273.md) | complete raw heldout panel s0_group_13_r2_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_13_r2_e1/summary.json` | 已分析 |
+| [E274](E274.md) | complete raw heldout panel s0_group_08_r2_e1 | `rl/bfcl_source_stage0_heldout_eval_20261015/s0_group_08_r2_e1/summary.json` | 已分析 |
