@@ -290,3 +290,4 @@
 | [E283](E283.md) | stage1 original-five plus separate H1 forward integration | `rl/BFCL_STAGE1_FORWARD_BINDING_20261015.json` | 已分析 |
 | [E284](E284.md) | current SSH fixed-parent stage1 training control integration | `pipeline/bfcl_stage1_training_ssh.py` | 已分析 |
 | [E285](E285.md) | human-authorized prospective stage1 forward15/32 scope amendment | `rl/BFCL_SOURCE_STAGE1_FORWARD15_PROTOCOL_20261015.json` | 已分析 |
+| [E286](E286.md) | complete raw fixed-parent stage1 local probe | `rl/bfcl_stage1_probe_ssh_eight_20261015/group_09/summary.json` | 已分析 |
