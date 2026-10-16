@@ -331,3 +331,4 @@
 | [E324](E324.md) | actual eight-GPU forward32 target generation startup | `rl/bfcl_stage1_forward32_eval_ssh_cont1_20261016/startup_verified.json` | 已分析 |
 | [E325](E325.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_uniform_r0_e1/summary.json` | 已分析 |
 | [E326](E326.md) | evidence postprocessing failure and recovery | `rl/bfcl_stage1_forward32_review_scan_recovery_20261016.json` | 已分析 |
+| [E327](E327.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_common_e1/summary.json` | 已分析 |
