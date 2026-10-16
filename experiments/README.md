@@ -316,3 +316,4 @@
 | [E309](E309.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_uniform_r1/summary.json` | 已分析 |
 | [E310](E310.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_group_04_r1/summary.json` | 已分析 |
 | [E311](E311.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_group_05_r1/summary.json` | 已分析 |
+| [E312](E312.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_group_13_r0/summary.json` | 已分析 |
