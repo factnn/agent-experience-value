@@ -311,3 +311,4 @@
 | [E304](E304.md) | actual prospective forecast publication and current15 training ownership | `rl/BFCL_STAGE1_FORWARD15_TRAIN_SSH_AUTHORITY_20261016.json` | 已分析 |
 | [E305](E305.md) | actual forward15 RL acquisition startup and frozen forward analysis implementation | `rl/bfcl_stage1_forward15_train_ssh_20261016/startup_verified.json` | 已分析 |
 | [E306](E306.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_uniform_r0/summary.json` | 已分析 |
+| [E307](E307.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_group_04_r0/summary.json` | 已分析 |
