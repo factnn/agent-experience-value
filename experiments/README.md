@@ -362,3 +362,5 @@
 | [E355](E355.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_group_08_r2_e1/summary.json` | 已分析 |
 | [E356](E356.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_group_13_r2_e0/summary.json` | 已分析 |
 | [E357](E357.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_group_13_r2_e1/summary.json` | 已分析 |
+| [E358](E358.md) | 完整原32前向评测执行链审阅 | `rl/bfcl_stage1_forward32_complete_execution_review_20261017.json` | 已分析 |
+| [E359](E359.md) | 缩减Stage1完整科学报告与跨状态预测解释 | `rl/bfcl_source_stage1_forward_report_20261016/audit_status.json` | 已分析 |

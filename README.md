@@ -1,3 +1,7 @@
+**最新完成结果（2026-10-16T23:26:39.939989+00:00）：** 原Stage0 51训练/104面板已完成（E276）；缩减Stage1 15训练/32面板亦已完成并审阅（E358/E359），当前该批无运行/排队任务。见[完整科学报告](rl/bfcl_source_stage1_forward_report_20261016/README.md)、[原始证据与检查点取得](docs/stage1_forward15_reproduction.md)及[NEXT](experiments/NEXT.md)。21保留题关闭，晚全51/104延后，整个研究尚未完成。
+
+以下是注明日期的历史快照，不作当前运行状态。
+
 **当前SSH执行快照（2026-10-13T18:35:08.958116+00:00）：** 原51训练已完成原始审计与E145整批审阅；fit80按六卡上限沿原job执行，12完成、6active、62pending、0失败。完整80后封存并远端发布实际预测，再进入24 heldout。实时入口为 rl/bfcl_source_stage0_fit_eval_20261013/queue.json 和对应进程收据；已有证据与检查点取得见[68](68_stage0_artifact_retrieval.md)。以下日期快照保留为历史。
 
 **2026-10-13 SSH接手（2026-10-13T06:01:31.014540+00:00）：** 原36/51终点保留，GPU4–7实际运行V3首四条，11排队、0失败；共同起点恢复verified。控制归属与三段合并见[63](63_ssh_takeover_continuation.md)，当前队列见 `rl/bfcl_source_stage0_resume_v3_20261012/queue.json`。本轮仍无迁移G/V。
