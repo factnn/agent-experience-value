@@ -308,3 +308,4 @@
 | [E301](E301.md) | complete raw fixed-parent stage1 local probe | `rl/bfcl_stage1_probe_ssh_eight_20261015/group_03/summary.json` | 已分析 |
 | [E302](E302.md) | complete raw fixed-parent stage1 local probe | `rl/bfcl_stage1_probe_ssh_eight_20261015/group_12/summary.json` | 已分析 |
 | [E303](E303.md) | complete late local measurements and actual prospective forward15 forecasts | `rl/bfcl_source_stage1_forward15_prediction_seal_20261015/receipt.json` | 已分析 |
+| [E304](E304.md) | actual prospective forecast publication and current15 training ownership | `rl/BFCL_STAGE1_FORWARD15_TRAIN_SSH_AUTHORITY_20261016.json` | 已分析 |
