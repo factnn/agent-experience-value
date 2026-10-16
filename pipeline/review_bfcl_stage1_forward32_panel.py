@@ -128,7 +128,7 @@ def review_one(root):
              'experiments/'+eid+'.md','experiments/reviews/'+eid+'.json','experiments/index.json',
              'experiments/events.jsonl','experiments/README.md','experiments/NEXT.md']
     for name in paths:
-        if re.search(rb'gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----|sk-[A-Za-z0-9_-]{30,}|X-Amz-Signature=',(root/name).read_bytes()):
+        if re.search(rb'gh[pousr]_[A-Za-z0-9]{20,}|-----BEGIN (?:RSA |OPENSSH |EC )?PRIVATE KEY-----|sk-[A-Za-z0-9_-]{30,}|X-Amz' + rb'-Signature=',(root/name).read_bytes()):
             raise ValueError('Sensitive content refused: '+name)
     if subprocess.check_output(['git','diff','--cached','--name-only'],cwd=root,text=True).strip():raise ValueError('Unexpected staged changes')
     subprocess.run(['git','add','--',*paths],cwd=root,check=True)
