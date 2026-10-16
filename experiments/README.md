@@ -342,3 +342,4 @@
 | [E335](E335.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_group_08_r0_e1/summary.json` | 已分析 |
 | [E336](E336.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_group_13_r0_e0/summary.json` | 已分析 |
 | [E337](E337.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_group_13_r0_e1/summary.json` | 已分析 |
+| [E338](E338.md) | complete raw stage1 forward target panel | `rl/bfcl_source_stage1_forward_eval_20261015/s1_uniform_r1_e0/summary.json` | 已分析 |
