@@ -327,3 +327,4 @@
 | [E320](E320.md) | 完整原forward15训练分支审阅 | `rl/bfcl_source_stage1_train_20261015/s1_group_08_r2/summary.json` | 已分析 |
 | [E321](E321.md) | 原forward15整批训练完整审阅 | `rl/bfcl_source_stage1_train_20261015/audit_status_forward15_20261015.json` | 已分析 |
 | [E322](E322.md) | actual forward32 target job registration and separate current evaluation ownership | `rl/BFCL_STAGE1_FORWARD32_EVAL_SSH_AUTHORITY_20261016.json` | 已分析 |
+| [E323](E323.md) | gpt21 review decisions and zero-inference publication-admission continuation | `rl/bfcl_stage1_forward32_admission_continuation_20261016.json` | 已分析 |
