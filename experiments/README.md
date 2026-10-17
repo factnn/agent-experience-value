@@ -388,3 +388,4 @@
 | [E381](E381.md) | cross_stage_research_evidence_delivery_index | `rl/research_evidence_index_20261018.json` | 已分析 |
 | [E382](E382.md) | native8b_first_complete_source_three_repeat_update_heterogeneity | `rl/qwen3_8b_stage0_group05_complete_three_repeat_review_20261018.json` | 已分析 |
 | [E383](E383.md) | native8b_tenth_complete_source_training_review | `rl/qwen3_8b_stage0_tenth_complete_branch_review_20261018.json` | 已分析 |
+| [E384](E384.md) | native8b_travelapi_complete_original_three_repeat_review | `rl/qwen3_8b_stage0_travelapi_complete_three_repeat_review_20261018.json` | 已分析 |
