@@ -365,3 +365,4 @@
 | [E358](E358.md) | 完整原32前向评测执行链审阅 | `rl/bfcl_stage1_forward32_complete_execution_review_20261017.json` | 已分析 |
 | [E359](E359.md) | 缩减Stage1完整科学报告与跨状态预测解释 | `rl/bfcl_source_stage1_forward_report_20261016/audit_status.json` | 已分析 |
 | [E360](E360.md) | bounded one-group nativeQwen3-8B resource measurement registration | `rl/QWEN3_8B_SINGLE_UPDATE_CAPACITY_PROTOCOL_20261017.json` | 已分析 |
+| [E361](E361.md) | completed single nativeQwen3-8B cost and capacity measurement | `rl/qwen3_8b_single_update_capacity_20261017/audit.json` | 已分析 |
