@@ -372,3 +372,4 @@
 | [E365](E365.md) | native8B common completed; JSON allocator audit repair and unexecuted probe continuation | `rl/QWEN3_8B_STAGE0_UNEXECUTED_PROBE_CONTINUATION_20261017.json` | 已分析 |
 | [E366](E366.md) | native8B common audited and original eight-lane probe execution verified | `rl/qwen3_8b_stage0_probe_continuation_20261017/startup_verified.json` | 已分析 |
 | [E367](E367.md) | native8B actual cross-size point forecast sealing implementation frozen; incomplete panels refused | `rl/QWEN3_8B_CROSS_SIZE_PREDICTION_SEAL_PROTOCOL_20261017.json` | 已分析 |
+| [E368](E368.md) | finite distinct model-conditioned value candidate design; existing feature-token input coverage verified | `rl/BFCL_MODEL_CONDITIONED_VALUE_CANDIDATES_DESIGN_20261017.json` | 已分析 |
