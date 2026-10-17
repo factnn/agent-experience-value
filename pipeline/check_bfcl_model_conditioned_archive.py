@@ -109,6 +109,7 @@ def one_profile(root, profile_name):
     with patch('audit_bfcl_model_conditioned_measurement.load_execution', return_value=(execution, design)), \
          patch('audit_bfcl_model_conditioned_measurement.feature_episodes', side_effect=source_loader):
         result = audit_case(root, execution_ref, case['name'], TinyTokenizer())
+        assert audit_case(root, execution_ref | {'bytes': 123}, case['name'], TinyTokenizer()) == result
         assert result['cost']['forward_calls_completed'] == (8 if profile_name == 'qwen4b' else 12)
         assert result['source_features'][SIGNALS[0]] == 3.
         assert result['source_features'][SIGNALS[1]] == (-2.5 if profile_name == 'qwen4b' else -3.5)

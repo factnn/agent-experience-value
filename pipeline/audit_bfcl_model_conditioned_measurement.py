@@ -4,7 +4,7 @@ import json
 
 import numpy as np
 
-from bfcl_model_conditioned_contract import (SIGNALS, check_bytes, feature_episodes, load_execution,
+from bfcl_model_conditioned_contract import (SIGNALS, check_bytes, feature_episodes, identity_ref, load_execution,
     read, ref, summarize_episodes)
 from bfcl_model_conditioned_feature_inputs import feedback_inputs, saved_model_inputs
 from bfcl_model_conditioned_likelihood import feedback_summary, reference_summary
@@ -27,6 +27,7 @@ def require_array(archive, name, dtype, expected=None, length=None):
 
 def audit_case(root, execution_ref, name, tokenizer):
     execution, design = load_execution(root, execution_ref)
+    execution_ref = identity_ref(execution_ref)
     case = next(x for x in execution['cases'] if x['name'] == name)
     profile = design['profiles'][case['profile']]
     output = root / design['output_root'] / name

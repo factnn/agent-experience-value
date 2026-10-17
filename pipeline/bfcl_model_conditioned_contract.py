@@ -38,6 +38,11 @@ def ref(root, path):
     return {'path': str(path.relative_to(root)), 'sha256': digest(path), 'bytes': path.stat().st_size}
 
 
+def identity_ref(reference):
+    """Protocol identity ignores optional file-manifest display metadata."""
+    return {key: reference[key] for key in ['path', 'sha256']}
+
+
 def exclusive(path, value):
     with path.open('x') as stream:
         json.dump(value, stream, ensure_ascii=False, indent=2)
