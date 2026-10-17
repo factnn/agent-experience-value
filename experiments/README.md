@@ -390,3 +390,4 @@
 | [E383](E383.md) | native8b_tenth_complete_source_training_review | `rl/qwen3_8b_stage0_tenth_complete_branch_review_20261018.json` | 已分析 |
 | [E384](E384.md) | native8b_travelapi_complete_original_three_repeat_review | `rl/qwen3_8b_stage0_travelapi_complete_three_repeat_review_20261018.json` | 已分析 |
 | [E385](E385.md) | native8b_full_pool_uniform_original_three_repeat_review | `rl/qwen3_8b_stage0_uniform_complete_three_repeat_review_20261018.json` | 已分析 |
+| [E386](E386.md) | native8b_thirteenth_complete_source_training_review | `rl/qwen3_8b_stage0_thirteenth_complete_branch_review_20261018.json` | 已分析 |
