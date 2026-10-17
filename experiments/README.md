@@ -369,3 +369,4 @@
 | [E362](E362.md) | native8B common state and full16-source presampling measurement registration | `rl/QWEN3_8B_STAGE0_INITIAL_PROBE_EXECUTION_20261017.json` | 已分析 |
 | [E363](E363.md) | verified actual native8B common generation startup | `rl/qwen3_8b_stage0_initial_ssh_20261017/startup_verified.json` | 已分析 |
 | [E364](E364.md) | separate structural-diversity and recovery candidate rules before8B transfer labels | `rl/BFCL_STRUCTURAL_VALUE_CANDIDATES_PROTOCOL_20261017.json` | 已分析 |
+| [E365](E365.md) | native8B common completed; JSON allocator audit repair and unexecuted probe continuation | `rl/QWEN3_8B_STAGE0_UNEXECUTED_PROBE_CONTINUATION_20261017.json` | 已分析 |
