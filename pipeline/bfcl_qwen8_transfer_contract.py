@@ -7,12 +7,14 @@ import time
 
 from bfcl_source_eval_contract import digest, pinned, policy_role, validate_panel
 from bfcl_qwen8_source_training import REVISION, identity, load_job as load_training_job
+from bfcl_qwen8_forward_design import validate as validate_scientific_design
 from seal_bfcl_qwen8_cross_size_predictions import verify_cross_size_seal, verify_chronology
 from seal_bfcl_model_conditioned_predictions import verify_auxiliary_seal
 
 SELF = 'pipeline/bfcl_qwen8_transfer_contract.py'
 SCOPE = 'qwen3_8b_stage0_forward_target_evaluation'
 RUNTIME = {SELF, 'pipeline/run_bfcl_qwen8_source_transfer.py', 'pipeline/report_bfcl_qwen8_source_transfer.py',
+           'pipeline/bfcl_qwen8_forward_design.py',
            'pipeline/bfcl_qwen8_source_training.py', 'pipeline/eval_bfcl_source_transfer.py',
            'pipeline/report_bfcl_source_eval.py', 'pipeline/report_bfcl_intervention.py',
            'pipeline/bfcl_source_eval_contract.py', 'pipeline/run_bfcl_intervention.py',
@@ -161,7 +163,9 @@ def publication(root, publication_ref, job_ref, authority_ref, authority, bindin
     if (value['commit'] != value['remote_main'] or value['scientific_child_started'] is not False
             or datetime.datetime.fromisoformat(value['verified_at']).timestamp() > started):
         raise ValueError('Target code/forecasts were not verified on the actual remote before admission')
-    required = [job_ref, authority_ref, authority['manifest'], pinned(root, job_ref)['execution_protocol'],
+    execution_ref=pinned(root,job_ref)['execution_protocol']
+    execution=pinned(root,execution_ref)
+    required = [job_ref, authority_ref, authority['manifest'], execution_ref,execution['design'],
                 authority['admission_binding'], binding['complete_training_audit'], binding['complete_training_review'],
                 binding['prior_training_terminal_proof'],
                 binding['cross_size_seal'], binding['cross_size_publication'],
@@ -180,6 +184,7 @@ def load_job(root, path, expected_sha, *, authority_ref, publication_ref, admit=
     job = pinned(root, job_ref)
     master = pinned(root, job['execution_protocol'])
     design = pinned(root, master['design'])
+    validate_scientific_design(root,design)
     if (master['kind'] != 'qwen3_8b_stage0_forward_training_and_transfer'
             or master['model_revision'] != REVISION or master['stage'] != 0
             or design['kind'] != 'qwen3_8b_stage0_source_forward_design'
@@ -237,5 +242,6 @@ def load_job(root, path, expected_sha, *, authority_ref, publication_ref, admit=
         raise ValueError('Target inference cannot use the4B base')
     proof = {'core_seal': binding['cross_size_seal'], 'core_publication': binding['cross_size_publication'],
              'auxiliary_disposition': binding['auxiliary_forecast_disposition'], 'execution_publication': publication_ref,
+             'zero_gain_reference':{'published_design':master['design'],'point_count':16,'rule':'Unfitted constant Ghat=0'},
              'target_labels_used_in_forecasts': False, 'verified_for_every_target_role': True}
     return job | {'_runtime_forward_verification': proof}, master, algorithm, policy, core
