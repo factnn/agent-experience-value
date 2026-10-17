@@ -1,6 +1,6 @@
 # Stage1 forward15/32：取得已有产物并复现分析
 
-本说明对应用户事前收窄的15条在线RL训练与32个前向评测面板。15条训练已经完成整批审阅（E321）；评测是否齐全，以原控制段、完整证书和带时间的NEXT快照为准。本说明不宣称32个面板已经完成，也不新增训练、评测或准入检查。
+本说明对应用户事前收窄的15条在线RL训练与32个前向评测面板，现均已完成原始审计和执行审阅（训练E321、评测E358、整批结果E359）。完整报告为 [audit_status.json](../rl/bfcl_source_stage1_forward_report_20261016/audit_status.json)，SHA256 为 fb10d82ad47845bee0bc0dc4788c3eb95ba8606b283326cdc55b8b0294ba510b；[结果与claim–evidence](../rl/bfcl_source_stage1_forward_report_20261016/README.md)解释其有限范围。以下复现读取原有证据，不新增训练或评测；整个研究Goal仍未完成。
 
 ## 环境与代码
 

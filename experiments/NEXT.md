@@ -2,7 +2,11 @@
 
 <!-- CURRENT_NATIVE8B_FORWARD_DESIGN_20261017 -->
 
-现行8B路线：E362/E365/E366原16来源测量沿当前SSH接续控制，先收齐并审阅；当前新准入停止入口为ssh_qwen8_probe_continuation_stop_20261017及原ssh_qwen8_initial_stop_20261017，全局为ssh_stop_20261013。E369前瞻登记后续原四留出来源的8B 15训练/32评测，不做8B内重拟合，尚未创建真实执行绑定。未来训练/评测分别登记当前归属及ssh_qwen8_forward15_training_stop_20261017、ssh_qwen8_forward32_eval_stop_20261017；只停止新准入，终止已有owned进程须当前用户明确要求。下列旧4B控制标记作为完成证据保留，不能作为新8B入口。
+现行8B路线（核对时间 2026-10-17T16:52:18.661432+00:00）：原共同与16来源测量、有限32个forward评分及全部176实际预测已完成并发布（E371–E374）；原15在线RL使用controller405789和冻结八lane继续，最近完整审阅8条、其余7个owned进程运行，原队列已无待执行case，0科学失败（E380）。实际实时状态以 rl/qwen3_8b_stage0_forward15_ssh_20261017/queue.json、原run/supervisor及PID为准；这一段亦是带时间快照。尚无8B G/V，原32目标manifest尚未登记/运行。全15完整原始审计、执行审阅和进程终止后，按独立当前评测归属接续原32面板。21保留题继续关闭。
+
+当前停止源训练新准入的入口为ssh_qwen8_forward15_training_stop_20261017，全局ssh_stop_20261013；未来32目标使用ssh_qwen8_forward32_eval_stop_20261017及单独登记authority，不沿用失效的旧线程入口。标记只停止新增准入，终止已运行owned子进程须当前用户明确要求；资源遵循后续明确授权和冻结设计，最多8张实际空卡。
+
+4B原51/104与缩减晚15/32均已完整完成，晚全矩阵与第三状态不自动恢复，当前不新增代理。已有正文与可复现产物入口见[证据索引](../docs/research_evidence_index_20261018.md)（E381）。整个研究Goal未完成，未来批次等完整8B结果后按关键解释另行登记。以下保留的旧状态/“尚未绑定”等表述均按日期理解。
 
 <!-- CURRENT_FORWARD15_AUTHORITY_20261016 -->
 

@@ -385,3 +385,4 @@
 | [E378](E378.md) | first_complete_native8b_uniform_control_review | `rl/qwen3_8b_stage0_first_uniform_complete_review_20261018.json` | 已分析 |
 | [E379](E379.md) | gpt23_scope_review_and_complete_native8b_uniform_r1 | `rl/gpt23_review_20261018/diagnostic_and_decisions.json` | 已分析 |
 | [E380](E380.md) | native8b_four_source_first_repeat_and_reward_composition_review | `rl/qwen3_8b_stage0_eight_complete_reward_review_20261018.json` | 已分析 |
+| [E381](E381.md) | cross_stage_research_evidence_delivery_index | `rl/research_evidence_index_20261018.json` | 已分析 |
