@@ -14,6 +14,11 @@ def audit_job(root, path, execution_ref):
     out = root/job['output']
     result = original_audit(job, digest(path))
     run, summary = read(out/'run.json'), read(out/'summary.json')
+    terminal=read(out/'supervisor.json')
+    if terminal['returncode']!=0 or terminal['hard_timeout'] is not False:
+        raise ValueError('Failed or interrupted native8B source process cannot pass as a complete branch')
+    if run['versions']!=master['runtime_versions']:
+        raise ValueError('Actual native8B training libraries differ from the frozen execution')
     verification = pinned(root, master['model_verification'])
     if (run['native_model_revision'] != REVISION
             or run['native_model_path'] != verification['destination']
@@ -32,6 +37,7 @@ def audit_job(root, path, execution_ref):
         'native_execution_protocol': execution_ref,
         'native_common_binding': job['native_common_binding'],
         'frozen_base_sha256': common_manifest['frozen_base_sha256'],
+        'actual_supervised_worker_wall_seconds':terminal['wall_seconds'],
         'target_evaluation': False, 'reserved21_accessed': False}
 
 

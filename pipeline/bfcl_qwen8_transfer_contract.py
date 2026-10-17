@@ -1,6 +1,7 @@
 """Native8B target identity, full-cohort audit and actual pre-label forecasts."""
 import datetime
 import hashlib
+import math
 from pathlib import Path
 import subprocess
 import time
@@ -158,10 +159,20 @@ def owner(root, authority_ref, job, master, *, live, started):
     return authority, manifest
 
 
+def publication_time(value):
+    """Accept the existing supervisor numeric clock and native ISO receipts."""
+    when=value.get('verified_unix')
+    if when is None:when=datetime.datetime.fromisoformat(value['verified_at']).timestamp()
+    if type(when) not in (int,float) or not math.isfinite(when) or when<=0:
+        raise ValueError('Invalid actual publication observation time')
+    return float(when)
+
+
 def publication(root, publication_ref, job_ref, authority_ref, authority, binding, started):
     value = pinned(root, publication_ref)
-    if (value['commit'] != value['remote_main'] or value['scientific_child_started'] is not False
-            or datetime.datetime.fromisoformat(value['verified_at']).timestamp() > started):
+    if (publication_time(value)>started or value['scientific_child_started'] is not False
+            or subprocess.run(['git','merge-base','--is-ancestor',value['commit'],value['remote_main']],
+                              cwd=root,capture_output=True,timeout=30).returncode):
         raise ValueError('Target code/forecasts were not verified on the actual remote before admission')
     execution_ref=pinned(root,job_ref)['execution_protocol']
     execution=pinned(root,execution_ref)
