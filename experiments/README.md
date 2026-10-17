@@ -375,3 +375,4 @@
 | [E368](E368.md) | finite distinct model-conditioned value candidate design; existing feature-token input coverage verified | `rl/BFCL_MODEL_CONDITIONED_VALUE_CANDIDATES_DESIGN_20261017.json` | 已分析 |
 | [E369](E369.md) | prospective finite native8B cross-size forward15/32 design and zero-gain reference | `rl/QWEN3_8B_STAGE0_FORWARD15_SCIENTIFIC_DESIGN_20261017.json` | 已分析 |
 | [E370](E370.md) | gpt22_review_candidate_freeze_and_published4b_results_draft | `rl/gpt22_review_20261017/diagnostic_and_decisions.json` | 已分析 |
+| [E371](E371.md) | complete_native8b16_probe_raw_review_actual128_seal_and_E368_binding | `rl/qwen3_8b_stage0_complete_probe_review_20261017.json` | 已分析 |
