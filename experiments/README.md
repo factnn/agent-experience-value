@@ -367,3 +367,4 @@
 | [E360](E360.md) | bounded one-group nativeQwen3-8B resource measurement registration | `rl/QWEN3_8B_SINGLE_UPDATE_CAPACITY_PROTOCOL_20261017.json` | 已分析 |
 | [E361](E361.md) | completed single nativeQwen3-8B cost and capacity measurement | `rl/qwen3_8b_single_update_capacity_20261017/audit.json` | 已分析 |
 | [E362](E362.md) | native8B common state and full16-source presampling measurement registration | `rl/QWEN3_8B_STAGE0_INITIAL_PROBE_EXECUTION_20261017.json` | 已分析 |
+| [E363](E363.md) | verified actual native8B common generation startup | `rl/qwen3_8b_stage0_initial_ssh_20261017/startup_verified.json` | 已分析 |
