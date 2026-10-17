@@ -379,3 +379,4 @@
 | [E372](E372.md) | E368_actual_eight_gpu_forward_startup_observation | `rl/bfcl_model_conditioned_startup_observation_20261017.json` | 已分析 |
 | [E373](E373.md) | complete_E368_bounded_measurement_actual32_forecasts | `rl/bfcl_model_conditioned_complete_decision_20261017.json` | 已分析 |
 | [E374](E374.md) | actual_E369_native8b15_source_execution_and_current_authority_binding | `rl/qwen3_8b_stage0_forward15_binding_20261017/execution_registration.json` | 已分析 |
+| [E375](E375.md) | actual_native8b15_source_training_startup_and_zero_science_control_recovery | `rl/qwen3_8b_stage0_forward15_startup_observation_20261017.json` | 已分析 |

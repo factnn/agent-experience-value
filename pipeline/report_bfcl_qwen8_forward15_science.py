@@ -145,6 +145,10 @@ def build(root, manifest_ref):
             path = root / control / name
             if path.exists():
                 failure_records.append({'record': ref(root, path), 'value': read(path)})
+    prior_admission = ((root / master['source_prediction_binding']['path']).parent
+                       / 'source_admission_script_failure_20261017.json')
+    if prior_admission.exists():
+        failure_records.append({'record': ref(root, prior_admission), 'value': read(prior_admission)})
     old = pinned(root, auxiliary_design['fit_rule']['audited4b_report'])
     source_rows_with_points = [{'source_group': g, 'G': measured['G_labels'][g], 'V': measured['V_labels'][g],
         'frozen_point_predictions_G': points[g]} for g in measured['source_groups']]
