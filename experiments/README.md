@@ -382,3 +382,4 @@
 | [E375](E375.md) | actual_native8b15_source_training_startup_and_zero_science_control_recovery | `rl/qwen3_8b_stage0_forward15_startup_observation_20261017.json` | 已分析 |
 | [E376](E376.md) | first_complete_native8b_source_branch_raw_reviews | `rl/qwen3_8b_stage0_first_complete_branch_review_20261018.json` | 已分析 |
 | [E377](E377.md) | next_three_complete_native8b_source_branch_reviews | `rl/qwen3_8b_stage0_next_three_complete_branch_review_20261018.json` | 已分析 |
+| [E378](E378.md) | first_complete_native8b_uniform_control_review | `rl/qwen3_8b_stage0_first_uniform_complete_review_20261018.json` | 已分析 |
