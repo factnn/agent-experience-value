@@ -97,7 +97,7 @@ def load_job(root, path, expected_sha, execution_ref):
 
 
 @contextmanager
-def native_factories(runtime, model_path, metadata):
+def native_factories(runtime, model_path, metadata, *, target_evaluation=False):
     """Redirect exactly the legacy smoke/model factories in the current process."""
     tokenizer_factory, model_factory, original_write = runtime.AutoTokenizer, runtime.AutoModelForCausalLM, runtime.write
     expected = runtime.ROOT/'smoke/model'
@@ -116,9 +116,9 @@ def native_factories(runtime, model_path, metadata):
     def annotated_write(path, value):
         if path.name == 'run.json':
             value = value | metadata | {'native_model_revision': REVISION,
-                'native_model_path': str(model_path), 'target_evaluation': False,
+                'native_model_path': str(model_path), 'target_evaluation': target_evaluation,
                 'reserved21_accessed': False,
-                'model_factory_override': 'Process-local native8B factories; original scientific source trainer unchanged'}
+                'model_factory_override': 'Process-local native8B factories; original scientific engine unchanged'}
         return original_write(path, value)
     runtime.AutoTokenizer, runtime.AutoModelForCausalLM, runtime.write = NativeTokenizer, NativeModel, annotated_write
     try:

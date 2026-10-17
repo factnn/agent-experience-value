@@ -127,6 +127,11 @@ def main():
         assert calls[1][1] == {'dtype': 'bf16', 'attn_implementation': 'sdpa'}
         assert writes[0][1]['native_model_revision'] == REVISION and writes[0][1]['target_evaluation'] is False
         checks.append('Both legacy factories redirect to the actual8B cache; precision kwargs and process-local restoration retained')
+        with native_factories(runtime, destination, {}, target_evaluation=True):
+            runtime.write(root/'run.json', {'case_id': 'target-captured-only'})
+        assert writes[-1][1]['target_evaluation'] is True
+        assert runtime.AutoModelForCausalLM is CapturedFactory and runtime.write is writer
+        checks.append('Target-role metadata is explicit and original factories are restored')
         assert not (root/original_job['output']).exists()
     print(json.dumps({'status': 'passed', 'checks': checks,
         'fixtures': 'Temporary synthetic job/design/execution registry with links to actual native8B common artifacts; deleted after CPU check.',
