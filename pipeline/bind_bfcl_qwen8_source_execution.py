@@ -20,6 +20,8 @@ def build(root,design_ref,binding_ref,execution_path,authority_path,control_root
     audit=root/core_protocol['complete_probe_audit_path']
     if not audit.exists():
         raise ValueError('Complete original16 native8B probe required; no source execution binding created')
+    for marker in [design['training_stop_file'],design['global_stop_file']]:
+        if (root/marker).exists():raise RuntimeError('Current SSH owner stopped NEW source binding/admission')
     master={key:copy.deepcopy(design[key]) for key in ['model_revision','model_verification','native_common_binding',
         'analysis_contract','algorithm_protocol','source_groups','training_repeats','training','evaluation',
         'allowed_gpus','max_simultaneous_gpus','resource_authorization','current_ssh_owner']}
@@ -76,7 +78,13 @@ def build(root,design_ref,binding_ref,execution_path,authority_path,control_root
         'basis':'Current human autonomous research/eight-free-card authorization; E369 execution binding, no invented new per-job approval.'}
     exclusive(authority_path,authority);authority_ref=ref(root,authority_path)
     owner(root,authority_ref,execution_ref,master,live=True,started=time.time())
-    return {'execution':execution_ref,'authority':authority_ref,'registered_jobs':15,'scientific_children_launched':0}
+    import json
+    watched_path=root/'experiments/watch_roots.json';watched=pinned(root,ref(root,watched_path))
+    for relative in [master['output_root'],control_root,design['output_roots']['training_jobs']]:
+        if relative not in watched:watched.append(relative)
+    watched_path.write_text(json.dumps(watched,ensure_ascii=False,indent=2)+'\n')
+    return {'execution':execution_ref,'authority':authority_ref,'watch_roots':ref(root,watched_path),
+            'registered_jobs':15,'scientific_children_launched':0}
 
 
 if __name__=='__main__':

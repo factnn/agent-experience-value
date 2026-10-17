@@ -31,6 +31,8 @@ def audit_job(root, path):
         raise ValueError('Raw native8B run lacks its exact pre-target model, forecast or owner identity')
     if run['native_model_path'] != pinned(root, master['model_verification'])['destination']:
         raise ValueError('Target child used another model cache')
+    if run['versions']!=master['runtime_versions']:
+        raise ValueError('Actual native8B target libraries differ from the frozen learner execution')
     if (any(integrity[key] != expected for key in ['expected_frozen_base_sha256', 'initial_frozen_base_sha256', 'final_frozen_base_sha256'])
             or integrity['frozen_base_unchanged'] is not True or integrity['optimizer_updates'] != 0):
         raise ValueError('Native8B frozen base identity was not preserved')

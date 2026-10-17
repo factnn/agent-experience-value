@@ -24,6 +24,8 @@ def main():
         master={'jobs':jobs,'native_common_binding':common,'new_training_token_ceiling':196608,
                 'current_ssh_owner':{'thread_id':'cpu_fixture_only','mode':'human_authorized_ssh_takeover'},
                 'resource_authorization':common}
+        master['design']=save('fixture/target_design.json',{'evaluation_stop_file':'experiments/.runtime/cpu_target_stop',
+                          'global_stop_file':'experiments/.runtime/cpu_global_stop'})
         execution=save('fixture/execution.json',master)
         batch={'status':'passed','complete_jobs':2,'execution_protocol':execution,
                'jobs':[{'status':'passed','native_model_revision':REVISION,'job_sha256':j['sha256'],
@@ -70,6 +72,8 @@ def main():
         auth_ref=save('fixture/authority.json',auth)
         target={'execution_protocol':execution,'admission_binding':b_ref}
         contract.owner(root,auth_ref,target,master,live=True,started=20)
+        wrong_stop=auth|{'stop_file':'experiments/.runtime/old_phase_stop'}
+        reject('Wrong prior-phase stop marker rejected',lambda:contract.owner(root,save('fixture/wrong_stop_authority.json',wrong_stop),target,master,live=True,started=20))
         stop=root/auth['stop_file'];stop.parent.mkdir(parents=True,exist_ok=True);stop.touch()
         reject('Current stop rejects NEW target admission',lambda:contract.owner(root,auth_ref,target,master,live=True,started=20))
         contract.owner(root,auth_ref,target,master,live=False,started=20)

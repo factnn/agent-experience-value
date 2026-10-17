@@ -15,6 +15,7 @@ from seal_bfcl_model_conditioned_predictions import verify_auxiliary_seal
 SELF = 'pipeline/bfcl_qwen8_transfer_contract.py'
 SCOPE = 'qwen3_8b_stage0_forward_target_evaluation'
 RUNTIME = {SELF, 'pipeline/run_bfcl_qwen8_source_transfer.py', 'pipeline/report_bfcl_qwen8_source_transfer.py',
+           'pipeline/prepare_bfcl_qwen8_source_transfer.py','pipeline/supervise_bfcl_qwen8_source_transfer.py',
            'pipeline/bfcl_qwen8_forward_design.py',
            'pipeline/bfcl_qwen8_source_training.py', 'pipeline/eval_bfcl_source_transfer.py',
            'pipeline/report_bfcl_source_eval.py', 'pipeline/report_bfcl_intervention.py',
@@ -133,11 +134,14 @@ def forecasts(root, binding, master, started):
 
 def owner(root, authority_ref, job, master, *, live, started):
     authority = pinned(root, authority_ref)
+    design=pinned(root,master['design'])
     if (authority['mode'] != 'human_authorized_ssh_takeover' or authority['status'] != 'authorized'
             or authority['scope'] != SCOPE or authority['current_ssh_owner'] != master['current_ssh_owner']
             or identity(authority['execution_protocol']) != identity(job['execution_protocol'])
             or identity(authority['admission_binding']) != identity(job['admission_binding'])
             or identity(authority['resource_authorization']) != identity(master['resource_authorization'])
+            or authority['stop_file']!=design['evaluation_stop_file']
+            or authority['global_stop_file']!=design['global_stop_file']
             or authority['registered_unix'] > started):
         raise ValueError('Wrong separately registered current native8B target owner')
     for key in ['stop_file', 'global_stop_file']:
