@@ -394,3 +394,4 @@
 | [E387](E387.md) | native8b_math_trading_complete_original_three_repeat_review | `rl/qwen3_8b_stage0_math_trading_complete_three_repeat_review_20261018.json` | 已分析 |
 | [E388](E388.md) | complete_native8b_source_training_and_forward32_execution_review | `rl/qwen3_8b_stage0_forward32_binding_20261017/complete_source_and_target_execution_review.json` | 已分析 |
 | [E389](E389.md) | actual_native8b_original32_eight_gpu_target_startup | `rl/qwen3_8b_stage0_forward32_binding_20261017/actual_eight_gpu_startup_review.json` | 已分析 |
+| [E390](E390.md) | complete_native8b_source_process_descriptive_review | `rl/qwen3_8b_complete_source_process_execution_review_20261018.json` | 已分析 |
