@@ -116,6 +116,7 @@ def native_factories(runtime, model_path, metadata, *, target_evaluation=False):
     def annotated_write(path, value):
         if path.name == 'run.json':
             value = value | metadata | {'native_model_revision': REVISION,
+                'model_revision': REVISION,
                 'native_model_path': str(model_path), 'target_evaluation': target_evaluation,
                 'reserved21_accessed': False,
                 'model_factory_override': 'Process-local native8B factories; original scientific engine unchanged'}

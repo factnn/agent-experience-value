@@ -20,7 +20,7 @@ def audit_job(root, path):
     common = pinned(root, master['native_common_binding']); common_manifest = pinned(root, common['manifest'])
     integrity = read(output/'native_base_integrity.json')
     expected = common_manifest['frozen_base_sha256']
-    if (run['job_sha256'] != digest(path) or run['stage'] != 0 or run['native_model_revision'] != REVISION
+    if (run['job_sha256'] != digest(path) or run['stage'] != 0 or run['native_model_revision'] != REVISION or run['model_revision']!=REVISION
             or run['target_evaluation'] is not True or run['reserved21_accessed'] is not False
             or run['within_native8b_fitting_performed'] is not False or run['heldout_gate'] != 'verified'
             or identity(run['native_execution_protocol']) != identity(job['execution_protocol'])

@@ -20,7 +20,7 @@ def audit_job(root, path, execution_ref):
     if run['versions']!=master['runtime_versions']:
         raise ValueError('Actual native8B training libraries differ from the frozen execution')
     verification = pinned(root, master['model_verification'])
-    if (run['native_model_revision'] != REVISION
+    if (run['native_model_revision'] != REVISION or run['model_revision']!=REVISION
             or run['native_model_path'] != verification['destination']
             or run['target_evaluation'] is not False or run['reserved21_accessed'] is not False):
         raise ValueError('Scientific child did not use the registered native8B learner')

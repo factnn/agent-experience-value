@@ -8,6 +8,7 @@ from types import SimpleNamespace
 from bfcl_qwen8_source_training import load_job, native_factories, REVISION, REQUIRED
 from bfcl_source_eval_contract import digest
 from supervise_bfcl_stage_fork import ROOT, read
+from seal_bfcl_qwen8_cross_size_predictions import native_target_record_check
 
 
 def main():
@@ -130,8 +131,16 @@ def main():
         with native_factories(runtime, destination, {}, target_evaluation=True):
             runtime.write(root/'run.json', {'case_id': 'target-captured-only'})
         assert writes[-1][1]['target_evaluation'] is True
+        assert writes[-1][1]['model_revision']==writes[-1][1]['native_model_revision']==REVISION
         assert runtime.AutoModelForCausalLM is CapturedFactory and runtime.write is writer
         checks.append('Target-role metadata is explicit and original factories are restored')
+        tagged=root/'rl/cpu_tagged_target_fixture/run.json';tagged.parent.mkdir(parents=True,exist_ok=True)
+        tagged.write_text(json.dumps(writes[0][1])+'\n')
+        native_target_record_check(root)
+        tagged.write_text(json.dumps(writes[-1][1])+'\n')
+        try:native_target_record_check(root)
+        except ValueError:checks.append('Existing frozen target-access guard recognizes new native run metadata and rejects target access in isolated CPU fixture')
+        else:raise AssertionError('Frozen guard failed to recognize new target run metadata')
         assert not (root/original_job['output']).exists()
     print(json.dumps({'status': 'passed', 'checks': checks,
         'fixtures': 'Temporary synthetic job/design/execution registry with links to actual native8B common artifacts; deleted after CPU check.',
